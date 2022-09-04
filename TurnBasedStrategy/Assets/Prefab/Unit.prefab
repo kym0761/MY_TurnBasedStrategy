@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Unit: {fileID: 6969085638237594796}
+  _MeshRenderer: {fileID: 0}
 --- !u!1 &6969085638237594797
 GameObject:
   m_ObjectHideFlags: 0
@@ -108,6 +109,7 @@ GameObject:
   - component: {fileID: 6969085638237594795}
   - component: {fileID: 6969085638237594796}
   - component: {fileID: 3017367302152788981}
+  - component: {fileID: 591339103053361804}
   m_Layer: 7
   m_Name: Unit
   m_TagString: Untagged
@@ -144,7 +146,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e989d95c1619e064c8ac26097934d23c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _UnitAnimator: {fileID: 7053595428714221187}
 --- !u!65 &3017367302152788981
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -166,6 +167,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.6, y: 1.75, z: 0.6}
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &591339103053361804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6969085638237594797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4b26d4e64bcd55438995aa79fa29c06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitAnimator: {fileID: 7053595428714221187}
 --- !u!1001 &6969085638214541531
 PrefabInstance:
   m_ObjectHideFlags: 0
