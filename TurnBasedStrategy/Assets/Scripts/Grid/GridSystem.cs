@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class GridSystem
 {
+    //grid Setting 정보
     private int width;
     private int height;
     private float cellSize;
+
+    //실제 grid 정보 보관. width, height 만큼 미리 확보함.
     private GridObject[,] gridObjectArray;
 
 
@@ -25,8 +28,6 @@ public class GridSystem
             {
                 GridObject gridobj = new GridObject(this, new GridPosition(x, z));
                 gridObjectArray[x, z] = gridobj;
-                
-                //Debug.DrawLine(GetWorldPosition(x,z), GetWorldPosition(x,z) + Vector3.right*0.2f,Color.white, 1000);
             }
         }
 
@@ -34,11 +35,15 @@ public class GridSystem
 
     public Vector3 GetWorldPosition(GridPosition gridPosition)
     {
+        //Grid의 World Position.
+
         return new Vector3(gridPosition.X, 0, gridPosition.Z) * cellSize;
     }
 
     public GridPosition GetGridPosition(Vector3 WorldPosition)
     {
+        //World position에 해당하는 GridPosition
+
         return new GridPosition(
             Mathf.RoundToInt(WorldPosition.x / cellSize), 
             Mathf.RoundToInt(WorldPosition.z / cellSize));

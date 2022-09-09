@@ -58,7 +58,7 @@ public class GridSystemVisual : MonoBehaviour
         }
     }
 
-    public void ShoGridPositionList(List<GridPosition> gridPositionList)
+    public void ShowGridPositionList(List<GridPosition> gridPositionList)
     {
         foreach (GridPosition gridPosition in gridPositionList)
         {
@@ -72,7 +72,7 @@ public class GridSystemVisual : MonoBehaviour
 
         Unit unit = UnitActionSystem.Instance.GetSelectedUnit();
 
-        ShoGridPositionList(
+        ShowGridPositionList(
             unit.GetMoveAction().GetValidActionGridPositionList());
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MouseWorld : MonoBehaviour
 {
-    //[SerializeField] 
+    //마우스는 게임 속에 단 하나만 존재함.
     private static MouseWorld _Instance;
 
     [SerializeField]
@@ -24,7 +24,6 @@ public class MouseWorld : MonoBehaviour
 
     public static Vector3 GetPosition()
     {
-        //Debug.Log("OK OK");
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit raycastHit;

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GridObject
 {
+    //½ÇÁ¦ Grid.
+
     private GridSystem gridSystem;
     private GridPosition gridPosition;
     private List<Unit> unitList;

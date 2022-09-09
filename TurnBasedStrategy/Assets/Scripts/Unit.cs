@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    
+    //현재 위치의 GridPosition
     private GridPosition gridPosition;
-    // Start is called before the first frame update
-
+    //Move 담당
     private MoveAction moveAction;
 
 
@@ -18,6 +17,7 @@ public class Unit : MonoBehaviour
 
     void Start()
     {
+        //시작할 때 기준의 위치 값대로 Grid 설정함.
         gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition,this);
     }
@@ -25,11 +25,7 @@ public class Unit : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    Vector3 pos = MouseWorld.GetPosition();
-        //    Move(pos);
-        //}
+        //Grid가 현재 Grid와 다르면 LevelGrid의 값을 변경한 뒤에 다시 Set
         GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
         if (newGridPosition != gridPosition)
         {

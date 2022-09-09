@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class LevelGrid : MonoBehaviour
 {
+    //Grid System을 관리하는 유니티 오브젝트이므로, 자세한 기능은 GridSystem을 봐야함.
+
 
     public static LevelGrid Instance { get; private set; }
 

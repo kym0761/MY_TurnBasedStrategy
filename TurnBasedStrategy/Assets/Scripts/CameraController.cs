@@ -5,6 +5,11 @@ using Cinemachine;
 
 public class CameraController : MonoBehaviour
 {
+    //cinemachine의 virtual Camera를 사용하여 간단하게 카메라 구현.
+    //Q E : 회전
+    //W A S D : 이동
+    //마우스 휠 : 줌
+
     [SerializeField]
     private CinemachineVirtualCamera cinemachineVirtualCamera;
 
