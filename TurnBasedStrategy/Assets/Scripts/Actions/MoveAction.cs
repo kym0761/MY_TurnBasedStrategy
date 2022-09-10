@@ -1,21 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class MoveAction : MonoBehaviour
+public class MoveAction : BaseAction
 {
     [SerializeField]
     private Animator unitAnimator;
     private Vector3 targetPosition;
     [SerializeField]
     private int maxMoveDistance = 4;
-    private Unit unit;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         //최초 위치 설정하여 움직이지 않게 막음.
         targetPosition = transform.position;
-        unit = GetComponent<Unit>();
     }
 
     // Start is called before the first frame update
@@ -27,17 +28,21 @@ public class MoveAction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isActive)
+        {
+            return;
+        }
+
         float stoppingDistance = 0.1f;
+        Vector3 moveDirection = (targetPosition - transform.position).normalized;
+
 
         //targetPosition으로 이동.
         if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
         {
-            Vector3 moveDirection = (targetPosition - transform.position).normalized;
+
             float moveSpeed = 4.0f;
             transform.position += moveDirection * moveSpeed * Time.deltaTime;
-
-            float rotationSpeed = 10.0f;
-            transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
 
             //Animator 참고
             unitAnimator.SetBool("IsWalking", true);
@@ -45,22 +50,25 @@ public class MoveAction : MonoBehaviour
         else
         {
             unitAnimator.SetBool("IsWalking", false);
+            isActive = false;
+            onActionComplete();
         }
+
+        float rotationSpeed = 10.0f;
+        transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
+
+
     }
 
-    public void Move(GridPosition gridPosition)
+    public override void TakeAction(GridPosition gridPosition, Action onMoveComplete)
     {
+        onActionComplete = onMoveComplete;
         targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
+        isActive = true;
     }
 
-    public bool IsValidActionGridPosition(GridPosition gridPosition)
-    {
-        //ValidGrid인지 확인.
 
-        return GetValidActionGridPositionList().Contains(gridPosition);
-    }
-
-    public List<GridPosition> GetValidActionGridPositionList()
+    public override List<GridPosition> GetValidActionGridPositionList()
     {
         //unit의 이동 범위 Grid에서 Valid한 Grid만 걸러냄
 
@@ -99,5 +107,10 @@ public class MoveAction : MonoBehaviour
         }
 
         return validList;
+    }
+
+    public override string GetActionName()
+    {
+        return "Move";
     }
 }

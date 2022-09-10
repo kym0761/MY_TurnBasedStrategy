@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.EventSystems;
 
 public class UnitActionSystem : MonoBehaviour
 {
@@ -10,9 +11,12 @@ public class UnitActionSystem : MonoBehaviour
 
     public event EventHandler OnSelectedUnitChanged;
     [SerializeField] 
-    private Unit _SelectedUnit; // 선택된 유닛. 마우스 클릭으로 선택됨.
+    private Unit selectedUnit; // 선택된 유닛. 마우스 클릭으로 선택됨.
     [SerializeField]
-    private LayerMask _UnitLayerMask; //선택 가능한 unit의 레이어 마스크를 선택해줘야함.
+    private LayerMask unitLayerMask; // unit을 선택해서 레이어 Selection이 가능하게 해야함.
+
+    private bool isBusy;
+    private BaseAction selectedAction;
 
     private void Awake()
     {
@@ -28,51 +32,91 @@ public class UnitActionSystem : MonoBehaviour
 
     void Start()
     {
-        
+        //??
+        //SetSelectedUnit(selectedUnit);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isBusy)
+        {
+            return;
+        }
 
+
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        //유닛 선택시 유닛만 선택하고 끝남.
+        //유닛이 아닌 바닥을 클릭하면 Grid클릭으로 넘어감.
+        if (TryHandleUnitSelection())
+        {
+            return;
+        }
+
+        HandleSelectedAction();
+    }
+
+    private void HandleSelectedAction()
+    {
         if (Input.GetMouseButtonDown(0))
         {
-            //유닛 선택시 유닛만 선택하고 끝남.
-            //유닛이 아닌 바닥을 클릭하면 Grid클릭으로 넘어감.
-            if (TryHandleUnitSelection())
-            {
-                return;
-            }
-
             GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseWorld.GetPosition());
 
-            //유닛이 있을 때, 마우스의 Grid위치가 unit에게 Valid하다면 이동 명령을 내림.
-            if (_SelectedUnit)
+            if (selectedAction.IsValidActionGridPosition(mouseGridPosition))
             {
-                bool validMove = _SelectedUnit.GetMoveAction().IsValidActionGridPosition(mouseGridPosition);
-                if (validMove)
-                {
-                    _SelectedUnit.GetMoveAction().Move(mouseGridPosition);
-                }
+                SetBusy();
+                selectedAction.TakeAction(mouseGridPosition, ClearBusy);
             }
+
+            ////C# 7.0 Pattern Matching.
+            //switch (selectedAction)
+            //{
+            //    case MoveAction moveAction:
+
+            //        //유닛이 있을 때, 마우스의 Grid위치가 unit에게 Valid하다면 이동 명령을 내림.
+            //        if (selectedUnit)
+            //        {
+            //            bool validMove = moveAction.IsValidActionGridPosition(mouseGridPosition);
+            //            if (validMove)
+            //            {
+            //                SetBusy();
+            //                moveAction.Move(mouseGridPosition, ClearBusy);
+            //            }
+            //        }
+            //        break;
+
+            //    case SpinAction spinAction:
+            //        SetBusy();
+            //        spinAction.Spin(ClearBusy);
+            //        break;
+            //}
         }
     }
 
-
     private bool TryHandleUnitSelection()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit raycastHit;
-        if (Physics.Raycast(ray, out raycastHit, float.MaxValue, _UnitLayerMask))
+        if (Input.GetMouseButtonDown(0))
         {
-            Unit unit;
-            if (raycastHit.transform.TryGetComponent<Unit>(out unit))
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit raycastHit;
+            if (Physics.Raycast(ray, out raycastHit, float.MaxValue, unitLayerMask))
             {
-                SetSelectedUnit(unit);
-                return true;
-            }
+                Unit unit;
+                if (raycastHit.transform.TryGetComponent<Unit>(out unit) && unit != selectedUnit)
+                {
+                    //unit == selectedUnit means Already Selected that unit.
 
+                    SetSelectedUnit(unit);
+                    return true;
+                }
+
+            }
         }
+
 
         return false;
     }
@@ -80,14 +124,37 @@ public class UnitActionSystem : MonoBehaviour
 
     private void SetSelectedUnit(Unit Unit)
     {
-        _SelectedUnit = Unit;
+        selectedUnit = Unit;
+        //MoveAction을 기본 Action으로 세팅.
+        SetSelectedAction(Unit.GetMoveAction());
+
+
         OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
 
     }
 
-    public Unit GetSelectedUnit()
+    public void SetSelectedAction(BaseAction baseAction)
     {
-        return _SelectedUnit;
+        selectedAction = baseAction;
     }
 
+
+    public Unit GetSelectedUnit()
+    {
+        return selectedUnit;
+    }
+
+    public BaseAction GetSelectedAction()
+    {
+        return selectedAction;
+    }
+
+    private void SetBusy()
+    {
+        isBusy = true;
+    }
+    private void ClearBusy()
+    {
+        isBusy = false;
+    }
 }

@@ -5,15 +5,15 @@ using UnityEngine;
 public class MouseWorld : MonoBehaviour
 {
     //마우스는 게임 속에 단 하나만 존재함.
-    private static MouseWorld _Instance;
+    private static MouseWorld Instance;
 
     [SerializeField]
-    private LayerMask MousePlaneLayerMask;
+    private LayerMask mousePlaneLayerMask; //MousePlane 선택필요
 
     // Start is called before the first frame update
     void Awake()
     {
-        _Instance = this;
+        Instance = this;
     }
 
     // Update is called once per frame
@@ -27,7 +27,7 @@ public class MouseWorld : MonoBehaviour
 
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit raycastHit;
-        Physics.Raycast(ray, out raycastHit, float.MaxValue, _Instance.MousePlaneLayerMask);
+        Physics.Raycast(ray, out raycastHit, float.MaxValue, Instance.mousePlaneLayerMask);
         return raycastHit.point;
     }
 
