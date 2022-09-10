@@ -11,9 +11,15 @@ public class ActionButtonUI : MonoBehaviour
     private TextMeshProUGUI textMeshPro;
     [SerializeField]
     private Button button;
+    [SerializeField]
+    private GameObject selectedGameObject; // 버튼 UI Prefab에서 Selected로 설정.
+
+    private BaseAction baseAction;
 
     public void SetBaseAction(BaseAction baseAction)
     {
+       this.baseAction = baseAction;
+
         textMeshPro.text = baseAction.GetActionName().ToUpper();
 
 
@@ -21,6 +27,12 @@ public class ActionButtonUI : MonoBehaviour
         button.onClick.AddListener(() => {
             UnitActionSystem.Instance.SetSelectedAction(baseAction);
         });
+    }
+
+    public void UpdateSelectedVisual()
+    {
+        BaseAction selectedBaseAction = UnitActionSystem.Instance.GetSelectedAction();
+        selectedGameObject.SetActive(selectedBaseAction == baseAction);
     }
 
 }

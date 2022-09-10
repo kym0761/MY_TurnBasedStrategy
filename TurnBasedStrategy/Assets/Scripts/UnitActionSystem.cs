@@ -10,6 +10,11 @@ public class UnitActionSystem : MonoBehaviour
 
 
     public event EventHandler OnSelectedUnitChanged;
+    public event EventHandler OnSelectedActionChanged;
+    public event EventHandler<bool> OnBusyChanged; // args로 bool을 전달할 수 있음.
+    public event EventHandler OnActionStart;
+
+
     [SerializeField] 
     private Unit selectedUnit; // 선택된 유닛. 마우스 클릭으로 선택됨.
     [SerializeField]
@@ -44,7 +49,7 @@ public class UnitActionSystem : MonoBehaviour
             return;
         }
 
-
+        //UI 위에 마우스가 올라와 있는지를 확인함.
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
@@ -66,11 +71,25 @@ public class UnitActionSystem : MonoBehaviour
         {
             GridPosition mouseGridPosition = LevelGrid.Instance.GetGridPosition(MouseWorld.GetPosition());
 
-            if (selectedAction.IsValidActionGridPosition(mouseGridPosition))
+            if (!selectedAction)
             {
-                SetBusy();
-                selectedAction.TakeAction(mouseGridPosition, ClearBusy);
+                return;
             }
+
+            if (!selectedAction.IsValidActionGridPosition(mouseGridPosition))
+            {
+                return;
+            }
+
+            if (!selectedUnit.TrySpendActionPointsToTakeAction(selectedAction))
+            {
+                return;
+            }
+
+            SetBusy();
+            selectedAction.TakeAction(mouseGridPosition, ClearBusy);
+
+            OnActionStart?.Invoke(this, EventArgs.Empty);
 
             ////C# 7.0 Pattern Matching.
             //switch (selectedAction)
@@ -106,9 +125,13 @@ public class UnitActionSystem : MonoBehaviour
             if (Physics.Raycast(ray, out raycastHit, float.MaxValue, unitLayerMask))
             {
                 Unit unit;
-                if (raycastHit.transform.TryGetComponent<Unit>(out unit) && unit != selectedUnit)
+                if (raycastHit.transform.TryGetComponent<Unit>(out unit))
                 {
                     //unit == selectedUnit means Already Selected that unit.
+                    if (unit == selectedUnit)
+                    {
+                        return false;
+                    }
 
                     SetSelectedUnit(unit);
                     return true;
@@ -136,6 +159,10 @@ public class UnitActionSystem : MonoBehaviour
     public void SetSelectedAction(BaseAction baseAction)
     {
         selectedAction = baseAction;
+
+
+
+        OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
     }
 
 
@@ -152,9 +179,13 @@ public class UnitActionSystem : MonoBehaviour
     private void SetBusy()
     {
         isBusy = true;
+
+        OnBusyChanged?.Invoke(this, isBusy);
     }
     private void ClearBusy()
     {
         isBusy = false;
+
+        OnBusyChanged?.Invoke(this, isBusy);
     }
 }

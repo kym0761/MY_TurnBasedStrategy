@@ -1,9 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    private const int ACTION_POINTS_MAX = 2;
+
+    public static event EventHandler OnAnyActionPointsChanged;
+
+
     //현재 위치의 GridPosition
     private GridPosition gridPosition;
     //Move 담당
@@ -11,6 +17,9 @@ public class Unit : MonoBehaviour
     private SpinAction spinAction;
 
     private BaseAction[] baseActionArray;
+
+
+    private int actionPoints = ACTION_POINTS_MAX;
 
     private void Awake()
     {
@@ -26,6 +35,8 @@ public class Unit : MonoBehaviour
         //시작할 때 기준의 위치 값대로 Grid 설정함.
         gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition,this);
+
+        TurnSystem.Instance.onTurnChanged += TurnSystem_onTurnChanged;
     }
 
     // Update is called once per frame
@@ -60,4 +71,42 @@ public class Unit : MonoBehaviour
         return baseActionArray;
     }
 
+    public bool TrySpendActionPointsToTakeAction(BaseAction baseAction)
+    {
+        if (CanSpendActionPointsToTakeAction(baseAction))
+        {
+            SpendActionPoints(baseAction.GetActionPointsCost());
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
+    }
+
+    public bool CanSpendActionPointsToTakeAction(BaseAction baseAction)
+    {
+        return actionPoints >= baseAction.GetActionPointsCost();
+    }
+
+    private void SpendActionPoints(int amount)
+    {
+        actionPoints -= amount;
+
+        OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public int GetActionPoints()
+    {
+        return actionPoints;
+    }
+
+
+    private void TurnSystem_onTurnChanged(object sender, EventArgs e)
+    {
+        actionPoints = ACTION_POINTS_MAX;
+
+        OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+    }
 }

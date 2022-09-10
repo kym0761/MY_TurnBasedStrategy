@@ -73,8 +73,7 @@ public class GridSystemVisual : MonoBehaviour
         BaseAction selectedAction = UnitActionSystem.Instance.GetSelectedAction();
         if (selectedAction)
         {
-            ShowGridPositionList(
-                    selectedAction.GetValidActionGridPositionList());
+            ShowGridPositionList(selectedAction.GetValidActionGridPositionList());
         }
     }
 }
