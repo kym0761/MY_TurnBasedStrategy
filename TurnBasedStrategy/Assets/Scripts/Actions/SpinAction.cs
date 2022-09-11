@@ -56,4 +56,15 @@ public class SpinAction : BaseAction
         return 1;
     }
 
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+        //스핀 액션은 가치가 없다.
+
+        return new EnemyAIAction
+        {
+            gridPosition = gridPosition,
+            actionValue = 0,
+        };
+    }
+
 }

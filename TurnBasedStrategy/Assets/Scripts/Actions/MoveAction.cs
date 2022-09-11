@@ -82,6 +82,15 @@ public class MoveAction : BaseAction
         {
             for (int z = -maxMoveDistance; z <= maxMoveDistance; z++)
             {
+                //이동량 조절
+                int XZ = Mathf.Abs(x) + Mathf.Abs(z);
+                if (XZ > maxMoveDistance)
+                {
+                    continue;
+                }
+                
+
+
                 GridPosition offsetposition = new GridPosition(x, z);
 
                 GridPosition testPosition = unitGridPosition + offsetposition;
@@ -116,4 +125,18 @@ public class MoveAction : BaseAction
     {
         return "Move";
     }
+
+    public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
+    {
+        //공격 가능한 적이 많을 수록 가치가 높다.
+
+        int targetCountAtGridPosition = unit.GetShootAction().GetTargetCountAtPosition(gridPosition);
+
+        return new EnemyAIAction
+        {
+            gridPosition = gridPosition,
+            actionValue = targetCountAtGridPosition * 10,
+        };
+    }
+
 }

@@ -20,6 +20,7 @@ public class Unit : MonoBehaviour
     //Move 담당
     private MoveAction moveAction;
     private SpinAction spinAction;
+    private ShootAction shootAction;
 
     private BaseAction[] baseActionArray;
     private HealthSystem healthSystem;
@@ -30,6 +31,8 @@ public class Unit : MonoBehaviour
     {
         moveAction = GetComponent<MoveAction>();
         spinAction = GetComponent<SpinAction>();
+        shootAction = GetComponent<ShootAction>();
+
         healthSystem = GetComponent<HealthSystem>();
         baseActionArray = GetComponents<BaseAction>();
 
@@ -37,9 +40,9 @@ public class Unit : MonoBehaviour
 
     void Start()
     {
-        //시작할 때 기준의 위치 값대로 Grid 설정함.
+        //시작할 때 기준의 위치 값대로 gridPosition을 Set함.
         gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
-        LevelGrid.Instance.AddUnitAtGridPosition(gridPosition,this);
+        LevelGrid.Instance.AddUnitAtGridPosition(gridPosition, this);
 
         TurnSystem.Instance.onTurnChanged += TurnSystem_onTurnChanged;
         healthSystem.onDead += HealthSystem_OnDead;
@@ -70,6 +73,12 @@ public class Unit : MonoBehaviour
     {
         return spinAction;
     }
+
+    public ShootAction GetShootAction()
+    {
+        return shootAction;
+    }
+
 
     public GridPosition GetGridPosition()
     {
@@ -140,11 +149,17 @@ public class Unit : MonoBehaviour
     public void Damage(int damageAmount)
     {
         healthSystem.Damage(damageAmount);
-        //Debug.Log(transform+" Damaged");
     }
 
     public Vector3 GetWorldPosition()
     {
         return transform.position;
+    }
+
+    public float GetHealthNormalized()
+    {
+        //hp를 0~1 값으로 normalized.
+
+        return healthSystem.GetHealthNormalized();
     }
 }
