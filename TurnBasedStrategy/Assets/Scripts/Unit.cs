@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
     private const int ACTION_POINTS_MAX = 2;
 
-    public static event EventHandler OnAnyActionPointsChanged;
+    public static event EventHandler onAnyActionPointsChanged;
+    public static event EventHandler onAnyUnitSpawned;
+    public static event EventHandler onAnyUnitDead;
 
     [SerializeField] private bool isEnemy;
 
@@ -19,7 +22,7 @@ public class Unit : MonoBehaviour
     private SpinAction spinAction;
 
     private BaseAction[] baseActionArray;
-
+    private HealthSystem healthSystem;
 
     private int actionPoints = ACTION_POINTS_MAX;
 
@@ -27,7 +30,7 @@ public class Unit : MonoBehaviour
     {
         moveAction = GetComponent<MoveAction>();
         spinAction = GetComponent<SpinAction>();
-
+        healthSystem = GetComponent<HealthSystem>();
         baseActionArray = GetComponents<BaseAction>();
 
     }
@@ -39,6 +42,9 @@ public class Unit : MonoBehaviour
         LevelGrid.Instance.AddUnitAtGridPosition(gridPosition,this);
 
         TurnSystem.Instance.onTurnChanged += TurnSystem_onTurnChanged;
+        healthSystem.onDead += HealthSystem_OnDead;
+
+        onAnyUnitSpawned?.Invoke(this, EventArgs.Empty);
     }
 
     // Update is called once per frame
@@ -48,8 +54,10 @@ public class Unit : MonoBehaviour
         GridPosition newGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
         if (newGridPosition != gridPosition)
         {
-            LevelGrid.Instance.UnitMovedGridPosition(this, gridPosition, newGridPosition);
+            GridPosition oldGridPosition = gridPosition;
             gridPosition = newGridPosition;
+
+            LevelGrid.Instance.UnitMovedGridPosition(this, oldGridPosition, newGridPosition);
         }
     }
 
@@ -96,7 +104,7 @@ public class Unit : MonoBehaviour
     {
         actionPoints -= amount;
 
-        OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+        onAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public int GetActionPoints()
@@ -111,8 +119,17 @@ public class Unit : MonoBehaviour
         {
             actionPoints = ACTION_POINTS_MAX;
 
-            OnAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
+            onAnyActionPointsChanged?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    private void HealthSystem_OnDead(object sender, EventArgs e)
+    {
+        LevelGrid.Instance.RemoveUnitAtGridPosition(gridPosition, this);
+
+        Destroy(gameObject);
+
+        onAnyUnitDead?.Invoke(this, EventArgs.Empty);
     }
 
     public bool IsEnemy()
@@ -120,9 +137,10 @@ public class Unit : MonoBehaviour
         return isEnemy;
     }
 
-    public void Damage()
+    public void Damage(int damageAmount)
     {
-        Debug.Log(transform+" Damaged");
+        healthSystem.Damage(damageAmount);
+        //Debug.Log(transform+" Damaged");
     }
 
     public Vector3 GetWorldPosition()

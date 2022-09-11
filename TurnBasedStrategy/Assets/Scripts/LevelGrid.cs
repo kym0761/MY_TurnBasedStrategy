@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ public class LevelGrid : MonoBehaviour
 {
     //Grid System을 관리하는 유니티 오브젝트이므로, 자세한 기능은 GridSystem을 봐야함.
 
+    public event EventHandler onAnyUnitMovedGridPosition;
 
     public static LevelGrid Instance { get; private set; }
 
@@ -63,6 +65,8 @@ public class LevelGrid : MonoBehaviour
     {
         RemoveUnitAtGridPosition(from, unit);
         AddUnitAtGridPosition(to, unit);
+
+        onAnyUnitMovedGridPosition?.Invoke(this, EventArgs.Empty);
     }
 
     public GridPosition GetGridPosition(Vector3 worldPosition) => gridSystem.GetGridPosition(worldPosition);

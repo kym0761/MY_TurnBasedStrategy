@@ -9,10 +9,10 @@ public class UnitActionSystem : MonoBehaviour
     public static UnitActionSystem Instance { get; private set; }
 
 
-    public event EventHandler OnSelectedUnitChanged;
-    public event EventHandler OnSelectedActionChanged;
-    public event EventHandler<bool> OnBusyChanged; // args로 bool을 전달할 수 있음.
-    public event EventHandler OnActionStart;
+    public event EventHandler onSelectedUnitChanged;
+    public event EventHandler onSelectedActionChanged;
+    public event EventHandler<bool> onBusyChanged; // args로 bool을 전달할 수 있음.
+    public event EventHandler onActionStart;
 
 
     [SerializeField] 
@@ -38,7 +38,7 @@ public class UnitActionSystem : MonoBehaviour
     void Start()
     {
         //??
-        //SetSelectedUnit(selectedUnit);
+        SetSelectedUnit(selectedUnit);
     }
 
     // Update is called once per frame
@@ -94,7 +94,7 @@ public class UnitActionSystem : MonoBehaviour
             SetBusy();
             selectedAction.TakeAction(mouseGridPosition, ClearBusy);
 
-            OnActionStart?.Invoke(this, EventArgs.Empty);
+            onActionStart?.Invoke(this, EventArgs.Empty);
 
             ////C# 7.0 Pattern Matching.
             //switch (selectedAction)
@@ -156,14 +156,13 @@ public class UnitActionSystem : MonoBehaviour
     }
 
 
-    private void SetSelectedUnit(Unit Unit)
+    private void SetSelectedUnit(Unit unit)
     {
-        selectedUnit = Unit;
+        selectedUnit = unit;
         //MoveAction을 기본 Action으로 세팅.
-        SetSelectedAction(Unit.GetMoveAction());
+        SetSelectedAction(unit.GetMoveAction());
 
-
-        OnSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
+        onSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
 
     }
 
@@ -171,9 +170,9 @@ public class UnitActionSystem : MonoBehaviour
     {
         selectedAction = baseAction;
 
+        //Debug.Log("?");
 
-
-        OnSelectedActionChanged?.Invoke(this, EventArgs.Empty);
+        onSelectedActionChanged?.Invoke(this, EventArgs.Empty);
     }
 
 
@@ -191,12 +190,12 @@ public class UnitActionSystem : MonoBehaviour
     {
         isBusy = true;
 
-        OnBusyChanged?.Invoke(this, isBusy);
+        onBusyChanged?.Invoke(this, isBusy);
     }
     private void ClearBusy()
     {
         isBusy = false;
 
-        OnBusyChanged?.Invoke(this, isBusy);
+        onBusyChanged?.Invoke(this, isBusy);
     }
 }
