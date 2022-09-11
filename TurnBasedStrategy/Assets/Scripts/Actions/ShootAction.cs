@@ -8,6 +8,14 @@ using UnityEngine.EventSystems;
 public class ShootAction : BaseAction
 {
 
+    public event EventHandler<OnShootEventArgs> onShoot;
+
+    public class OnShootEventArgs : EventArgs
+    {
+        public Unit targetUnit;
+        public Unit shootingUnit;
+    }
+
     private enum State
     { 
     Aiming, Shooting, Cooloff
@@ -87,6 +95,10 @@ public class ShootAction : BaseAction
 
     private void Shoot()
     {
+        onShoot?.Invoke(this, new OnShootEventArgs {
+            targetUnit = targetUnit, shootingUnit = unit 
+        });
+
         targetUnit.Damage();
     }
 
