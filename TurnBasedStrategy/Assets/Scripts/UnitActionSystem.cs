@@ -160,7 +160,7 @@ public class UnitActionSystem : MonoBehaviour
     {
         selectedUnit = unit;
         //MoveAction을 기본 Action으로 세팅.
-        SetSelectedAction(unit.GetMoveAction());
+        SetSelectedAction(unit.GetAction<MoveAction>());
 
         onSelectedUnitChanged?.Invoke(this, EventArgs.Empty);
 

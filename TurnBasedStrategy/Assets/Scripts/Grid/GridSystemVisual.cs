@@ -112,7 +112,7 @@ public class GridSystemVisual : MonoBehaviour
     {
         foreach (GridPosition gridPosition in gridPositionList)
         {
-            gridSystemVisualSingleArray[gridPosition.X, gridPosition.Z].
+            gridSystemVisualSingleArray[gridPosition.x, gridPosition.z].
                 Show(GetGridVisualTypeMaterial(gridVisualType));
         }
     }

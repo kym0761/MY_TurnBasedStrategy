@@ -130,7 +130,7 @@ public class MoveAction : BaseAction
     {
         //공격 가능한 적이 많을 수록 가치가 높다.
 
-        int targetCountAtGridPosition = unit.GetShootAction().GetTargetCountAtPosition(gridPosition);
+        int targetCountAtGridPosition = unit.GetAction<ShootAction>().GetTargetCountAtPosition(gridPosition);
 
         return new EnemyAIAction
         {

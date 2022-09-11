@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Rendering.Universal;
 using UnityEngine;
 
-public class GridSystem
+public class GridSystem<TGridObject>
 {
     //grid Setting 정보
     private int width;
@@ -11,22 +12,23 @@ public class GridSystem
     private float cellSize;
 
     //실제 grid 정보 보관. width, height 만큼 미리 확보함.
-    private GridObject[,] gridObjectArray;
+    private TGridObject[,] gridObjectArray;
 
 
-    public GridSystem(int Width, int Height, float CellSize)
+    public GridSystem(int Width, int Height, float CellSize, Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
     {
         width = Width;
         height = Height;
         cellSize = CellSize;
 
-        gridObjectArray = new GridObject[Width, Height];
+        gridObjectArray = new TGridObject[Width, Height];
 
         for (int x = 0; x < Width; x++)
         {
             for (int z = 0; z < Height; z++)
             {
-                GridObject gridobj = new GridObject(this, new GridPosition(x, z));
+                GridPosition gridPosition = new GridPosition(x, z);
+                TGridObject gridobj = createGridObject(this,gridPosition);
                 gridObjectArray[x, z] = gridobj;
             }
         }
@@ -37,7 +39,7 @@ public class GridSystem
     {
         //Grid의 World Position.
 
-        return new Vector3(gridPosition.X, 0, gridPosition.Z) * cellSize;
+        return new Vector3(gridPosition.x, 0, gridPosition.z) * cellSize;
     }
 
     public GridPosition GetGridPosition(Vector3 WorldPosition)
@@ -64,17 +66,17 @@ public class GridSystem
         }
     }
 
-    public GridObject GetGridObject(GridPosition gridPosition)
+    public TGridObject GetGridObject(GridPosition gridPosition)
     {
-        return gridObjectArray[gridPosition.X, gridPosition.Z];
+        return gridObjectArray[gridPosition.x, gridPosition.z];
     }
 
     public bool IsValidGridPosition(GridPosition gridPosition)
     {
-        return gridPosition.X >= 0 && 
-            gridPosition.Z >= 0 && 
-            gridPosition.X < width &&
-            gridPosition.Z < height;
+        return gridPosition.x >= 0 && 
+            gridPosition.z >= 0 && 
+            gridPosition.x < width &&
+            gridPosition.z < height;
     }
 
     public int GetWidth()

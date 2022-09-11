@@ -17,11 +17,8 @@ public class Unit : MonoBehaviour
 
     //현재 위치의 GridPosition
     private GridPosition gridPosition;
-    //Move 담당
-    private MoveAction moveAction;
-    private SpinAction spinAction;
-    private ShootAction shootAction;
 
+    //가능한 Action들
     private BaseAction[] baseActionArray;
     private HealthSystem healthSystem;
 
@@ -29,13 +26,8 @@ public class Unit : MonoBehaviour
 
     private void Awake()
     {
-        moveAction = GetComponent<MoveAction>();
-        spinAction = GetComponent<SpinAction>();
-        shootAction = GetComponent<ShootAction>();
-
         healthSystem = GetComponent<HealthSystem>();
         baseActionArray = GetComponents<BaseAction>();
-
     }
 
     void Start()
@@ -64,21 +56,18 @@ public class Unit : MonoBehaviour
         }
     }
 
-    public MoveAction GetMoveAction()
+    public T GetAction<T>() where T : BaseAction
     {
-        return moveAction;
-    }
+        foreach (BaseAction baseAction in baseActionArray)
+        {
+            if (baseAction is T)
+            {
+                return (T)baseAction;
+            }
+        }
 
-    public SpinAction GetSpinAction()
-    {
-        return spinAction;
+        return null;
     }
-
-    public ShootAction GetShootAction()
-    {
-        return shootAction;
-    }
-
 
     public GridPosition GetGridPosition()
     {
