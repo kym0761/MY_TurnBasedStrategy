@@ -49,6 +49,11 @@ public class UnitActionSystem : MonoBehaviour
             return;
         }
 
+        if (!TurnSystem.Instance.IsPlayerTurn())
+        {
+            return;
+        }
+
         //UI 위에 마우스가 올라와 있는지를 확인함.
         if (EventSystem.current.IsPointerOverGameObject())
         {
@@ -130,6 +135,12 @@ public class UnitActionSystem : MonoBehaviour
                     //unit == selectedUnit means Already Selected that unit.
                     if (unit == selectedUnit)
                     {
+                        return false;
+                    }
+
+                    if (unit.IsEnemy())
+                    {
+                        //not select enemy
                         return false;
                     }
 
