@@ -3,26 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GrenadeAction : BaseAction
+public class SwordAction : BaseAction
 {
-    [SerializeField]
-    private int maxThrowDistance = 7;
-    [SerializeField] 
-    private Transform grenadeProjectilePrefab;
+    private int maxSwordDistance = 1;
 
-    private void Update()
-    {
-        if (!isActive)
-        {
-            return;
-        }
-
-        ActionComplete();
-    }
 
     public override string GetActionName()
     {
-        return "Grenade";
+        return "Sword";
     }
 
     public override EnemyAIAction GetEnemyAIAction(GridPosition gridPosition)
@@ -30,7 +18,7 @@ public class GrenadeAction : BaseAction
         return new EnemyAIAction
         {
             gridPosition = gridPosition,
-            actionValue = 0,
+            actionValue = 200,
         };
     }
 
@@ -40,9 +28,9 @@ public class GrenadeAction : BaseAction
 
         GridPosition unitGridPosition = unit.GetGridPosition();
 
-        for (int x = -maxThrowDistance; x <= maxThrowDistance; x++)
+        for (int x = -maxSwordDistance; x <= maxSwordDistance; x++)
         {
-            for (int z = -maxThrowDistance; z <= maxThrowDistance; z++)
+            for (int z = -maxSwordDistance; z <= maxSwordDistance; z++)
             {
                 GridPosition offsetposition = new GridPosition(x, z);
 
@@ -54,13 +42,19 @@ public class GrenadeAction : BaseAction
                     continue;
                 }
 
-                //사거리 체크
-                int testDistance = Mathf.Abs(x) + Mathf.Abs(z);
-                if (testDistance > maxThrowDistance)
+                //누군가 점유하지 않은 곳은 공격 선택 불가
+                if (!LevelGrid.Instance.HasAnyUnitOnGridPosition(testPosition))
                 {
                     continue;
                 }
 
+                Unit targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(testPosition);
+
+                //같은 팀은 Skip.
+                if (targetUnit.IsEnemy() == unit.IsEnemy())
+                {
+                    continue;
+                }
 
                 //통과했다면 문제 없으니 valid에 추가.
                 validList.Add(testPosition);
@@ -72,22 +66,33 @@ public class GrenadeAction : BaseAction
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
-        Transform grenadeProjectileTransform = Instantiate(grenadeProjectilePrefab, unit.GetWorldPosition(), Quaternion.identity);
-        GrenadeProjectile grenadeProjectile = grenadeProjectileTransform.GetComponent<GrenadeProjectile>();
-        grenadeProjectile.Setup(gridPosition, OnGrenadeBehaviourComplete);
-
 
         ActionStart(onActionComplete);
+
     }
 
-    private void OnGrenadeBehaviourComplete()
+    // Start is called before the first frame update
+    void Start()
     {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!isActive)
+        {
+            return;
+        }
+
         ActionComplete();
+
     }
 
-    public int GetMaxGrenadeDistance()
+    public int GetMaxSwordDistance()
     {
-        return maxThrowDistance;
+        return maxSwordDistance;
     }
+
 
 }
