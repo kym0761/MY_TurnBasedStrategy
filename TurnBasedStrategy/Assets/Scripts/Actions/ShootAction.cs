@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 public class ShootAction : BaseAction
 {
-
+    public static event EventHandler<OnShootEventArgs> onAnyShoot;
     public event EventHandler<OnShootEventArgs> onShoot;
    
     [SerializeField]
@@ -98,6 +98,12 @@ public class ShootAction : BaseAction
 
     private void Shoot()
     {
+        onAnyShoot?.Invoke(this, new OnShootEventArgs
+        {
+            targetUnit = targetUnit,
+            shootingUnit = unit
+        });
+
         onShoot?.Invoke(this, new OnShootEventArgs {
             targetUnit = targetUnit, shootingUnit = unit 
         });
