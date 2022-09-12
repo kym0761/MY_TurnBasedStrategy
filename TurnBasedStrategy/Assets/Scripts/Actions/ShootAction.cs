@@ -9,6 +9,9 @@ public class ShootAction : BaseAction
 {
 
     public event EventHandler<OnShootEventArgs> onShoot;
+   
+    [SerializeField]
+    private LayerMask obstaclesLayerMask;
 
     public class OnShootEventArgs : EventArgs
     {
@@ -150,6 +153,22 @@ public class ShootAction : BaseAction
 
                 //같은 팀은 Skip.
                 if (targetUnit.IsEnemy() == unit.IsEnemy())
+                {
+                    continue;
+                }
+
+                Vector3 unitWorldPosition = LevelGrid.Instance.GetWorldPosition(unitGridPosition);
+                Vector3 shootDir = (targetUnit.GetWorldPosition() - unitWorldPosition).normalized;
+
+                float unitshoulderHeight = 1.7f;
+                bool t= Physics.Raycast(unitWorldPosition + Vector3.up * unitshoulderHeight,
+                    shootDir,
+                    Vector3.Distance(unitWorldPosition, targetUnit.GetWorldPosition()),
+                    obstaclesLayerMask
+                    );
+
+                //발사할 위치에 장애물이 있다면 불가능.
+                if (t)
                 {
                     continue;
                 }

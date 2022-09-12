@@ -14,14 +14,9 @@ public class MoveAction : BaseAction
     [SerializeField]
     private int maxMoveDistance = 4;
 
-    private Vector3 targetPosition;
+    private List<Vector3> positionList;
+    int currentPositionIndex;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        //최초 위치 설정하여 움직이지 않게 막음.
-        targetPosition = transform.position;
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -37,10 +32,14 @@ public class MoveAction : BaseAction
             return;
         }
 
-        float stoppingDistance = 0.1f;
+        Vector3 targetPosition = positionList[currentPositionIndex];
         Vector3 moveDirection = (targetPosition - transform.position).normalized;
 
+        float rotationSpeed = 10.0f;
+        transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
 
+
+        float stoppingDistance = 0.1f;
         //targetPosition으로 이동.
         if (Vector3.Distance(transform.position, targetPosition) > stoppingDistance)
         {
@@ -51,19 +50,31 @@ public class MoveAction : BaseAction
         }
         else
         {
-            onStopMoving?.Invoke(this, EventArgs.Empty);
-            ActionComplete();
+            currentPositionIndex++;
+
+            if (currentPositionIndex >= positionList.Count)
+            {
+                onStopMoving?.Invoke(this, EventArgs.Empty);
+                ActionComplete();
+            }
         }
-
-        float rotationSpeed = 10.0f;
-        transform.forward = Vector3.Lerp(transform.forward, moveDirection, rotationSpeed * Time.deltaTime);
-
 
     }
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
-        targetPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
+        List<GridPosition> pathList = PathFinding.Instance.FindPath(unit.GetGridPosition(), gridPosition, out int pathLength);
+
+
+        currentPositionIndex = 0;
+        positionList = new List<Vector3>();
+        //positionList.Add(LevelGrid.Instance.GetWorldPosition(gridPosition));
+
+        foreach (GridPosition pathGridPosition in pathList)
+        {
+            positionList.Add(LevelGrid.Instance.GetWorldPosition(pathGridPosition));
+        }
+
 
         onStartMoving?.Invoke(this, EventArgs.Empty);
 
@@ -82,12 +93,12 @@ public class MoveAction : BaseAction
         {
             for (int z = -maxMoveDistance; z <= maxMoveDistance; z++)
             {
-                //이동량 조절
-                int XZ = Mathf.Abs(x) + Mathf.Abs(z);
-                if (XZ > maxMoveDistance)
-                {
-                    continue;
-                }
+                ////이동량 조절
+                //int XZ = Mathf.Abs(x) + Mathf.Abs(z);
+                //if (XZ > maxMoveDistance)
+                //{
+                //    continue;
+                //}
                 
 
 
@@ -112,6 +123,26 @@ public class MoveAction : BaseAction
                 {
                     continue;
                 }
+
+                //걸을 수 있는 위치인지
+                if (!PathFinding.Instance.IsWalkableGridPosition(testPosition))
+                {
+                    continue;
+                }
+
+                //도착 가능한 위치인지
+                if (!PathFinding.Instance.HasPath(unitGridPosition, testPosition))
+                {
+                    continue;
+                }
+
+                int multiplier = 10;
+                //의도와 달리 거리가 먼 위치
+                if (PathFinding.Instance.GetPathLength(unitGridPosition, testPosition) > maxMoveDistance * multiplier)
+                {
+                    continue;
+                }
+
 
                 //통과했다면 문제 없으니 valid에 추가.
                 validList.Add(testPosition);

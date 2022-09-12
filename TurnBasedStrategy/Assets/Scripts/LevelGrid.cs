@@ -15,6 +15,13 @@ public class LevelGrid : MonoBehaviour
     private Transform gridDebugObjectPrefab;
     private GridSystem<GridObject> gridSystem;
 
+    [SerializeField]
+    private int width =10;
+    [SerializeField]
+    private int height =10;
+    [SerializeField]
+    private float cellSize = 2.0f;
+
 
     private void Awake()
     {
@@ -27,14 +34,14 @@ public class LevelGrid : MonoBehaviour
 
         Instance = this;
 
-        gridSystem = new GridSystem<GridObject>(10, 10, 2.0f, (GridSystem<GridObject> g, GridPosition gridPosition) => new GridObject(g, gridPosition));
+        gridSystem = new GridSystem<GridObject>(width, height, cellSize, (GridSystem<GridObject> g, GridPosition gridPosition) => new GridObject(g, gridPosition));
         //gridSystem.CreateDebugObjects(gridDebugObjectPrefab);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        PathFinding.Instance.Setup(width,height,cellSize);
     }
 
     // Update is called once per frame
