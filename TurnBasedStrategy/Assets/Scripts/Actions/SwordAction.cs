@@ -5,8 +5,21 @@ using UnityEngine;
 
 public class SwordAction : BaseAction
 {
-    private int maxSwordDistance = 1;
+    public static event EventHandler onAnySwordHit;
 
+    public event EventHandler onSwordActionStarted;
+    public event EventHandler onSwordActionComplete;
+
+    private int maxSwordDistance = 1;
+    private State state;
+    private float stateTimer;
+    private Unit targetUnit;
+
+    private enum State
+    {
+        SwingingBeforeHit,
+        SwingingAfterHit,
+    }
 
     public override string GetActionName()
     {
@@ -66,6 +79,13 @@ public class SwordAction : BaseAction
 
     public override void TakeAction(GridPosition gridPosition, Action onActionComplete)
     {
+        targetUnit = LevelGrid.Instance.GetUnitAtGridPosition(gridPosition);
+
+        state = State.SwingingBeforeHit;
+        float beforeHitStateTime = 0.7f;
+        stateTimer = beforeHitStateTime;
+
+        onSwordActionStarted?.Invoke(this, EventArgs.Empty);
 
         ActionStart(onActionComplete);
 
@@ -85,8 +105,49 @@ public class SwordAction : BaseAction
             return;
         }
 
-        ActionComplete();
+        //ActionComplete();
 
+        stateTimer -= Time.deltaTime;
+
+        switch (state)
+        {
+            case State.SwingingBeforeHit:
+                Vector3 aimDir = (targetUnit.GetWorldPosition() - unit.GetWorldPosition()).normalized;
+
+                float rotationSpeed = 10.0f;
+                transform.forward = Vector3.Lerp(transform.forward, aimDir, rotationSpeed * Time.deltaTime);
+
+                break;
+            case State.SwingingAfterHit:
+
+                break;
+
+
+        }
+
+        if (stateTimer <= 0.0f)
+        {
+            NextState();
+        }
+
+    }
+
+    private void NextState()
+    {
+        switch (state)
+        {
+            case State.SwingingBeforeHit:
+                state = State.SwingingAfterHit;
+                float afterHitStateTime = 0.5f;
+                stateTimer = afterHitStateTime;
+                targetUnit.Damage(100);
+                onAnySwordHit?.Invoke(this,EventArgs.Empty);
+                break;
+            case State.SwingingAfterHit:
+                onSwordActionComplete?.Invoke(this, EventArgs.Empty);
+                ActionComplete();
+                break;
+        }
     }
 
     public int GetMaxSwordDistance()

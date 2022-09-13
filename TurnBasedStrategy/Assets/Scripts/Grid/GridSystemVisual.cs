@@ -151,6 +151,7 @@ public class GridSystemVisual : MonoBehaviour
 
         switch (selectedAction)
         {
+            default:
             case MoveAction moveAction:
                 gridVisualType = GridVisualType.White;
                 break;
