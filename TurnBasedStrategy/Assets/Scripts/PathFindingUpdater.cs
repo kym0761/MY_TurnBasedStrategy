@@ -13,15 +13,15 @@ public class PathFindingUpdater : MonoBehaviour
 
     private void DestructibleCrate_OnAnyDestroyed(object sender, EventArgs e)
     {
+        //부셔진 Crate 위치를 걷기 가능한 위치로 변환.
+
         DestructibleCrate crate = sender as DestructibleCrate;
         PathFinding.Instance.SetWalkableGridPosition(crate.GetGridPosition(), true);
-
-
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    //// Update is called once per frame
+    //void Update()
+    //{
         
-    }
+    //}
 }

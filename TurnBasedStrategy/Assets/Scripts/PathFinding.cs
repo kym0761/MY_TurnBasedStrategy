@@ -29,8 +29,8 @@ public class PathFinding : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        Instance = this;
 
+        Instance = this;
     }
 
 
@@ -49,7 +49,6 @@ public class PathFinding : MonoBehaviour
         {
             for (int z = 0; z < height; z++)
             {
-
                 GridPosition gridPosition = new GridPosition(x, z);
 
                 Vector3 worldPosition = LevelGrid.Instance.GetWorldPosition(gridPosition);
@@ -137,14 +136,9 @@ public class PathFinding : MonoBehaviour
                     {
                         openList.Add(neighbourNode);
                     }
-
                 }
-
-
             }
-
         }
-
 
         //no Path
         pathLength = 0;
@@ -158,12 +152,11 @@ public class PathFinding : MonoBehaviour
         int zDistance = Mathf.Abs(gridPositionDistance.z);
         int remaining = Mathf.Abs(xDistance - zDistance);
         return MOVE_DIAGONAL_COST * Mathf.Min(xDistance, zDistance) + MOVE_STRAIGHT_COST * remaining;
-
     }
 
     private PathNode GetNode(int x, int z)
     {
-       return gridSystem.GetGridObject(new GridPosition(x, z));
+        return gridSystem.GetGridObject(new GridPosition(x, z));
     }
 
     private PathNode GetLowestFCostPathNode(List<PathNode> pathNodeList)
@@ -243,7 +236,7 @@ public class PathFinding : MonoBehaviour
         while (currentNode.GetCameFromPathNode() != null)
         {
             pathNodeList.Add(currentNode.GetCameFromPathNode());
-            currentNode =  currentNode.GetCameFromPathNode();
+            currentNode = currentNode.GetCameFromPathNode();
         }
 
         pathNodeList.Reverse();

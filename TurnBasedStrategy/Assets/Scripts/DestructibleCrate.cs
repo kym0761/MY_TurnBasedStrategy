@@ -7,14 +7,14 @@ public class DestructibleCrate : MonoBehaviour
 {
     [SerializeField] private Transform crate_DestroyedPrefab;
 
-    public static event EventHandler onAnyDestroyed;
+    public static event EventHandler onAnyDestroyed;    //PathFindingUpdater¿¡¼­ BindµÊ.
 
     private GridPosition gridPosition;
 
     // Start is called before the first frame update
     void Start()
     {
-        gridPosition= LevelGrid.Instance.GetGridPosition(transform.position);
+        gridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
     }
 
     public GridPosition GetGridPosition()
@@ -24,12 +24,12 @@ public class DestructibleCrate : MonoBehaviour
 
     public void Damage()
     {
-        Transform crate_des_transform= Instantiate(crate_DestroyedPrefab, transform.position, transform.rotation);
+        Transform crate_des_transform = Instantiate(crate_DestroyedPrefab, transform.position, transform.rotation);
         ApplyExplosionToChildren(crate_des_transform, 150.0f, transform.position, 10.0f);
-
 
         Destroy(gameObject);
 
+        //Grenade
         onAnyDestroyed?.Invoke(this, EventArgs.Empty);
     }
 

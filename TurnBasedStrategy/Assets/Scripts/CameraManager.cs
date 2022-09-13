@@ -30,7 +30,7 @@ public class CameraManager : MonoBehaviour
         switch (sender)
         {
             case ShootAction shootAction:
-         
+
                 //매 실행마다 ActionCamera의 위치 방향을 캐릭터에 맞게 설정해줌.
                 Unit shooterUnit = shootAction.GetUnit();
                 Unit targetUnit = shootAction.GetTargetUnit();

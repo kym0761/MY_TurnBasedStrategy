@@ -26,9 +26,9 @@ public class GrenadeProjectile : MonoBehaviour
         positionXZ += moveDir * moveSpeed * Time.deltaTime;
 
         float distance = Vector3.Distance(positionXZ, targetPosition);
-        float distanceNormalized = 1- distance / totalDistance;
+        float distanceNormalized = 1 - distance / totalDistance;
 
-        float maxHeight = totalDistance/3.0f;
+        float maxHeight = totalDistance / 3.0f;
         float positionY = arcYAnimationCurve.Evaluate(distanceNormalized) * maxHeight;
         transform.position = new Vector3(positionXZ.x, positionY, positionXZ.z);
 
@@ -40,11 +40,13 @@ public class GrenadeProjectile : MonoBehaviour
 
             foreach (Collider collider in colliderArray)
             {
+                //유닛에게는 30 데미지
                 if (collider.TryGetComponent<Unit>(out Unit targetUnit))
                 {
                     targetUnit.Damage(30);
                 }
 
+                //Crate는 부수기
                 if (collider.TryGetComponent<DestructibleCrate>(out DestructibleCrate crate))
                 {
                     crate.Damage();

@@ -84,5 +84,4 @@ public class PathNode
         this.isWalkable = isWalkable;
     }
 
-
 }

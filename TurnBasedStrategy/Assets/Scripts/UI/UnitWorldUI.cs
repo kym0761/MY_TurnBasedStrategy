@@ -23,10 +23,9 @@ public class UnitWorldUI : MonoBehaviour
         UpdateHealthBar();
     }
 
-
-    private void UpdateActionPointsText()
+    private void HealthSystem_OnDamaged(object sender, EventArgs e)
     {
-        actionPointsText.text = unit.GetActionPoints().ToString();
+        UpdateHealthBar();
     }
 
     private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
@@ -34,15 +33,14 @@ public class UnitWorldUI : MonoBehaviour
         UpdateActionPointsText();
     }
 
+    private void UpdateActionPointsText()
+    {
+        actionPointsText.text = unit.GetActionPoints().ToString();
+    }
+
     private void UpdateHealthBar()
     {
         healthBarImage.fillAmount = healthSystem.GetHealthNormalized();
     }
-
-    private void HealthSystem_OnDamaged(object sender, EventArgs e)
-    {
-        UpdateHealthBar();
-    }
-
 
 }

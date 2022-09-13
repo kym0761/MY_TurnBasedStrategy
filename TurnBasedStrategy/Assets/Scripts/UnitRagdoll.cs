@@ -16,6 +16,8 @@ public class UnitRagdoll : MonoBehaviour
 
     private void MatchAllChildTransforms(Transform root, Transform clone)
     {
+        //죽은 캐릭터의 현재 포즈와 동일한 Ragdoll이 생성되도록 함.
+
         foreach (Transform child in root)
         {
             Transform cloneChild = clone.Find(child.name);
@@ -32,6 +34,9 @@ public class UnitRagdoll : MonoBehaviour
 
     private void ApplyExplosionToRagdoll(Transform root, float explosionForce, Vector3 explosionPosition, float explosionRange)
     {
+        //ragdoll이 생성되고 튕겨나가는 물리 시뮬.
+        //위와 동일.
+
         foreach (Transform child in root)
         {
             if (child.TryGetComponent<Rigidbody>(out Rigidbody childRigidbody))

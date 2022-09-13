@@ -21,7 +21,6 @@ public class HealthSystem : MonoBehaviour
     {
         health -= damageAmount;
 
-
         if (health < 0)
         {
             health = 0;
@@ -38,7 +37,7 @@ public class HealthSystem : MonoBehaviour
 
     private void Die()
     {
-        //Destroy(gameObject);
+        //RagdollSpawner에서 Ragdoll Spawn 이벤트가 bind 되어 있음.
         onDead?.Invoke(this, EventArgs.Empty);
     }
 

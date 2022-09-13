@@ -30,8 +30,6 @@ public class GridSystemVisual : MonoBehaviour
         Yellow,
     }
 
-
-
     private void Awake()
     {
         if (Instance != null)
@@ -66,7 +64,6 @@ public class GridSystemVisual : MonoBehaviour
 
         UpdateGridVisual();
     }
-
 
     public void HideAllGridPosition()
     {
@@ -134,8 +131,9 @@ public class GridSystemVisual : MonoBehaviour
     {
         foreach (GridPosition gridPosition in gridPositionList)
         {
-            gridSystemVisualSingleArray[gridPosition.x, gridPosition.z].
-                Show(GetGridVisualTypeMaterial(gridVisualType));
+            GridSystemVisualSingle visualSingle = gridSystemVisualSingleArray[gridPosition.x, gridPosition.z];
+
+            visualSingle.Show(GetGridVisualTypeMaterial(gridVisualType));
         }
     }
 
@@ -153,35 +151,32 @@ public class GridSystemVisual : MonoBehaviour
 
         switch (selectedAction)
         {
-            default:
             case MoveAction moveAction:
                 gridVisualType = GridVisualType.White;
                 break;
+
             case SpinAction spinAction:
                 gridVisualType = GridVisualType.Blue;
                 break;
+
             case ShootAction shootAction:
                 gridVisualType = GridVisualType.Red;
-
                 ShowGridPositionRange(selectedUnit.GetGridPosition(), shootAction.GetMaxShootDistance(), GridVisualType.RedSoft);
                 break;
+
             case GrenadeAction grenadeAction:
                 gridVisualType = GridVisualType.Red;
-
                 ShowGridPositionRange(selectedUnit.GetGridPosition(), grenadeAction.GetMaxGrenadeDistance(), GridVisualType.RedSoft);
                 break;
 
             case SwordAction swordAction:
                 gridVisualType = GridVisualType.Red;
-
                 ShowGridPositionRangeSquare(selectedUnit.GetGridPosition(), swordAction.GetMaxSwordDistance(), GridVisualType.RedSoft);
                 break;
 
         }
 
         ShowGridPositionList(selectedAction.GetValidActionGridPositionList(), gridVisualType);
-
-
     }
 
     private void UnitActionSystem_OnSelectedActionChanged(object sender, EventArgs e)

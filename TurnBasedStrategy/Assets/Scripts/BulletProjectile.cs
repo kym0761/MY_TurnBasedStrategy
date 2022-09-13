@@ -33,9 +33,7 @@ public class BulletProjectile : MonoBehaviour
 
             Instantiate(bulletHitEffectPrefab, targetPosition, Quaternion.identity);
 
-
         }
-
     }
 
 }

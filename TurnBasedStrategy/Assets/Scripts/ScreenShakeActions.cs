@@ -5,16 +5,11 @@ using UnityEngine;
 
 public class ScreenShakeActions : MonoBehaviour
 {
-
-
-
     // Start is called before the first frame update
     void Start()
     {
-
         ShootAction.onAnyShoot += ShootAction_OnAnyShoot;
         GrenadeProjectile.onAnyGranadeExploded += GrenadeProjectile_OnAnyGranadeExploded;
-
     }
 
     private void GrenadeProjectile_OnAnyGranadeExploded(object sender, EventArgs e)

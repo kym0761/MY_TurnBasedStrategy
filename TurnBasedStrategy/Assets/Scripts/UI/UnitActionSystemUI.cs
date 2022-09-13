@@ -87,6 +87,15 @@ public class UnitActionSystemUI : MonoBehaviour
         UpdateActionPoints();
     }
 
+    private void TurnSystem_onTurnChanged(object sender, EventArgs e)
+    {
+        UpdateActionPoints();
+    }
+    private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
+    {
+        UpdateActionPoints();
+    }
+
     private void UpdateSelectedVisual()
     {
         foreach (ActionButtonUI actionButtonUI in actionButtonUIList)
@@ -102,12 +111,4 @@ public class UnitActionSystemUI : MonoBehaviour
         actionPointsText.text = "Action Points : " + selectedUnit.GetActionPoints();
     }
 
-    private void TurnSystem_onTurnChanged(object sender, EventArgs e)
-    {
-        UpdateActionPoints();
-    }
-    private void Unit_OnAnyActionPointsChanged(object sender, EventArgs e)
-    {
-        UpdateActionPoints();
-    }
 }
