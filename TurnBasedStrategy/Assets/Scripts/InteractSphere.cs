@@ -38,7 +38,7 @@ public class InteractSphere : MonoBehaviour, IInteractable
         if (timer <= 0.0f)
         {
             isActive = false;
-            onInteractComplete();
+            onInteractionComplete();
         }
     }
 
