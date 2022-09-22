@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Grid.h"
+#include "GridSystem.h"
 #include "UObject/NoExportTypes.h"
 #include "GridObject.generated.h"
 
@@ -24,10 +25,13 @@ public:
 
 private:
 
-	//UPROPERTY()
-		FGrid Grid;
-	UPROPERTY()
-		TArray<AUnitCharacter*> UnitArray;
+	TWeakPtr<FGridSystem<UGridObject>> GridSystem;
+	//FGridSystem<UGridObject>* GridSystem;
+
+	FGrid Grid;
+	TArray<AUnitCharacter*> UnitArray;
+
+
 
 public:
 
@@ -38,4 +42,7 @@ public:
 	AUnitCharacter* GetUnit();
 	void SetGrid(FGrid InGrid);
 	FGrid GetGrid() const;
+
+	//TWeakPtr<FGridSystem<UGridObject>> GetGridSystem() const;
+	//void SetGridSystem(TSharedPtr<FGridSystem<UGridObject>> InGridSystem);
 };

@@ -48,3 +48,13 @@ FGrid UGridObject::GetGrid() const
 {
 	return Grid;
 }
+
+//TWeakPtr<FGridSystem<UGridObject>> UGridObject::GetGridSystem() const
+//{
+//	return GridSystem;
+//}
+//
+//void UGridObject::SetGridSystem(TSharedPtr<FGridSystem<UGridObject>> InGridSystem)
+//{
+//	GridSystem = InGridSystem;
+//}

@@ -4,7 +4,7 @@
 #include "GridSystem.h"
 
 template<typename TObject>
-FGridSystem<TObject>::FGridSystem(int _X_Length, int _Y_Length, float _CellSize, TFunctionRef<TObject* (const FGridSystem<TObject>,const FGrid)> CreateObjectFunction)
+FGridSystem<TObject>::FGridSystem(int _X_Length, int _Y_Length, float _CellSize, TFunctionRef<TObject* (const FGridSystem<TObject>*,const FGrid)> CreateObjectFunction)
 {
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
@@ -22,5 +22,11 @@ FGridSystem<TObject>::FGridSystem(int _X_Length, int _Y_Length, float _CellSize,
         }
     }
 
+}
+
+template<typename TObject>
+FGridSystem<TObject>::~FGridSystem()
+{
+    GridObjectArray.Empty();
 }
 

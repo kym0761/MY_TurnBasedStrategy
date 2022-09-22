@@ -14,6 +14,17 @@ class TURNBASESTRATEGY_API AGridManager : public AActor
 {
 	GENERATED_BODY()
 	
+private:
+
+	TSharedPtr<FGridSystem<UGridObject>> GridSystem;
+
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+	int32 X_Length = 10;
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+	int32 Y_Length = 10;
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+	float CellSize = 100.0f;
+
 public:	
 	// Sets default values for this actor's properties
 	AGridManager();
@@ -22,10 +33,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void OnConstruction(const FTransform& Transform);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UGridObject* CreateGrid(FGridSystem<UGridObject> gs, FGrid grid);
 
 };

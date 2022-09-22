@@ -22,9 +22,9 @@ void AGridSystem::BeginPlay()
 	
 	CreateGridVisual();
 
-	//temp. hide all after 5 sec
-	FTimerHandle timer;
-	GetWorldTimerManager().SetTimer(timer, this, &AGridSystem::HideAllGridVisual, 5.0f, false, 5.0f);
+	////temp. hide all after 5 sec
+	//FTimerHandle timer;
+	//GetWorldTimerManager().SetTimer(timer, this, &AGridSystem::HideAllGridVisual, 5.0f, false, 5.0f);
 
 }
 

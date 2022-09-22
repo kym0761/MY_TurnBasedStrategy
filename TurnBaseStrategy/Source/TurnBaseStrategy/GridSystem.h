@@ -6,12 +6,13 @@
 #include "UObject/NoExportTypes.h"
 #include "Grid.h"
 #include "GridObject.h"
+//#include "GridSystem.generated.h"
 /**
  * https://docs.unrealengine.com/5.0/en-US/API/Runtime/Core/GenericPlatform/TFunction/
  */
 
-template <typename TObject>
-class TURNBASESTRATEGY_API FGridSystem : public UObject
+template <typename TObject>//, TEnableIf<TIsSame<TObject,UObject>::Value>::Type>
+class TURNBASESTRATEGY_API FGridSystem
 {
 
 private:
@@ -24,7 +25,12 @@ private:
 
 public:
 
-	FGridSystem(int _X_Length, int _Y_Length, float _CellSize, TFunctionRef<TObject*(const FGridSystem<TObject>, const FGrid)> CreateObjectFunction);
+	FGridSystem(int _X_Length, int _Y_Length, float _CellSize,
+		TFunctionRef<TObject*(const FGridSystem<TObject>*,const FGrid)> CreateObjectFunction);
+
+	~FGridSystem();
+	//FGrid WorldToGrid(FVector WorldPosition);
+	//FVector GridToWorld(FGrid Grid);
 };
 
 
