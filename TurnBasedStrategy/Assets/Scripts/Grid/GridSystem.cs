@@ -15,6 +15,7 @@ public class GridSystem<TGridObject>
     private TGridObject[,] gridObjectArray;
 
 
+    //Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject = generic
     public GridSystem(int Width, int Height, float CellSize, Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
     {
         width = Width;
