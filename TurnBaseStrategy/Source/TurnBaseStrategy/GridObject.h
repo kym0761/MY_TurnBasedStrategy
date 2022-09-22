@@ -24,7 +24,7 @@ public:
 
 private:
 
-	UPROPERTY()
+	//UPROPERTY()
 		FGrid Grid;
 	UPROPERTY()
 		TArray<AUnitCharacter*> UnitArray;

@@ -9,7 +9,7 @@
 #include "Engine/World.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "GridSystem.h"
+//#include "GridSystem.h"
 
 ATurnBaseStrategyPlayerController::ATurnBaseStrategyPlayerController()
 {
@@ -38,41 +38,41 @@ void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 		}
 		HitLocation = Hit.Location;
 
-		AGridSystem* gridsystem = Cast<AGridSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridSystem::StaticClass()));
-		if (gridsystem)
-		{
-			FGrid grid = gridsystem->WorldToGrid(Hit.Location);
+		//AGridSystem* gridsystem = Cast<AGridSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridSystem::StaticClass()));
+		//if (gridsystem)
+		//{
+		//	FGrid grid = gridsystem->WorldToGrid(Hit.Location);
 
-			bool isvalid = gridsystem->IsValidGrid(grid);
+		//	bool isvalid = gridsystem->IsValidGrid(grid);
 
-			//UE_LOG(LogTemp, Warning, TEXT("%s"), *grid.ToString());
-			//if (isvalid)
-			//{
-			//	UE_LOG(LogTemp, Warning, TEXT("Yes"));
-			//}
-			//else
-			//{
-			//	UE_LOG(LogTemp, Warning, TEXT("no....."));
-			//}
+		//	//UE_LOG(LogTemp, Warning, TEXT("%s"), *grid.ToString());
+		//	//if (isvalid)
+		//	//{
+		//	//	UE_LOG(LogTemp, Warning, TEXT("Yes"));
+		//	//}
+		//	//else
+		//	//{
+		//	//	UE_LOG(LogTemp, Warning, TEXT("no....."));
+		//	//}
 
-			
-			auto gridObj = gridsystem->GetValidGridObject(grid);
+		//	
+		//	auto gridObj = gridsystem->GetValidGridObject(grid);
 
-			//if (IsValid(gridObj))
-			//{
-			//	UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
-			//}
-			//else
-			//{
-			//	UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
-			//}
+		//	//if (IsValid(gridObj))
+		//	//{
+		//	//	UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
+		//	//}
+		//	//else
+		//	//{
+		//	//	UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
+		//	//}
 
-			gridsystem->HideAllGridVisual();
-			gridsystem->ShowGridRange(grid, 2, EGridVisualType::Blue);
+		//	gridsystem->HideAllGridVisual();
+		//	gridsystem->ShowGridRange(grid, 3, EGridVisualType::Blue);
 
 
 
-		}
+		//}
 
 
 		// Direct the Pawn towards that location

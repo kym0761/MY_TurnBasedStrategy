@@ -17,7 +17,7 @@ public:
 	AUnitCharacter();
 
 private:
-	UPROPERTY()
+	//UPROPERTY()
 	FGrid Grid;
 
 
