@@ -54,8 +54,10 @@ public:
 			for (int y = 0; y < Y_Length; y++)
 			{
 				FGrid grid = FGrid(x, y);
+				//CreateObjectFunction을 구현해야함. 람다로 구현.
+				//GridManager 참고.
 				T* gridobj = CreateObjectFunction(this, grid);
-				gridobj->SetGrid(grid);
+				//gridobj->SetGrid(grid); // CreateObjectFunction에서 해결하도록 함.
 				ObjectArray.Add(gridobj);
 			}
 		}

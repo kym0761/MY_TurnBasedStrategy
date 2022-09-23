@@ -99,7 +99,10 @@ bool AGridManager::IsValidGrid(FGrid Grid)
 void AGridManager::CreateGridSystem()
 {
 	auto gridSystem = new FGridSystem<UGridObject>(X_Length, Y_Length, CellSize, [](FGridSystem<UGridObject>* gs, FGrid grid) {
-		return NewObject<UGridObject>();
+		UGridObject* gridObj = NewObject<UGridObject>();
+		gridObj->SetGrid(grid);
+		gridObj->SetGridSystem(MakeShareable(gs));
+		return gridObj;
 		});
 
 	if (GridSystem.IsValid())
@@ -121,7 +124,9 @@ void AGridManager::CreateGridSystem()
 	}
 
 	auto pathFindingGridSystem = new FGridSystem<UPathNode>(X_Length, Y_Length, CellSize, [](FGridSystem<UPathNode>* gs, FGrid grid) {
-		return NewObject<UPathNode>();
+		UPathNode* pathNode = NewObject<UPathNode>();
+		pathNode->SetGrid(grid);
+		return pathNode;
 		});
 
 	if (PathFindingGridSystem.IsValid())
@@ -297,20 +302,17 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)
 	TArray<UPathNode*> closeList;
 
 	UPathNode* startNode = PathFindingGridSystem->GetValidGridObject(Start);
-	//startNode->SetGrid(Start);
-
 	openList.Add(startNode);
 
 	UPathNode* endNode = PathFindingGridSystem->GetValidGridObject(End);
-	//endNode->SetGrid(End);
 
+	//PathFindingGridSystem의 Grid 값을 전부 초기화.
 	for (int x = 0; x < X_Length; x++)
 	{
 		for (int y = 0; y < Y_Length; y++)
 		{
 			FGrid grid = FGrid(x, y);
 			UPathNode* pathNode = PathFindingGridSystem->GetValidGridObject(grid);
-			//pathNode->SetGrid(Start);
 
 			pathNode->SetGCost(TNumericLimits<int32>::Max());
 			pathNode->SetHCost(0);

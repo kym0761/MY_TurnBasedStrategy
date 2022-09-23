@@ -33,8 +33,6 @@ private:
 	FGrid Grid;
 	TArray<AUnitCharacter*> UnitArray;
 
-
-
 public:
 
 	FString ToString();
