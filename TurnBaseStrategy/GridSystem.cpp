@@ -157,9 +157,6 @@ AGridVisual* AGridSystem::GetValidGridVisual(FGrid Grid)
 	}
 
 	return nullptr;
-
-
-	return nullptr;
 }
 
 void AGridSystem::CreateGridVisual()
@@ -345,9 +342,6 @@ int32 AGridSystem::CalculateGridDistance(FGrid a, FGrid b)
 	FGrid grid = a - b;
 
 	return FMath::Abs(grid.X) + FMath::Abs(grid.Y);
-
-
-
 }
 
 UPathNode* AGridSystem::GetLowestFCostNode(TArray<UPathNode*> PathNodeList)
@@ -414,5 +408,5 @@ TArray<UPathNode*> AGridSystem::GetNearNodeList(UPathNode* CurrentNode)
 		}
 	}
 
-	return TArray<UPathNode*>();
+	return nearNodeList;
 }

@@ -9,7 +9,10 @@
 #include "Engine/World.h"
 
 #include "Kismet/GameplayStatics.h"
-//#include "GridSystem.h"
+#include "GridManager.h"
+
+
+#include "DrawDebugHelpers.h"// draw line
 
 ATurnBaseStrategyPlayerController::ATurnBaseStrategyPlayerController()
 {
@@ -20,6 +23,19 @@ ATurnBaseStrategyPlayerController::ATurnBaseStrategyPlayerController()
 void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+
+	APawn* const pawn = GetPawn();
+	FGrid pawnGrid = FGrid(0,0);
+	if (pawn)
+	{
+		FVector pawnLocation = pawn->GetActorLocation();
+		AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+		if (gridManager)
+		{
+			pawnGrid = gridManager->WorldToGrid(pawnLocation);
+			//UE_LOG(LogTemp, Warning, TEXT("PawnGrid : %s"), *pawnGrid.ToString());
+		}
+	}
 
 	if(bInputPressed)
 	{
@@ -38,41 +54,60 @@ void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 		}
 		HitLocation = Hit.Location;
 
-		//AGridSystem* gridsystem = Cast<AGridSystem>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridSystem::StaticClass()));
-		//if (gridsystem)
-		//{
-		//	FGrid grid = gridsystem->WorldToGrid(Hit.Location);
+		AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+		if (gridManager)
+		{
+			FGrid grid = gridManager->WorldToGrid(Hit.Location);
 
-		//	bool isvalid = gridsystem->IsValidGrid(grid);
+			bool isvalid = gridManager->IsValidGrid(grid);
 
-		//	//UE_LOG(LogTemp, Warning, TEXT("%s"), *grid.ToString());
-		//	//if (isvalid)
-		//	//{
-		//	//	UE_LOG(LogTemp, Warning, TEXT("Yes"));
-		//	//}
-		//	//else
-		//	//{
-		//	//	UE_LOG(LogTemp, Warning, TEXT("no....."));
-		//	//}
+			//UE_LOG(LogTemp, Warning, TEXT("%s"), *grid.ToString());
+			if (isvalid)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Yes"));
+			}
+			else
+			{
+				return;
+			}
 
-		//	
-		//	auto gridObj = gridsystem->GetValidGridObject(grid);
+			
+			auto gridObj = gridManager->GetValidGridObject(grid);
 
-		//	//if (IsValid(gridObj))
-		//	//{
-		//	//	UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
-		//	//}
-		//	//else
-		//	//{
-		//	//	UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
-		//	//}
+			//if (IsValid(gridObj))
+			//{
+			//	UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
+			//}
+			//else
+			//{
+			//	UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
+			//}
 
-		//	gridsystem->HideAllGridVisual();
-		//	gridsystem->ShowGridRange(grid, 3, EGridVisualType::Blue);
+			gridManager->HideAllGridVisual();
+			gridManager->ShowGridRange(grid, 1, EGridVisualType::Blue);
 
+			int32 pathLength;
+			auto path = gridManager->FindPath(pawnGrid, grid, pathLength);
+			if (path.Num() == 0)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Grid path is zero"));
+				return;
+			}
+			UE_LOG(LogTemp, Warning, TEXT("target grid : %s"), *grid.ToString());
+			UE_LOG(LogTemp, Warning, TEXT("Path Length : %d "), pathLength);
+			for (int i = 0; i < path.Num(); i++)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("path[%d] : %s"), i,*path[i].ToString());
 
+				//FVector start = gridManager->GridToWorld(path[i]) + FVector(0, 0, 10);
+				//FVector  end = gridManager->GridToWorld(path[i + 1]) + FVector(0, 0, 10);
 
-		//}
+				//DrawDebugLine(GetWorld(), start, end, FColor::Black, false, 5.0f, 0, 2.0f);
+				DrawDebugSphere(GetWorld(), gridManager->GridToWorld(path[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
+
+			}
+
+		}
 
 
 		// Direct the Pawn towards that location
