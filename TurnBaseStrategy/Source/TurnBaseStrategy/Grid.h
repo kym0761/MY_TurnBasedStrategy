@@ -30,3 +30,25 @@ public:
 	FGrid operator +(FGrid b);
 	FGrid operator -(FGrid b);
 };
+
+UENUM(BlueprintType)
+enum class EGridVisualType : uint8
+{
+	White UMETA(DisplayName = "White"),
+	Blue UMETA(DisplayName = "Blue"),
+	Red UMETA(DisplayName = "Red"),
+	RedSoft UMETA(DisplayName = "RedSoft"),
+	Yellow UMETA(DisplayName = "Yellow")
+
+};
+
+USTRUCT(BlueprintType)
+struct FGridVisualTypeMaterial
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+		EGridVisualType GridVisualType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+		UMaterialInstance* Material;
+};

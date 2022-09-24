@@ -18,7 +18,7 @@ public:
 		UUnitMoveActionComponent();
 	
 protected:
-
+	virtual void BeginPlay() override;
 private: 
 
 public:

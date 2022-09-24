@@ -61,5 +61,5 @@ TWeakPtr<FGridSystem<UGridObject>>  UGridObject::GetGridSystem() const
 
 void UGridObject::SetGridSystem(TSharedPtr<FGridSystem<UGridObject>> InGridSystem)
 {
-	GridSystem = TWeakPtr<FGridSystem<UGridObject>> (InGridSystem);
+	GridSystem = TWeakPtr<FGridSystem<UGridObject>>(InGridSystem);
 }

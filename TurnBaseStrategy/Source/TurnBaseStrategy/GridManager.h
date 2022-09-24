@@ -64,7 +64,7 @@ public:
 	AGridVisual* GetValidGridVisual(FGrid Grid);
 
 	void ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType);
-	void ShowFromGridList(TArray<FGrid> GridList, EGridVisualType GridVisualType);
+	void ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType);
 
 	TArray<FGrid> FindPath(FGrid Start, FGrid End, int32& PathLength);
 	int32 CalculateGridDistance(FGrid a, FGrid b);
@@ -78,4 +78,6 @@ public:
 	bool HasPath(FGrid Start, FGrid End);
 	bool IsWalkableGrid(FGrid GridValue);
 	int32 GetPathLength(FGrid Start, FGrid End);
+
+	void InitAllPathFindingNodes();
 };

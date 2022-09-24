@@ -278,12 +278,12 @@ void AGridManager::ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVi
 		}
 	}
 
-	ShowFromGridList(gridList, GridVisualType);
+	ShowFromGridArray(gridList, GridVisualType);
 }
 
-void AGridManager::ShowFromGridList(TArray<FGrid> GridList, EGridVisualType GridVisualType)
+void AGridManager::ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType)
 {
-	for (FGrid grid : GridList)
+	for (FGrid grid : GridArray)
 	{
 		AGridVisual* gridVisual = GetValidGridVisual(grid);
 		if (IsValid(gridVisual))
@@ -303,6 +303,7 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)
 	if (!IsValid(startNode))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StartNode Not Valid"));
+		PathLength = -1;
 		return TArray<FGrid>();
 	}
 
@@ -312,24 +313,11 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)
 	if (!IsValid(endNode))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EndNode Not Valid"));
+		PathLength = -1;
 		return TArray<FGrid>();
 	}
 
-
-	//PathFindingGridSystem의 Grid 값을 전부 초기화.
-	for (int x = 0; x < X_Length; x++)
-	{
-		for (int y = 0; y < Y_Length; y++)
-		{
-			FGrid grid = FGrid(x, y);
-			UPathNode* pathNode = PathFindingGridSystem->GetValidGridObject(grid);
-
-			pathNode->SetGCost(TNumericLimits<int32>::Max());
-			pathNode->SetHCost(0);
-			pathNode->CalculateFCost();
-			pathNode->SetParentNode(nullptr);
-		}
-	}
+	InitAllPathFindingNodes();
 
 	startNode->SetGCost(0);
 	startNode->SetHCost(CalculateGridDistance(Start, End));
@@ -529,6 +517,24 @@ int32 AGridManager::GetPathLength(FGrid Start, FGrid End)
 	int32 pathLength = 0;
 	FindPath(Start,End, pathLength);
 	return pathLength;
+}
+
+void AGridManager::InitAllPathFindingNodes()
+{
+	//PathFindingGridSystem의 Grid 값을 전부 초기화.
+	for (int x = 0; x < X_Length; x++)
+	{
+		for (int y = 0; y < Y_Length; y++)
+		{
+			FGrid grid = FGrid(x, y);
+			UPathNode* pathNode = PathFindingGridSystem->GetValidGridObject(grid);
+
+			pathNode->SetGCost(TNumericLimits<int32>::Max());
+			pathNode->SetHCost(0);
+			pathNode->CalculateFCost();
+			pathNode->SetParentNode(nullptr);
+		}
+	}
 }
 
 

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Grid.h"
 #include "GridSystem.h"
-//#include "UObject/NoExportTypes.h"
 #include "GridObject.generated.h"
 
 /**

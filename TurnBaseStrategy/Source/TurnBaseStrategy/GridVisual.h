@@ -4,33 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Grid.h"
 #include "GridVisual.generated.h"
 
 class UStaticMeshComponent;
 class USceneComponent;
-
-UENUM(BlueprintType)
-enum class EGridVisualType : uint8
-{
-	White UMETA(DisplayName = "White"),
-	Blue UMETA(DisplayName = "Blue"),
-	Red UMETA(DisplayName = "Red"),
-	RedSoft UMETA(DisplayName = "RedSoft"),
-	Yellow UMETA(DisplayName = "Yellow")
-
-};
-
-USTRUCT(BlueprintType)
-struct FGridVisualTypeMaterial
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-		EGridVisualType GridVisualType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-		UMaterialInstance* Material;
-};
-
 
 UCLASS(abstract)
 class TURNBASESTRATEGY_API AGridVisual : public AActor
@@ -47,7 +25,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UStaticMeshComponent* GridMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual", Meta = (AllowPrivateAccess = true))
 		TArray<FGridVisualTypeMaterial> GridVisualTypeList;
 
 protected:

@@ -13,6 +13,14 @@ UUnitMoveActionComponent::UUnitMoveActionComponent()
 	MaxActionRange = 5;
 }
 
+void UUnitMoveActionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Unit = Cast<AUnitCharacter>(GetOwner());
+
+}
+
 FString UUnitMoveActionComponent::GetActionName() const
 {
 	return FString("Move");
@@ -47,11 +55,11 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 				continue;
 			}
 			
-			//지금 현재 Unit의 위치
-			if (testGrid == unitGrid)
-			{
-				continue;
-			}
+			////지금 현재 Unit의 위치
+			//if (testGrid == unitGrid)
+			//{
+			//	continue;
+			//}
 
 			//누군가 점유중이면 Skip
 			if (gridManager->HasAnyUnitOnGrid(testGrid))
@@ -84,7 +92,7 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 	}
 
 
-	return TArray<FGrid>();
+	return validArray;
 }
 
 void UUnitMoveActionComponent::TakeAction(FGrid Grid)

@@ -17,7 +17,9 @@ class TURNBASESTRATEGY_API UPathNode : public UObject
 public:
 
 	UPathNode();
+
 private:
+
 	int32 G_Cost;
 	int32 H_Cost;
 	int32 F_Cost;
@@ -27,6 +29,7 @@ private:
 	UPathNode* ParentNode;
 
 public:
+
 	void SetGrid(FGrid InGrid);
 	int32 GetGCost();
 	int32 GetHCost();

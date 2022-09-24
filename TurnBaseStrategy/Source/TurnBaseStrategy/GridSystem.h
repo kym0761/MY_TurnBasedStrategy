@@ -3,11 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-//#include "UObject/NoExportTypes.h"
 #include "Grid.h"
 #include "GridObject.h"
-//#include "GridSystem.generated.h"
-/**
+
+/*
  * https://docs.unrealengine.com/5.0/en-US/API/Runtime/Core/GenericPlatform/TFunction/
  * https://stackoverflow.com/questions/1639797/template-issue-causes-linker-error-c
  */
@@ -127,7 +126,7 @@ T* FGridSystem<T>::GetValidGridObject(FGrid Grid) const
 	{
 		T* obj = ObjectArray[index];
 
-		if (IsValid(obj))// && obj->GetGrid() == Grid)
+		if (IsValid(obj))// TODO : Check ... obj->GetGrid() == Grid)
 		{
 			return obj;
 		}

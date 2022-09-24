@@ -8,7 +8,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "UnitCharacter.h"
 
-
+#include "UnitMoveActionComponent.h"
+#include "GridManager.h"
+#include "Grid.h"
 
 // Sets default values
 AUnitSelectPawn::AUnitSelectPawn()
@@ -111,7 +113,7 @@ void AUnitSelectPawn::UnitSelect()
 	bool result = UKismetSystemLibrary::LineTraceSingleForObjects(
 		GetWorld(),
 		loc,
-		loc + rot * 1000,
+		loc + rot * 10000,
 		objects,
 		true,
 		ignores,
@@ -130,6 +132,20 @@ void AUnitSelectPawn::UnitSelect()
 		if (hit.GetActor()->IsA(AUnitCharacter::StaticClass()))
 		{
 			SelectedUnit = Cast<AUnitCharacter>(hit.GetActor());
+
+			UUnitMoveActionComponent* moveActionComponent = SelectedUnit->UnitMoveActionComponent;
+			if (IsValid(moveActionComponent))
+			{
+				auto gridarray= moveActionComponent->GetValidActionGridArray();
+				AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+				if (IsValid(gridManager))
+				{
+					gridManager->HideAllGridVisual();
+					gridManager->ShowFromGridArray(gridarray,EGridVisualType::Blue);
+				}
+
+			}
+
 		}
 	}
 
