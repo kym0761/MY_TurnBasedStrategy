@@ -40,9 +40,10 @@ public:
 	void RemoveUnit(AUnitCharacter* Unit);
 	bool HasAnyUnit();
 	AUnitCharacter* GetUnit();
+	TArray<AUnitCharacter*> GetUnitArray();
 	void SetGrid(FGrid InGrid);
 	FGrid GetGrid() const;
 
-	TWeakPtr<FGridSystem<UGridObject>> GetGridSystem() const;
-	void SetGridSystem(TSharedPtr<FGridSystem<UGridObject>> InGridSystem);
+	TWeakPtr<FGridSystem<UGridObject>>  GetGridSystem() const;
+	void SetGridSystem(TSharedPtr<FGridSystem<UGridObject>>  InGridSystem);
 };

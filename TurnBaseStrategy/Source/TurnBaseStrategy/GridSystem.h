@@ -29,81 +29,65 @@ public:
 
 public:
 
-	FGridSystem()
-	{
-		X_Length = 10;
-		Y_Length = 10;
-		CellSize = 100.0f;
-	}
-	~FGridSystem()
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("~FGridSystem Called"));
-		ObjectArray.Empty();
-	}
+	FGridSystem();
+	~FGridSystem();
+	FGridSystem(int _X_Length, int _Y_Length, float _CellSize);
 
-	FGridSystem(int _X_Length, int _Y_Length, float _CellSize,
-		TFunctionRef<T* (FGridSystem<T>*, FGrid)> CreateObjectFunction)
-	{
-		X_Length = _X_Length;
-		Y_Length = _Y_Length;
-		CellSize = _CellSize;
-
-
-		for (int x = 0; x < X_Length; x++)
-		{
-			for (int y = 0; y < Y_Length; y++)
-			{
-				FGrid grid = FGrid(x, y);
-				//CreateObjectFunction을 구현해야함. 람다로 구현.
-				//GridManager 참고.
-				T* gridobj = CreateObjectFunction(this, grid);
-				//gridobj->SetGrid(grid); // CreateObjectFunction에서 해결하도록 함.
-				ObjectArray.Add(gridobj);
-			}
-		}
-	}
+	void SetGridSystem(int _X_Length, int _Y_Length, float _CellSize, TSharedPtr<FGridSystem<T>> SharedPtr,
+		TFunctionRef<T* (TSharedPtr<FGridSystem<T>>, FGrid)> CreateObjectFunction);
 
 	TArray<T*> GetObjectArray() const;
 
-	FGrid WorldToGrid(FVector WorldPosition);
-	FVector GridToWorld(FGrid Grid);
+	FGrid WorldToGrid(FVector WorldPosition) const;
+	FVector GridToWorld(FGrid Grid) const;
 
-	T* GetValidGridObject(FGrid Grid);
+	T* GetValidGridObject(FGrid Grid) const;
 };
 
-//template <typename T, TEnableIf< TIsDerivedFrom<T, UObject>::IsDerivedType>::Type>
-//FGridSystem<T>::FGridSystem()
-//{
-//
-//}
+template<typename T>
+FGridSystem<T>::FGridSystem()
+{
+	X_Length = 10;
+	Y_Length = 10;
+	CellSize = 100.0f;
+}
 
-//template <typename T, TEnableIf< TIsDerivedFrom<T, UObject>::IsDerivedType>::Type>
-//FGridSystem<T>::~FGridSystem()
-//{
-//	UE_LOG(LogTemp, Warning, TEXT("~FGridSystem Called"));
-//	GridObjectArray.Empty();
-//}
+template<typename T>
+FGridSystem<T>::~FGridSystem()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("~FGridSystem Called"));
+	ObjectArray.Empty();
+}
 
-//template <typename T, TEnableIf< TIsDerivedFrom<T, UObject>::IsDerivedType>::Type>
-//FGridSystem<T>::FGridSystem(int _X_Length, int _Y_Length, float _CellSize,
-//	TFunctionRef<T* (FGridSystem<T>*, FGrid)> CreateObjectFunction)
-//{
-//	X_Length = _X_Length;
-//	Y_Length = _Y_Length;
-//	CellSize = _CellSize;
-//
-//
-//	for (int x = 0; x < X_Length; x++)
-//	{
-//		for (int y = 0; y < Y_Length; y++)
-//		{
-//			FGrid grid = FGrid(x, y);
-//			UGridObject* gridobj = CreateObjectFunction(this, grid);
-//			gridobj->SetGrid(grid);
-//			GridObjectArray.Add(gridobj);
-//		}
-//	}
-//}
+template<typename T>
+FGridSystem<T>::FGridSystem(int _X_Length, int _Y_Length, float _CellSize)
+{
+	X_Length = _X_Length;
+	Y_Length = _Y_Length;
+	CellSize = _CellSize;
+}
+
+template<typename T>
+void FGridSystem<T>::SetGridSystem(int _X_Length, int _Y_Length, float _CellSize, TSharedPtr<FGridSystem<T>> SharedPtr,
+	TFunctionRef<T* (TSharedPtr<FGridSystem<T>>, FGrid)> CreateObjectFunction)
+{
+	X_Length = _X_Length;
+	Y_Length = _Y_Length;
+	CellSize = _CellSize;
+
+	for (int x = 0; x < X_Length; x++)
+	{
+		for (int y = 0; y < Y_Length; y++)
+		{
+			FGrid grid = FGrid(x, y);
+			//CreateObjectFunction을 구현해야함. 람다로 구현.
+			//GridManager 참고.
+
+			T* gridobj = CreateObjectFunction(SharedPtr, grid);
+			ObjectArray.Add(gridobj);
+		}
+	}
+}
 
 template<typename T>
 inline TArray<T*> FGridSystem<T>::GetObjectArray() const
@@ -112,7 +96,7 @@ inline TArray<T*> FGridSystem<T>::GetObjectArray() const
 }
 
 template<typename T>
-inline FGrid FGridSystem<T>::WorldToGrid(FVector WorldPosition)
+inline FGrid FGridSystem<T>::WorldToGrid(FVector WorldPosition) const
 {
 	FGrid grid;
 	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
@@ -122,7 +106,7 @@ inline FGrid FGridSystem<T>::WorldToGrid(FVector WorldPosition)
 }
 
 template<typename T>
-inline FVector FGridSystem<T>::GridToWorld(FGrid Grid)
+inline FVector FGridSystem<T>::GridToWorld(FGrid Grid) const
 {
 	FVector worldPosition;
 	worldPosition.X = Grid.X * CellSize;
@@ -132,7 +116,7 @@ inline FVector FGridSystem<T>::GridToWorld(FGrid Grid)
 }
 
 template<typename T>
-T* FGridSystem<T>::GetValidGridObject(FGrid Grid)
+T* FGridSystem<T>::GetValidGridObject(FGrid Grid) const
 {
 	int32 x = Grid.X;
 	int32 y = Grid.Y;

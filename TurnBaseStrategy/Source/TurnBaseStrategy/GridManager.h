@@ -12,7 +12,7 @@
 class AGridVisual;
 class UGridObject;
 class UPathNode;
-
+class AUnitCharacter;
 
 
 UCLASS()
@@ -70,5 +70,12 @@ public:
 	int32 CalculateGridDistance(FGrid a, FGrid b);
 	UPathNode* GetLowestFCostNode(TArray<UPathNode*> PathNodeList);
 	TArray<FGrid> CalculatePath(UPathNode* EndNode);
-	TArray<UPathNode*> GetNearNodeList(UPathNode* CurrentNode);
+	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode);
+
+	void AddUnitAtGrid(FGrid GridValue,AUnitCharacter* Unit);
+	TArray<AUnitCharacter*> GetUnitArrayAtGrid(FGrid GridValue);
+	bool HasAnyUnitOnGrid(FGrid GridValue);
+	bool HasPath(FGrid Start, FGrid End);
+	bool IsWalkableGrid(FGrid GridValue);
+	int32 GetPathLength(FGrid Start, FGrid End);
 };

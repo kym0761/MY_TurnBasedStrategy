@@ -39,6 +39,11 @@ AUnitCharacter* UGridObject::GetUnit()
 	return nullptr;
 }
 
+TArray<AUnitCharacter*> UGridObject::GetUnitArray()
+{
+	return UnitArray;
+}
+
 void UGridObject::SetGrid(FGrid InGrid)
 {
 	Grid = InGrid;
@@ -49,12 +54,12 @@ FGrid UGridObject::GetGrid() const
 	return Grid;
 }
 
-TWeakPtr<FGridSystem<UGridObject>> UGridObject::GetGridSystem() const
+TWeakPtr<FGridSystem<UGridObject>>  UGridObject::GetGridSystem() const
 {
 	return GridSystem;
 }
 
 void UGridObject::SetGridSystem(TSharedPtr<FGridSystem<UGridObject>> InGridSystem)
 {
-	GridSystem = InGridSystem;
+	GridSystem = TWeakPtr<FGridSystem<UGridObject>> (InGridSystem);
 }

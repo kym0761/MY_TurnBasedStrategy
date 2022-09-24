@@ -7,15 +7,18 @@
 /**
  * 
  */
-USTRUCT()
+USTRUCT(BlueprintType, Blueprintable)
 struct FGrid
 {
 	GENERATED_BODY()
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	int32 X;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	int32 Y;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	int32 Height;
 
 	FGrid();

@@ -64,24 +64,25 @@ void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 			//UE_LOG(LogTemp, Warning, TEXT("%s"), *grid.ToString());
 			if (isvalid)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Yes"));
+				UE_LOG(LogTemp, Warning, TEXT("Valid Grid"));
 			}
 			else
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Not Valid Grid"));
 				return;
 			}
 
 			
 			auto gridObj = gridManager->GetValidGridObject(grid);
 
-			//if (IsValid(gridObj))
-			//{
-			//	UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
-			//}
-			//else
-			//{
-			//	UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
-			//}
+			if (IsValid(gridObj))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
+			}
 
 			gridManager->HideAllGridVisual();
 			gridManager->ShowGridRange(grid, 1, EGridVisualType::Blue);
@@ -106,7 +107,6 @@ void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 				DrawDebugSphere(GetWorld(), gridManager->GridToWorld(path[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 
 			}
-
 		}
 
 
