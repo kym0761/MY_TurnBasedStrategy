@@ -4,7 +4,7 @@
 #include "GridManager.h"
 #include "GridObject.h"
 #include "PathNode.h"
-
+#include "InstancedGridVisualComponent.h"
 
 
 
@@ -19,6 +19,13 @@ AGridManager::AGridManager()
 	X_Length = 10;
 	Y_Length = 10;
 	CellSize = 100.0f;
+
+
+		GridVisual_OK = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_OK"));
+
+
+		GridVisual_NO = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_NO"));
+
 }
 
 // Called when the game starts or when spawned
@@ -28,7 +35,7 @@ void AGridManager::BeginPlay()
 
 	CreateGridSystem();
 
-	CreateGridVisual();
+	//CreateGridVisual();
 }
 
 void AGridManager::OnConstruction(const FTransform& Transform)
@@ -134,68 +141,75 @@ void AGridManager::CreateGridSystem()
 	UE_LOG(LogTemp, Warning, TEXT("CreateGridSystem"));
 }
 
-void AGridManager::CreateGridVisual()
-{
-	if (!IsValid(GridVisualClass))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GridVisualClass is not Set."));
-		return;
-	}
+//void AGridManager::CreateGridVisual()
+//{
+//	if (!IsValid(GridVisualClass))
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("GridVisualClass is not Set."));
+//		return;
+//	}
+//
+//	if (!GridSystem.IsValid())
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("GridSystem is not Set."));
+//		return;
+//	}
+//
+//	TArray<UGridObject*> gridObjectArray = GridSystem->GetObjectArray();
+//
+//	int32 num = gridObjectArray.Num();
+//	UE_LOG(LogTemp, Warning, TEXT("Num : %d"), num);
+//
+//	for (int32 x = 0; x < X_Length; x++)
+//	{
+//		for (int32 y = 0; y < Y_Length; y++)
+//		{
+//			int32 index = Y_Length * x + y;
+//
+//			if (gridObjectArray.IsValidIndex(index))
+//			{
+//				UGridObject* gridObj = gridObjectArray[index];
+//
+//				FGrid grid = gridObj->GetGrid();
+//
+//				UE_LOG(LogTemp, Warning, TEXT("Grid : %s"), *grid.ToString());
+//
+//
+//				FVector gridWorldPosition = GridSystem->GridToWorld(grid);
+//
+//				UE_LOG(LogTemp, Warning, TEXT("Grid position : %s"), *gridWorldPosition.ToString());
+//
+//				FActorSpawnParameters param;
+//				param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+//				AGridVisual* visual = GetWorld()->SpawnActor<AGridVisual>(GridVisualClass, gridWorldPosition, FRotator::ZeroRotator, param);
+//				GridVisualArray.Add(visual);
+//
+//			}
+//		}
+//	}
+//}
 
-	if (!GridSystem.IsValid())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GridSystem is not Set."));
-		return;
-	}
-
-	TArray<UGridObject*> gridObjectArray = GridSystem->GetObjectArray();
-
-	int32 num = gridObjectArray.Num();
-	UE_LOG(LogTemp, Warning, TEXT("Num : %d"), num);
-
-	for (int32 x = 0; x < X_Length; x++)
-	{
-		for (int32 y = 0; y < Y_Length; y++)
-		{
-			int32 index = Y_Length * x + y;
-
-			if (gridObjectArray.IsValidIndex(index))
-			{
-				UGridObject* gridObj = gridObjectArray[index];
-
-				FGrid grid = gridObj->GetGrid();
-
-				UE_LOG(LogTemp, Warning, TEXT("Grid : %s"), *grid.ToString());
-
-
-				FVector gridWorldPosition = GridSystem->GridToWorld(grid);
-
-				UE_LOG(LogTemp, Warning, TEXT("Grid position : %s"), *gridWorldPosition.ToString());
-
-				FActorSpawnParameters param;
-				param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-				AGridVisual* visual = GetWorld()->SpawnActor<AGridVisual>(GridVisualClass, gridWorldPosition, FRotator::ZeroRotator, param);
-				GridVisualArray.Add(visual);
-
-			}
-		}
-	}
-}
-
-void AGridManager::ShowAllGridVisual()
-{
-	for (AGridVisual* gridVisual : GridVisualArray)
-	{
-		gridVisual->Show();
-	}
-}
+//void AGridManager::ShowAllGridVisual()
+//{
+//	
+//
+//	//GridVisual_OK->RemoveGridVisuals();
+//	//GridVisual_NO->RemoveGridVisuals();
+//	//for (AGridVisual* gridVisual : GridVisualArray)
+//	//{
+//	//	gridVisual->Show();
+//	//}
+//}
 
 void AGridManager::HideAllGridVisual()
 {
-	for (AGridVisual* gridVisual : GridVisualArray)
-	{
-		gridVisual->Hide();
-	}
+	GridVisual_OK->RemoveGridVisuals();
+	GridVisual_NO->RemoveGridVisuals();
+
+	//for (AGridVisual* gridVisual : GridVisualArray)
+	//{
+	//	gridVisual->Hide();
+	//}
 }
 
 FGrid AGridManager::WorldToGrid(FVector WorldPosition)
@@ -233,26 +247,6 @@ UGridObject* AGridManager::GetValidGridObject(FGrid Grid)
 	return nullptr;
 }
 
-AGridVisual* AGridManager::GetValidGridVisual(FGrid Grid)
-{
-	int32 x = Grid.X;
-	int32 y = Grid.Y;
-
-	int32 index = X_Length * x + y;
-
-	if (GridVisualArray.IsValidIndex(index))
-	{
-		AGridVisual* gridVisual = GridVisualArray[index];
-
-		if (IsValid(gridVisual))
-		{
-			return gridVisual;
-		}
-	}
-
-	return nullptr;
-}
-
 void AGridManager::ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType)
 {
 	TArray<FGrid> gridList;
@@ -283,14 +277,17 @@ void AGridManager::ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVi
 
 void AGridManager::ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType)
 {
-	for (FGrid grid : GridArray)
-	{
-		AGridVisual* gridVisual = GetValidGridVisual(grid);
-		if (IsValid(gridVisual))
-		{
-			gridVisual->Show();
-		}
-	}
+	GridVisual_OK->DrawGridVisualswithGridArray(GridArray);
+
+
+	//for (FGrid grid : GridArray)
+	//{
+	//	AGridVisual* gridVisual = GetValidGridVisual(grid);
+	//	if (IsValid(gridVisual))
+	//	{
+	//		gridVisual->Show();
+	//	}
+	//}
 }
 
 TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)

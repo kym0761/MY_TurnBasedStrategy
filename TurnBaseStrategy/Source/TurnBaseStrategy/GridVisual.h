@@ -10,6 +10,10 @@
 class UStaticMeshComponent;
 class USceneComponent;
 
+/*
+* Deprecated? 
+*/
+
 UCLASS(abstract)
 class TURNBASESTRATEGY_API AGridVisual : public AActor
 {

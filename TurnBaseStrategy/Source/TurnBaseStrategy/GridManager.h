@@ -13,7 +13,7 @@ class AGridVisual;
 class UGridObject;
 class UPathNode;
 class AUnitCharacter;
-
+class UInstancedGridVisualComponent;
 
 UCLASS()
 class TURNBASESTRATEGY_API AGridManager : public AActor
@@ -32,13 +32,19 @@ private:
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
 	float CellSize = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		TSubclassOf<AGridVisual> GridVisualClass;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+	//	TSubclassOf<AGridVisual> GridVisualClass;
 
-	TArray<AGridVisual*> GridVisualArray;
+	//TArray<AGridVisual*> GridVisualArray;
 public:	
 	// Sets default values for this actor's properties
 	AGridManager();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid")
+		UInstancedGridVisualComponent* GridVisual_OK;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid")
+		UInstancedGridVisualComponent* GridVisual_NO;
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,15 +59,14 @@ public:
 
 	void CreateGridSystem();
 
-	void CreateGridVisual();
-	void ShowAllGridVisual();
+	//void CreateGridVisual();
+	//void ShowAllGridVisual();
 	void HideAllGridVisual();
 
 	FGrid WorldToGrid(FVector WorldPosition);
 	FVector GridToWorld(FGrid Grid);
 
 	UGridObject* GetValidGridObject(FGrid Grid);
-	AGridVisual* GetValidGridVisual(FGrid Grid);
 
 	void ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType);
 	void ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType);
