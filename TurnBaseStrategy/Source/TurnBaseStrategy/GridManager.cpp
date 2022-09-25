@@ -6,7 +6,9 @@
 #include "PathNode.h"
 #include "InstancedGridVisualComponent.h"
 
-
+#include "Kismet/GameplayStatics.h"
+#include "PathFindingSystem.h"
+#include "GridSystem.h"
 
 // Sets default values
 AGridManager::AGridManager()
@@ -105,40 +107,25 @@ bool AGridManager::IsValidGrid(FGrid Grid)
 
 void AGridManager::CreateGridSystem()
 {
-	if (GridSystem.IsValid())
-	{
-		GridSystem.Reset();
-	}
+	GridSystem = NewObject<UGridSystem>();
 
-	GridSystem = MakeShareable(new FGridSystem<UGridObject>());
-
-	GridSystem->SetGridSystem(X_Length, Y_Length, CellSize, GridSystem ,[](TSharedPtr<FGridSystem<UGridObject>> gs, FGrid grid) {
+	GridSystem->SetGridSystem(X_Length, Y_Length, CellSize, [](UGridSystem* gs, FGrid grid) {
 		UGridObject* gridObj = NewObject<UGridObject>();
 		gridObj->SetGrid(grid);
 		gridObj->SetGridSystem(gs);
 		return gridObj;
 		});
 
-	if (GridSystem.IsValid())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("GridSystem is OK"));
-	}
+	PathFindingGridSystem = NewObject<UPathFindingSystem>();
 
-	if (PathFindingGridSystem.IsValid())
-	{
-		PathFindingGridSystem.Reset();
-		//UE_LOG(LogTemp, Warning, TEXT("PathFindingGridSystem is Reset"));
-	}
-
-	PathFindingGridSystem = MakeShareable(new FGridSystem<UPathNode>());
-
-	PathFindingGridSystem->SetGridSystem(X_Length, Y_Length, CellSize, PathFindingGridSystem,[](TSharedPtr<FGridSystem<UPathNode>> gs, FGrid grid) {
-		UPathNode* pathNode = NewObject<UPathNode>();
-		pathNode->SetGrid(grid);
-		return pathNode;
-		});
-
-	UE_LOG(LogTemp, Warning, TEXT("CreateGridSystem"));
+	PathFindingGridSystem->SetPathFindingSystem(X_Length, Y_Length, CellSize,
+		[](UPathFindingSystem* pfs, FGrid grid)
+		{
+			UPathNode* pathNode = NewObject<UPathNode>();
+			pathNode->SetGrid(grid);
+			return pathNode;
+		}
+	);
 }
 
 //void AGridManager::CreateGridVisual()
@@ -214,35 +201,27 @@ void AGridManager::HideAllGridVisual()
 
 FGrid AGridManager::WorldToGrid(FVector WorldPosition)
 {
-	if (GridSystem.IsValid())
-	{
-		return GridSystem->WorldToGrid(WorldPosition);
-	}
 
-	return FGrid();
+	return GridSystem->WorldToGrid(WorldPosition);
 }
 
 FVector AGridManager::GridToWorld(FGrid Grid)
 {
-	if (GridSystem.IsValid())
-	{
-		return GridSystem->GridToWorld(Grid);
-	}
 
-	return FVector::ZeroVector;
+	return GridSystem->GridToWorld(Grid);
+
 }
 
 UGridObject* AGridManager::GetValidGridObject(FGrid Grid)
 {
-	if (GridSystem.IsValid())
-	{
-		UGridObject* gridObj = GridSystem->GetValidGridObject(Grid);
 
-		if (gridObj->GetGrid() == Grid)
-		{
-			return gridObj;
-		}
+	UGridObject* gridObj = GridSystem->GetValidGridObject(Grid);
+
+	if (gridObj->GetGrid() == Grid)
+	{
+		return gridObj;
 	}
+
 
 	return nullptr;
 }
@@ -295,7 +274,7 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)
 	TArray<UPathNode*> openList;
 	TArray<UPathNode*> closeList;
 
-	UPathNode* startNode = PathFindingGridSystem->GetValidGridObject(Start);
+	UPathNode* startNode = PathFindingGridSystem->GetValidPathNode(Start);
 
 	if (!IsValid(startNode))
 	{
@@ -306,7 +285,7 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)
 
 	openList.Add(startNode);
 
-	UPathNode* endNode = PathFindingGridSystem->GetValidGridObject(End);
+	UPathNode* endNode = PathFindingGridSystem->GetValidPathNode(End);
 	if (!IsValid(endNode))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EndNode Not Valid"));
@@ -342,6 +321,13 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength)
 			}
 
 			if (nearNode->GetIsWalkable() == false)
+			{
+				closeList.Add(nearNode);
+				continue;
+			}
+
+			auto gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
+			if (IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
 				closeList.Add(nearNode);
 				continue;
@@ -438,7 +424,7 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
 	{
 		if (IsValidGrid(near))
 		{
-			UPathNode* nearNode = PathFindingGridSystem->GetValidGridObject(near);
+			UPathNode* nearNode = PathFindingGridSystem->GetValidPathNode(near);
 
 			if (!IsValid(nearNode))
 			{
@@ -454,10 +440,6 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
 
 void AGridManager::AddUnitAtGrid(FGrid GridValue, AUnitCharacter* Unit)
 {
-	if (!GridSystem.IsValid())
-	{
-		return;
-	}
 
 	auto gridObject = GridSystem->GetValidGridObject(GridValue);
 	gridObject->AddUnit(Unit);
@@ -466,27 +448,27 @@ void AGridManager::AddUnitAtGrid(FGrid GridValue, AUnitCharacter* Unit)
 
 TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(FGrid GridValue)
 {
-	if (!GridSystem.IsValid())
+
+	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
+	if (!IsValid(gridObject))
 	{
 		return TArray<AUnitCharacter*>();
 	}
 
-	auto gridObject = GridSystem->GetValidGridObject(GridValue);
+
 	return gridObject->GetUnitArray();
 
 }
 
 bool AGridManager::HasAnyUnitOnGrid(FGrid GridValue)
 {
-	if (GridSystem.IsValid())
-	{
-		auto gridObj = GridSystem->GetValidGridObject(GridValue);
-		if (IsValid(gridObj))
-		{
-			return gridObj->HasAnyUnit();
-		}
-	}
 
+	auto gridObj = GridSystem->GetValidGridObject(GridValue);
+	if (IsValid(gridObj))
+	{
+		return gridObj->HasAnyUnit();
+	}
+	
 	return false;
 }
 
@@ -500,7 +482,7 @@ bool AGridManager::HasPath(FGrid Start, FGrid End)
 
 bool AGridManager::IsWalkableGrid(FGrid GridValue)
 {
-	UPathNode* pathNode = PathFindingGridSystem->GetValidGridObject(GridValue);
+	UPathNode* pathNode = PathFindingGridSystem->GetValidPathNode(GridValue);
 	if (IsValid(pathNode))
 	{
 		return pathNode->GetIsWalkable();
@@ -524,7 +506,12 @@ void AGridManager::InitAllPathFindingNodes()
 		for (int y = 0; y < Y_Length; y++)
 		{
 			FGrid grid = FGrid(x, y);
-			UPathNode* pathNode = PathFindingGridSystem->GetValidGridObject(grid);
+			UPathNode* pathNode = PathFindingGridSystem->GetValidPathNode(grid);
+
+			if (!IsValid(pathNode))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
+			}
 
 			pathNode->SetGCost(TNumericLimits<int32>::Max());
 			pathNode->SetHCost(0);
@@ -532,6 +519,19 @@ void AGridManager::InitAllPathFindingNodes()
 			pathNode->SetParentNode(nullptr);
 		}
 	}
+}
+
+AGridManager* AGridManager::GetGridManager()
+{
+	if (!IsValid(GEngine) || GEngine->GameViewport.IsNull())
+	{
+		return nullptr;
+	}
+
+	UWorld* world = GEngine->GameViewport->GetWorld();
+	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(world, AGridManager::StaticClass()));
+
+	return gridManager;
 }
 
 

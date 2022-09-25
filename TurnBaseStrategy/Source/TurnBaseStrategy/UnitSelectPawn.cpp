@@ -45,7 +45,7 @@ void AUnitSelectPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAxis("Turn", this, &AUnitSelectPawn::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &AUnitSelectPawn::LookUp);
 
-	PlayerInputComponent->BindAction("UnitSelect", IE_Pressed, this, &AUnitSelectPawn::UnitSelect);
+	PlayerInputComponent->BindAction("UnitSelect", IE_Pressed, this, &AUnitSelectPawn::HandleSelectAction);
 
 }
 
@@ -83,14 +83,115 @@ void AUnitSelectPawn::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
-void AUnitSelectPawn::UnitSelect()
+void AUnitSelectPawn::HandleSelectAction()
 {
-	UE_LOG(LogTemp, Warning, TEXT("UnitSelect()"));
+	bool unitSelected = TryUnitSelect();
+
+	if (unitSelected)
+	{
+		if (!IsValid(SelectedUnit))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("true.. Selected Unit Not Valid"));
+			return;
+		}
+
+		if (!IsValid(SelectedAction))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("true.. Selected Action Not Valid"));
+			return;
+		}
+
+		auto gridarray = SelectedAction->GetValidActionGridArray();
+		AGridManager* gridManager = AGridManager::GetGridManager();
+		if (IsValid(gridManager))
+		{
+			gridManager->HideAllGridVisual();
+			gridManager->ShowFromGridArray(gridarray, EGridVisualType::Blue);
+		}
+
+	}
+	else
+	{
+		if (!IsValid(SelectedUnit))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("false.. Selected Unit Not Valid"));
+			return;
+		}
+
+		if (!IsValid(SelectedAction))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("false.. Selected Action Not Valid"));
+			return;
+		}
+
+		APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (!IsValid(playerController))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("false.. Player Controller Not Valid"));
+			return;
+		}
+
+		FVector loc;
+		FVector rot;
+		playerController->DeprojectMousePositionToWorld(loc, rot);
+
+		TArray<TEnumAsByte<EObjectTypeQuery>> objects;
+
+		objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+		//objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+		TArray<AActor*> ignores;
+		//ignores.Add(this);
+
+		FHitResult hit;
+		GetWorld()->LineTraceSingleByChannel(hit, loc, loc + rot * 1000, ECollisionChannel::ECC_Visibility);
+		bool result = UKismetSystemLibrary::LineTraceSingleForObjects(
+			GetWorld(),
+			loc,
+			loc + rot * 10000,
+			objects,
+			true,
+			ignores,
+			//EDrawDebugTrace::None,
+			EDrawDebugTrace::ForDuration,
+			hit,
+			true,
+			FLinearColor::Red,
+			FLinearColor::Blue,
+			5.0f
+		);
+
+		if (result)
+		{
+			FVector hitLocation = hit.Location;
+
+			AGridManager* gridManager = AGridManager::GetGridManager();
+			if (IsValid(gridManager))
+			{
+				FGrid grid = gridManager->WorldToGrid(hitLocation);
+
+				if (!gridManager->IsValidGrid(grid))
+				{
+					return;
+				}
+
+				SelectedAction->TakeAction(grid);
+
+			}
+		}
+
+	}
+
+
+}
+
+bool AUnitSelectPawn::TryUnitSelect()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("UnitSelect()"));
 
 	APlayerController* playerController= UGameplayStatics::GetPlayerController(GetWorld(),0);
 	if (!IsValid(playerController))
 	{
-		return;
+		return false;
 	}
 
 	FVector loc;
@@ -99,17 +200,19 @@ void AUnitSelectPawn::UnitSelect()
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> objects;
 
-	//objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
-	//objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
-	objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
-	objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
-	//objects.Add(EObjectTypeQuery::ObjectTypeQuery7);
+	objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+
+	//////objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+	//////objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	////objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+	////objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_PhysicsBody));
+
 
 	TArray<AActor*> ignores;
-	ignores.Add(this);
+	//ignores.Add(this);
 
 	FHitResult hit;
-	GetWorld()->LineTraceSingleByChannel(hit, loc, loc + rot * 1000, ECollisionChannel::ECC_Visibility);
+
 	bool result = UKismetSystemLibrary::LineTraceSingleForObjects(
 		GetWorld(),
 		loc,
@@ -128,26 +231,38 @@ void AUnitSelectPawn::UnitSelect()
 
 	if (result)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Unit Name : %s"), *hit.GetActor()->GetName());
-		if (hit.GetActor()->IsA(AUnitCharacter::StaticClass()))
+		FVector hitLocation = hit.Location;
+		AGridManager* gridManager = AGridManager::GetGridManager();
+		if (IsValid(gridManager))
 		{
-			SelectedUnit = Cast<AUnitCharacter>(hit.GetActor());
-
-			UUnitMoveActionComponent* moveActionComponent = SelectedUnit->UnitMoveActionComponent;
-			if (IsValid(moveActionComponent))
+			FGrid hitGrid = gridManager->WorldToGrid(hitLocation);
+			if (gridManager->IsValidGrid(hitGrid))
 			{
-				auto gridarray= moveActionComponent->GetValidActionGridArray();
-				AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
-				if (IsValid(gridManager))
+				auto gridUnitArr = gridManager->GetUnitArrayAtGrid(hitGrid);
+				if (gridUnitArr.Num() > 0)
 				{
-					gridManager->HideAllGridVisual();
-					gridManager->ShowFromGridArray(gridarray,EGridVisualType::Blue);
+					UE_LOG(LogTemp, Warning, TEXT("SET!"));
+					SetSelectUnit(gridUnitArr[0]);
+					return true;
 				}
-
-			}
-
+			}	
 		}
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Nothing?"));
+	return false;
+}
+
+void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* Selected)
+{
+	if (IsValid(Selected) && SelectedUnit != Selected)
+	{
+		SelectedUnit = Selected;
+
+		if (IsValid(SelectedUnit->UnitMoveActionComponent))
+		{
+			SelectedAction = SelectedUnit->UnitMoveActionComponent;
+		}
+	}
 }
 

@@ -8,6 +8,7 @@
 
 class UFloatingPawnMovement;
 class AUnitCharacter;
+class UUnitActionComponent;
 
 UCLASS()
 class TURNBASESTRATEGY_API AUnitSelectPawn : public APawn
@@ -27,8 +28,11 @@ protected:
 
 private:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	AUnitCharacter* SelectedUnit;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	UUnitActionComponent* SelectedAction;
 
 public:	
 	// Called every frame
@@ -44,5 +48,9 @@ public:
 	void Turn(float Value);
 	void LookUp(float Value);
 
-	void UnitSelect();
+	void HandleSelectAction();
+
+	bool TryUnitSelect();
+
+	void SetSelectUnit(AUnitCharacter* Selected);
 };

@@ -29,12 +29,12 @@ FString FGrid::ToString()
 	return FString("X : ") + FString::FromInt(X) + FString(" / Y : ") + FString::FromInt(Y) + FString(" / Height : ") + FString::FromInt(Height);
 }
 
-bool FGrid::operator == (const FGrid Other)
+bool FGrid::operator == (const FGrid& Other)
 {
-	return X == Other.X && Y == Other.Y && Height == Other.Height;
+	return X == Other.X && Y == Other.Y; //&& Height == Other.Height;
 }
 
-bool FGrid::operator != (const FGrid Other)
+bool FGrid::operator != (const FGrid& Other)
 {
 	return !(*this == Other);
 }
@@ -55,4 +55,14 @@ FGrid FGrid::operator -(FGrid b)
 	temp.Y = Y - b.Y;
 	temp.Height = Height - b.Height;
 	return temp;
+}
+
+bool operator==(const FGrid& a, const FGrid& b)
+{
+	return a.X == b.X && a.Y == b.Y;
+}
+
+bool operator!=(const FGrid& a, const FGrid& b)
+{
+	return !(a==b);
 }

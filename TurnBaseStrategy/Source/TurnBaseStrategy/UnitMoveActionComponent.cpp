@@ -32,10 +32,11 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 
 	FGrid unitGrid = Unit->GetGrid();
 
-	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+	AGridManager* gridManager = AGridManager::GetGridManager();
 	
 	if (!IsValid(gridManager))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager not Valid"));
 		return validArray;
 	}
 
@@ -97,7 +98,7 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 
 void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 {
-	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
 	{
 		return;
@@ -106,7 +107,16 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 	int32 pathLength;
 	TArray<FGrid> pathArray = gridManager->FindPath(Unit->GetGrid(), Grid, pathLength);
 
-	//
+	if (pathLength > MaxActionRange)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not Valid MovePosition"));
+		return;
+	}
+
+	for (int i = 0; i < pathArray.Num(); i++)
+	{
+		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
+	}
 
 
 }

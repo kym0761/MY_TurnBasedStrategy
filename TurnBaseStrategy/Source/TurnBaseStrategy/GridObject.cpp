@@ -3,6 +3,7 @@
 
 #include "GridObject.h"
 #include "UnitCharacter.h"
+#include "GridSystem.h"
 
 UGridObject::UGridObject()
 {
@@ -54,12 +55,12 @@ FGrid UGridObject::GetGrid() const
 	return Grid;
 }
 
-TWeakPtr<FGridSystem<UGridObject>>  UGridObject::GetGridSystem() const
+UGridSystem* UGridObject::GetGridSystem() const
 {
 	return GridSystem;
 }
 
-void UGridObject::SetGridSystem(TSharedPtr<FGridSystem<UGridObject>> InGridSystem)
+void UGridObject::SetGridSystem(UGridSystem* InGridSystem)
 {
-	GridSystem = TWeakPtr<FGridSystem<UGridObject>>(InGridSystem);
+	GridSystem = InGridSystem;
 }

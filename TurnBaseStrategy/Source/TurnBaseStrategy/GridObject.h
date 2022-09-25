@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Grid.h"
-#include "GridSystem.h"
 #include "GridObject.generated.h"
 
 /**
@@ -12,9 +11,7 @@
  */
 
 class AUnitCharacter;
-
-template<typename T>
-class FGridSystem;
+class UGridSystem;
 
 UCLASS()
 class TURNBASESTRATEGY_API UGridObject : public UObject
@@ -27,7 +24,8 @@ public:
 
 private:
 
-	TWeakPtr<FGridSystem<UGridObject>> GridSystem;
+	UPROPERTY()
+	UGridSystem* GridSystem;
 
 	FGrid Grid;
 	TArray<AUnitCharacter*> UnitArray;
@@ -43,6 +41,6 @@ public:
 	void SetGrid(FGrid InGrid);
 	FGrid GetGrid() const;
 
-	TWeakPtr<FGridSystem<UGridObject>>  GetGridSystem() const;
-	void SetGridSystem(TSharedPtr<FGridSystem<UGridObject>>  InGridSystem);
+	UGridSystem* GetGridSystem() const;
+	void SetGridSystem(UGridSystem* InGridSystem);
 };

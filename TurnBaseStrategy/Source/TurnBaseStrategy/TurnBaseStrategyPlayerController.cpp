@@ -13,6 +13,7 @@
 
 
 #include "DrawDebugHelpers.h"// draw line
+#include "GridObject.h"
 
 ATurnBaseStrategyPlayerController::ATurnBaseStrategyPlayerController()
 {

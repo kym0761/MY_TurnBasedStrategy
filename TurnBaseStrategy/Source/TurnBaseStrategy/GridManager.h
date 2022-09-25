@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid.h"
-#include "GridSystem.h"
 #include "GridVisual.h"
 #include "GridManager.generated.h"
 
@@ -14,7 +13,8 @@ class UGridObject;
 class UPathNode;
 class AUnitCharacter;
 class UInstancedGridVisualComponent;
-
+class UPathFindingSystem;
+class UGridSystem;
 UCLASS()
 class TURNBASESTRATEGY_API AGridManager : public AActor
 {
@@ -22,8 +22,11 @@ class TURNBASESTRATEGY_API AGridManager : public AActor
 	
 private:
 
-	TSharedPtr<FGridSystem<UGridObject>> GridSystem;
-	TSharedPtr<FGridSystem<UPathNode>> PathFindingGridSystem;
+	UPROPERTY()
+	UGridSystem* GridSystem;
+	
+	UPROPERTY()
+	UPathFindingSystem* PathFindingGridSystem;
 
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
 	int32 X_Length = 10;
@@ -85,4 +88,8 @@ public:
 	int32 GetPathLength(FGrid Start, FGrid End);
 
 	void InitAllPathFindingNodes();
+
+
+	static AGridManager* GetGridManager();
+
 };
