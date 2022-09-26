@@ -30,8 +30,8 @@ public:
 		UStaticMeshComponent* GridMesh;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual", Meta = (AllowPrivateAccess = true))
-		TArray<FGridVisualTypeMaterial> GridVisualTypeList;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual", Meta = (AllowPrivateAccess = true))
+	//	TArray<FGridVisualTypeMaterial> GridVisualTypeList;
 
 protected:
 	// Called when the game starts or when spawned

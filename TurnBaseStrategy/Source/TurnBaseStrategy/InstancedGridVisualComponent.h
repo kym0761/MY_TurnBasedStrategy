@@ -21,5 +21,6 @@ public:
 public:
 
 	void DrawGridVisualswithGridArray(TArray<FGrid> GridArray);
+	void DrawGridVisualsWithGridVisualData(FGridVisualData GridVisualData);
 	void RemoveGridVisuals();
 };

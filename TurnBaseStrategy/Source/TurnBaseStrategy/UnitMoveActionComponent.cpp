@@ -94,6 +94,84 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 	return validArray;
 }
 
+TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataArray() const
+{
+	//TArray<FGrid> validArray;
+	TArray<FGridVisualData> validVisualDataArray;
+	FGrid unitGrid = Unit->GetGrid();
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager not Valid"));
+		return validVisualDataArray;
+	}
+
+
+	for (int x = -MaxActionRange; x <= MaxActionRange; x++)
+	{
+		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
+		{
+			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
+			{
+				continue;
+			}
+
+			FGrid offsetGrid = FGrid(x, y);
+			FGrid resultGrid = unitGrid + offsetGrid;
+			
+			//존재하지 않는 Grid
+			if (!gridManager->IsValidGrid(resultGrid))
+			{
+				continue;
+			}
+
+			FGridVisualData testData;
+			testData.Grid = resultGrid;
+			testData.GridVisualType = EGridVisualType::Move;
+
+			////지금 현재 Unit의 위치
+			if (resultGrid == unitGrid)
+			{
+				testData.GridVisualType = EGridVisualType::Warning;
+			}
+
+			//누군가 점유중이면 Skip
+			if (gridManager->HasAnyUnitOnGrid(resultGrid))
+			{
+				testData.GridVisualType = EGridVisualType::NO;
+			}
+
+			//걸을 수 있는 위치?
+			if (!gridManager->IsWalkableGrid(resultGrid))
+			{
+				testData.GridVisualType = EGridVisualType::NO;
+			}
+
+			//도착 가능한 위치?
+			if (!gridManager->HasPath(unitGrid, resultGrid))
+			{
+				testData.GridVisualType = EGridVisualType::NO;
+
+			}
+
+			//의도와 달리 먼 거리?
+			if (gridManager->GetPathLength(unitGrid, resultGrid) > MaxActionRange)
+			{
+				testData.GridVisualType = EGridVisualType::NO;
+			}
+
+			//통과하면 문제없으니 validArray에 추가
+
+			validVisualDataArray.Add(testData);
+		}
+	}
+
+
+	return validVisualDataArray;
+}
+
 void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 {
 	AGridManager* gridManager = AGridManager::GetGridManager();

@@ -86,7 +86,7 @@ void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 			}
 
 			gridManager->RemoveAllGridVisual();
-			gridManager->ShowGridRange(grid, 1, EGridVisualType::Blue);
+			gridManager->ShowGridRange(grid, 1, EGridVisualType::OK);
 
 			int32 pathLength;
 			auto path = gridManager->FindPath(pawnGrid, grid, pathLength);

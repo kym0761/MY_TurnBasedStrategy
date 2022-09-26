@@ -107,7 +107,8 @@ void AUnitSelectPawn::HandleSelectAction()
 		if (IsValid(gridManager))
 		{
 			gridManager->RemoveAllGridVisual();
-			gridManager->ShowFromGridArray(gridarray, EGridVisualType::Blue);
+			//gridManager->ShowFromGridArray(gridarray, EGridVisualType::Warning);
+			gridManager->ShowFromGridVisualDataArray(SelectedAction->GetValidActionGridVisualDataArray());
 		}
 
 	}

@@ -25,11 +25,14 @@ public:
 	FOnActionEnd OnActionEnd;
 
 protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	AUnitCharacter* Unit;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	int32 MaxActionRange;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	bool bCanAction;
 
 protected:
@@ -44,6 +47,7 @@ public:
 	virtual FString GetActionName() const;
 	virtual void TakeAction(FGrid Grid);
 	virtual bool IsValidActionGrid(FGrid Grid) const;
+	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;
 	virtual TArray<FGrid> GetValidActionGridArray() const;
 	AUnitCharacter* GetUnit() const;
 

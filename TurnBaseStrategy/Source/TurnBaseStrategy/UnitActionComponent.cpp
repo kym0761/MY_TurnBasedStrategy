@@ -53,6 +53,11 @@ bool UUnitActionComponent::IsValidActionGrid(FGrid Grid) const
 	return GetValidActionGridArray().Contains(Grid);
 }
 
+TArray<FGridVisualData> UUnitActionComponent::GetValidActionGridVisualDataArray() const
+{
+	return TArray<FGridVisualData>();
+}
+
 TArray<FGrid> UUnitActionComponent::GetValidActionGridArray() const
 {
 	return TArray<FGrid>();

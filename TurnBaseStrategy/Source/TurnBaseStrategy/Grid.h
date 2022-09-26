@@ -38,21 +38,33 @@ public:
 UENUM(BlueprintType)
 enum class EGridVisualType : uint8
 {
-	White UMETA(DisplayName = "White"),
-	Blue UMETA(DisplayName = "Blue"),
-	Red UMETA(DisplayName = "Red"),
-	RedSoft UMETA(DisplayName = "RedSoft"),
-	Yellow UMETA(DisplayName = "Yellow")
+	Move UMETA(DisplayName = "Move"), //이동?
+	OK UMETA(DisplayName = "OK"), //아군에게?
+	NO UMETA(DisplayName = "NO"), // 적에게?
+	NO_Soft UMETA(DisplayName = "No_Soft"), //몰?루
+	Warning UMETA(DisplayName = "Warning") // 공격 범위?
 
 };
 
+
 USTRUCT(BlueprintType)
-struct FGridVisualTypeMaterial
+struct FGridVisualData
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-		EGridVisualType GridVisualType;
+		FGrid Grid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-		UMaterialInstance* Material;
+		EGridVisualType GridVisualType;
 };
+
+//USTRUCT(BlueprintType)
+//struct FGridVisualTypeMaterial
+//{
+//	GENERATED_BODY()
+//public:
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+//		EGridVisualType GridVisualType;
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
+//		UMaterialInstance* Material;
+//};

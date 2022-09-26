@@ -23,10 +23,17 @@ AGridManager::AGridManager()
 	Y_Length = 10;
 	CellSize = 100.0f;
 
+	GridVisual_Move = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_Move"));
+	GridVisual_Move->SetupAttachment(GetRootComponent());
+
 	GridVisual_OK = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_OK"));
 	GridVisual_OK->SetupAttachment(GetRootComponent());
+
 	GridVisual_NO = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_NO"));
 	GridVisual_NO->SetupAttachment(GetRootComponent());
+
+	GridVisual_Warning = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_Warning"));
+	GridVisual_Warning->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -83,9 +90,12 @@ void AGridManager::CreateGridSystem()
 
 void AGridManager::RemoveAllGridVisual()
 {
+	//auto gridvisual = GetComponentsByClass(UInstancedGridVisualComponent::StaticClass());
+
+	GridVisual_Move->RemoveGridVisuals();
 	GridVisual_OK->RemoveGridVisuals();
 	GridVisual_NO->RemoveGridVisuals();
-
+	GridVisual_Warning->RemoveGridVisuals();
 }
 
 FGrid AGridManager::WorldToGrid(FVector WorldPosition)
@@ -145,7 +155,64 @@ void AGridManager::ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVi
 
 void AGridManager::ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType)
 {
-	GridVisual_OK->DrawGridVisualswithGridArray(GridArray);
+	UInstancedGridVisualComponent* toDraw = nullptr;
+
+	switch (GridVisualType)
+	{
+	case EGridVisualType::Move:
+		toDraw = GridVisual_Move;
+		break;
+	case EGridVisualType::NO:
+		toDraw = GridVisual_NO;
+		break;
+	case EGridVisualType::OK:
+		toDraw = GridVisual_OK;
+		break;
+	case EGridVisualType::Warning:
+		toDraw = GridVisual_Warning;
+		break;
+	default:
+		break;
+	}
+
+	if (IsValid(toDraw))
+	{
+		toDraw->DrawGridVisualswithGridArray(GridArray);
+	}
+
+}
+
+void AGridManager::ShowFromGridVisualDataArray(TArray<FGridVisualData> GridVisualDataArray)
+{
+	for (auto visualData : GridVisualDataArray)
+	{
+		UInstancedGridVisualComponent* toDraw = nullptr;
+
+		switch (visualData.GridVisualType)
+		{
+		case EGridVisualType::Move:
+			toDraw = GridVisual_Move;
+			break;
+		case EGridVisualType::NO:
+			toDraw = GridVisual_NO;
+			break;
+		case EGridVisualType::OK:
+			toDraw = GridVisual_OK;
+			break;
+		case EGridVisualType::Warning:
+			toDraw = GridVisual_Warning;
+			break;
+		default:
+			break;
+		}
+
+		if (IsValid(toDraw))
+		{
+			toDraw->DrawGridVisualsWithGridVisualData(visualData);
+		}
+	}
+
+
 }
 
 TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, bool bCanIgnoreUnit)
@@ -431,6 +498,7 @@ void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, FGrid From, FGrid to)
 	RemoveUnitAtGrid(Unit, From);
 	AddUnitAtGrid(Unit, to);
 
+	//It is right?
 	Unit->SetGrid(to);
 
 	if (OnAnyUnitMoved.IsBound())

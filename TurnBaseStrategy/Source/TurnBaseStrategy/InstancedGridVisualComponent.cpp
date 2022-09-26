@@ -42,6 +42,25 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(TArray<FGrid> G
 
 }
 
+void UInstancedGridVisualComponent::DrawGridVisualsWithGridVisualData(FGridVisualData GridVisualData)
+{
+	AGridManager* gridManager = Cast<AGridManager>(GetOwner());
+	if (!IsValid(gridManager))
+	{
+		//gridManager Not Valid.
+		return;
+	}
+
+	FVector worldPos = gridManager->GridToWorld(GridVisualData.Grid);
+
+	FTransform visualTransform;
+	visualTransform.SetLocation(worldPos);
+	visualTransform.SetRotation(FQuat::Identity);
+	visualTransform.SetScale3D(GetComponentScale());
+
+	AddInstance(visualTransform,true);
+}
+
 void UInstancedGridVisualComponent::RemoveGridVisuals()
 {
 	ClearInstances();

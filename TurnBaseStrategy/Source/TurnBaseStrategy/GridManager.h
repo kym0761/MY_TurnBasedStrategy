@@ -46,10 +46,16 @@ private:
 	float CellSize = 100.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+		UInstancedGridVisualComponent* GridVisual_Move;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_OK;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_NO;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+		UInstancedGridVisualComponent* GridVisual_Warning;
 
 public:	
 	// Sets default values for this actor's properties
@@ -79,6 +85,8 @@ public:
 
 	void ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType);
 	void ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType);
+	void ShowFromGridVisualDataArray(TArray<FGridVisualData> GridVisualDataArray);
+
 
 	TArray<FGrid> FindPath(FGrid Start, FGrid End, int32& PathLength, bool bCanIgnoreUnit = false);
 	int32 CalculateGridDistance(FGrid a, FGrid b);
