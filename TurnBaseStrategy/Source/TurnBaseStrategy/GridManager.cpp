@@ -405,6 +405,18 @@ TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(FGrid GridValue)
 
 }
 
+AUnitCharacter* AGridManager::GetUnitAtGrid(FGrid GridValue)
+{
+	TArray<AUnitCharacter*> gridArray = GetUnitArrayAtGrid(GridValue);
+
+	if (gridArray.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	return gridArray[0];
+}
+
 bool AGridManager::HasAnyUnitOnGrid(FGrid GridValue)
 {
 
@@ -417,10 +429,10 @@ bool AGridManager::HasAnyUnitOnGrid(FGrid GridValue)
 	return false;
 }
 
-bool AGridManager::HasPath(FGrid Start, FGrid End)
+bool AGridManager::HasPath(FGrid Start, FGrid End, bool bCanIgnoreUnit)
 {
 	int32 pathLength = 0;
-	FindPath(Start, End, pathLength);
+	FindPath(Start, End, pathLength, bCanIgnoreUnit);
 
 	return pathLength != -1;
 }

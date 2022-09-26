@@ -72,8 +72,15 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 				continue;
 			}
 
+			bool bisFriend = false;
+			auto targetUnit = gridManager->GetUnitAtGrid(testGrid);
+			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
+			{
+				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
+			}
+
 			//도착 가능한 위치?
-			if (!gridManager->HasPath(unitGrid, testGrid))
+			if (bisFriend && !gridManager->HasPath(unitGrid, testGrid, true) || !gridManager->HasPath(unitGrid, testGrid))
 			{
 				continue;
 			}
@@ -148,8 +155,15 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 				testData.GridVisualType = EGridVisualType::NO;
 			}
 
+			bool bisFriend = false;
+			auto targetUnit = gridManager->GetUnitAtGrid(resultGrid);
+			if (IsValid(targetUnit) && GetOwner()->Tags.Num()>0)
+			{
+				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
+			}
+
 			//도착 가능한 위치?
-			if (!gridManager->HasPath(unitGrid, resultGrid))
+			if (bisFriend &&!gridManager->HasPath(unitGrid, resultGrid,true) || !gridManager->HasPath(unitGrid, resultGrid))
 			{
 				testData.GridVisualType = EGridVisualType::NO;
 

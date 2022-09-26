@@ -95,8 +95,9 @@ public:
 	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode);
 
 	TArray<AUnitCharacter*> GetUnitArrayAtGrid(FGrid GridValue);
+	AUnitCharacter* GetUnitAtGrid(FGrid GridValue);
 	bool HasAnyUnitOnGrid(FGrid GridValue);
-	bool HasPath(FGrid Start, FGrid End);
+	bool HasPath(FGrid Start, FGrid End, bool bCanIgnoreUnit = false);
 	bool IsWalkableGrid(FGrid GridValue);
 	int32 GetPathLength(FGrid Start, FGrid End);
 
