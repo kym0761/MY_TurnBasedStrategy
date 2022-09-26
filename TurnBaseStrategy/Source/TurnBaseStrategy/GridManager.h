@@ -22,6 +22,9 @@ class UGridSystem;
  * PathFinding같은 기능은 GridManager에서 관리해야함.
 */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnyUnitMoved);
+
+
 UCLASS()
 class TURNBASESTRATEGY_API AGridManager : public AActor
 {
@@ -52,6 +55,8 @@ public:
 	// Sets default values for this actor's properties
 	AGridManager();
 
+	FOnAnyUnitMoved OnAnyUnitMoved;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -65,7 +70,7 @@ public:
 
 	void CreateGridSystem();
 
-	void HideAllGridVisual();
+	void RemoveAllGridVisual();
 
 	FGrid WorldToGrid(FVector WorldPosition);
 	FVector GridToWorld(FGrid Grid);
@@ -81,7 +86,6 @@ public:
 	TArray<FGrid> CalculatePath(UPathNode* EndNode);
 	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode);
 
-	void AddUnitAtGrid(FGrid GridValue,AUnitCharacter* Unit);
 	TArray<AUnitCharacter*> GetUnitArrayAtGrid(FGrid GridValue);
 	bool HasAnyUnitOnGrid(FGrid GridValue);
 	bool HasPath(FGrid Start, FGrid End);
@@ -91,5 +95,9 @@ public:
 	void InitAllPathFindingNodes();
 
 	static AGridManager* GetGridManager();
+
+	void AddUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue);
+	void RemoveUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue);
+	void MoveUnitGrid(AUnitCharacter* Unit, FGrid From, FGrid to);
 
 };

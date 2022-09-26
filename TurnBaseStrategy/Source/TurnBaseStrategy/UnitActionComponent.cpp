@@ -2,6 +2,7 @@
 
 
 #include "UnitActionComponent.h"
+#include "UnitCharacter.h"
 
 // Sets default values for this component's properties
 UUnitActionComponent::UUnitActionComponent()
@@ -22,7 +23,9 @@ void UUnitActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
+	Unit = Cast<AUnitCharacter>(GetOwner());
+
 }
 
 
@@ -47,8 +50,7 @@ void UUnitActionComponent::TakeAction(FGrid Grid)
 
 bool UUnitActionComponent::IsValidActionGrid(FGrid Grid) const
 {
-	TArray<FGrid> gridArray = GetValidActionGridArray();
-	return gridArray.Contains(Grid);
+	return GetValidActionGridArray().Contains(Grid);
 }
 
 TArray<FGrid> UUnitActionComponent::GetValidActionGridArray() const

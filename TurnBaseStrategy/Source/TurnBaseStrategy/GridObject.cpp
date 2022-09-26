@@ -31,7 +31,15 @@ void UGridObject::AddUnit(AUnitCharacter* Unit)
 
 void UGridObject::RemoveUnit(AUnitCharacter* Unit)
 {
-	UnitArray.Remove(Unit);
+	if (UnitArray.Contains(Unit))
+	{
+		UnitArray.Remove(Unit);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Unit is not inside"));
+	}
+	
 }
 
 bool UGridObject::HasAnyUnit()

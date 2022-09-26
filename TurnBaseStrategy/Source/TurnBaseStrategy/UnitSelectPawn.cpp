@@ -11,6 +11,7 @@
 #include "UnitMoveActionComponent.h"
 #include "GridManager.h"
 #include "Grid.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AUnitSelectPawn::AUnitSelectPawn()
@@ -105,7 +106,7 @@ void AUnitSelectPawn::HandleSelectAction()
 		AGridManager* gridManager = AGridManager::GetGridManager();
 		if (IsValid(gridManager))
 		{
-			gridManager->HideAllGridVisual();
+			gridManager->RemoveAllGridVisual();
 			gridManager->ShowFromGridArray(gridarray, EGridVisualType::Blue);
 		}
 
@@ -258,11 +259,47 @@ void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* Selected)
 	if (IsValid(Selected) && SelectedUnit != Selected)
 	{
 		SelectedUnit = Selected;
-
-		if (IsValid(SelectedUnit->UnitMoveActionComponent))
+		if (OnSelectedUnitChanged.IsBound())
 		{
-			SelectedAction = SelectedUnit->UnitMoveActionComponent;
+			OnSelectedUnitChanged.Broadcast();
+		}
+		
+		if (IsValid(SelectedUnit->GetUnitActionComponent(EUnitActionType::Move)))
+		{
+			SelectedAction = SelectedUnit->GetUnitActionComponent(EUnitActionType::Move);
+			if (OnSelectedActionChanged.IsBound())
+			{
+				OnSelectedActionChanged.Broadcast();
+			}
+			
+			SelectedAction->OnActionStart;
+			SelectedAction->OnActionEnd;
+
+
 		}
 	}
+}
+
+AUnitCharacter* AUnitSelectPawn::GetSelectedUnit()
+{
+	return SelectedUnit;
+}
+
+UUnitActionComponent* AUnitSelectPawn::GetSelectedAction()
+{
+	return SelectedAction;
+}
+
+AUnitSelectPawn* AUnitSelectPawn::GetUnitSelectPawn()
+{
+	if (!IsValid(GEngine) || GEngine->GameViewport.IsNull())
+	{
+		return nullptr;
+	}
+
+	UWorld* world = GEngine->GameViewport->GetWorld();
+	AUnitSelectPawn* unitSelectPawn = Cast<AUnitSelectPawn>(UGameplayStatics::GetActorOfClass(world, AUnitSelectPawn::StaticClass()));
+
+	return unitSelectPawn;
 }
 

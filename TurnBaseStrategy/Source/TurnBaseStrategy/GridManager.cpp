@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PathFindingSystem.h"
 #include "GridSystem.h"
+#include "UnitCharacter.h"
 
 // Sets default values
 AGridManager::AGridManager()
@@ -80,7 +81,7 @@ void AGridManager::CreateGridSystem()
 	);
 }
 
-void AGridManager::HideAllGridVisual()
+void AGridManager::RemoveAllGridVisual()
 {
 	GridVisual_OK->RemoveGridVisuals();
 	GridVisual_NO->RemoveGridVisuals();
@@ -210,7 +211,7 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, 
 			//GridVisual은 여기가 아니라 MoveActionComponent에서 ValidGridVisual을 체크함.
 			//유닛 정보는 GridSystem에 접근이 필요함.
 			auto gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
-			if (bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
+			if (!bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
 				closeList.Add(nearNode);
 				continue;
@@ -323,14 +324,6 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
 	return nearNodeList;
 }
 
-void AGridManager::AddUnitAtGrid(FGrid GridValue, AUnitCharacter* Unit)
-{
-
-	auto gridObject = GridSystem->GetValidGridObject(GridValue);
-	gridObject->AddUnit(Unit);
-
-}
-
 TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(FGrid GridValue)
 {
 
@@ -417,6 +410,33 @@ AGridManager* AGridManager::GetGridManager()
 	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(world, AGridManager::StaticClass()));
 
 	return gridManager;
+}
+
+void AGridManager::AddUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue)
+{
+
+	auto gridObject = GridSystem->GetValidGridObject(GridValue);
+	gridObject->AddUnit(Unit);
+
+}
+
+void AGridManager::RemoveUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue)
+{
+	auto gridObject = GridSystem->GetValidGridObject(GridValue);
+	gridObject->RemoveUnit(Unit);
+}
+
+void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, FGrid From, FGrid to)
+{
+	RemoveUnitAtGrid(Unit, From);
+	AddUnitAtGrid(Unit, to);
+
+	Unit->SetGrid(to);
+
+	if (OnAnyUnitMoved.IsBound())
+	{
+		OnAnyUnitMoved.Broadcast();
+	}
 }
 
 

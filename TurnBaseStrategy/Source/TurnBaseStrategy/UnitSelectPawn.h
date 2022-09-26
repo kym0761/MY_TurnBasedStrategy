@@ -4,11 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "UnitAction.h"
 #include "UnitSelectPawn.generated.h"
 
 class UFloatingPawnMovement;
 class AUnitCharacter;
 class UUnitActionComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedUnitChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedActionChanged);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBusyChanged, bool, bIsBusy);
 
 UCLASS()
 class TURNBASESTRATEGY_API AUnitSelectPawn : public APawn
@@ -21,6 +27,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UFloatingPawnMovement* PawnMovement;
+
+	FOnSelectedActionChanged OnSelectedActionChanged;
+	FOnSelectedUnitChanged OnSelectedUnitChanged;
+	FOnBusyChanged OnBusyChanged;
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,4 +63,11 @@ public:
 	bool TryUnitSelect();
 
 	void SetSelectUnit(AUnitCharacter* Selected);
+
+	UFUNCTION(BlueprintCallable)
+	AUnitCharacter* GetSelectedUnit();
+	UFUNCTION(BlueprintCallable)
+	UUnitActionComponent* GetSelectedAction();
+
+	static AUnitSelectPawn* GetUnitSelectPawn();
 };

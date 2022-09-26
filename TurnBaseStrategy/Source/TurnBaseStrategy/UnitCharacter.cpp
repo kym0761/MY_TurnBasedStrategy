@@ -3,10 +3,13 @@
 
 #include "UnitCharacter.h"
 #include "StatComponent.h"
+
 #include "UnitMoveActionComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "GridManager.h"
+#include "TurnManager.h"
+#include "UnitSelectPawn.h"
 
 // Sets default values
 AUnitCharacter::AUnitCharacter()
@@ -25,13 +28,24 @@ void AUnitCharacter::BeginPlay()
 	Super::BeginPlay();
 
 
-	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (IsValid(gridManager))
 	{
 		Grid= gridManager->WorldToGrid(GetActorLocation());
-		gridManager->AddUnitAtGrid(Grid, this);
+		gridManager->AddUnitAtGrid(this, Grid);
 	}
 
+	ATurnManager* turnManager = ATurnManager::GetTurnManager();
+	if (IsValid(turnManager))
+	{
+		turnManager->OnTurnChanged.AddDynamic(this, &AUnitCharacter::OnTurnChanged);
+	}
+
+	AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn(); 
+	if (IsValid(unitSelectPawn))
+	{
+		unitSelectPawn->OnSelectedUnitChanged.AddDynamic(this, &AUnitCharacter::OnSelectedUnitChanged);
+	}
 }
 
 // Called every frame
@@ -66,5 +80,35 @@ FGrid AUnitCharacter::GetGrid()
 void AUnitCharacter::SetGrid(FGrid GridValue)
 {
 	Grid = GridValue;
+}
+
+UUnitActionComponent* AUnitCharacter::GetUnitActionComponent(EUnitActionType UnitActionType)
+{
+	switch (UnitActionType)
+	{
+	case EUnitActionType::Move:
+		return UnitMoveActionComponent;
+	
+	default:
+		return nullptr;
+	}
+}
+
+void AUnitCharacter::OnTurnChanged()
+{
+	//Function when TurnChanged.
+	UE_LOG(LogTemp, Warning, TEXT("OnTurnChanged -> %s"), *GetActorLabel());
+}
+
+void AUnitCharacter::OnSelectedUnitChanged()
+{	
+	AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn();
+	if (IsValid(unitSelectPawn))
+	{
+		if (unitSelectPawn->GetSelectedUnit() == this)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OnSelectedUnitChanged -> %s"), *GetActorLabel());
+		}
+	}
 }
 

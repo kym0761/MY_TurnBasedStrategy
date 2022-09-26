@@ -85,7 +85,7 @@ void ATurnBaseStrategyPlayerController::PlayerTick(float DeltaTime)
 				UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
 			}
 
-			gridManager->HideAllGridVisual();
+			gridManager->RemoveAllGridVisual();
 			gridManager->ShowGridRange(grid, 1, EGridVisualType::Blue);
 
 			int32 pathLength;

@@ -9,7 +9,10 @@
 
 class AUnitCharacter;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionEnd);
+
+UCLASS(abstract ,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TURNBASESTRATEGY_API UUnitActionComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -17,6 +20,9 @@ class TURNBASESTRATEGY_API UUnitActionComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UUnitActionComponent();
+
+	FOnActionStart OnActionStart;
+	FOnActionEnd OnActionEnd;
 
 protected:
 	AUnitCharacter* Unit;

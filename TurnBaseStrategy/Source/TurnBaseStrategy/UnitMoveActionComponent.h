@@ -6,6 +6,9 @@
 #include "UnitActionComponent.h"
 #include "UnitMoveActionComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartMoving);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndMoving);
+
 /**
  * 
  */
@@ -16,9 +19,14 @@ class TURNBASESTRATEGY_API UUnitMoveActionComponent : public UUnitActionComponen
 
 public:
 		UUnitMoveActionComponent();
-	
+
+		FOnStartMoving OnStartMoving;
+		FOnEndMoving OnEndMoving;
+
 protected:
+
 	virtual void BeginPlay() override;
+
 private: 
 
 public:

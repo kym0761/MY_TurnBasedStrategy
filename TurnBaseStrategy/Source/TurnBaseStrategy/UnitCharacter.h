@@ -5,10 +5,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Grid.h"
+#include "UnitAction.h"
 #include "UnitCharacter.generated.h"
 
 class UStatComponent;
 class UUnitMoveActionComponent;
+class UUnitActionComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSpawned);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDead);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionPlayed); //??
+
+
 UCLASS()
 class TURNBASESTRATEGY_API AUnitCharacter : public ACharacter
 {
@@ -23,6 +31,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UUnitMoveActionComponent* UnitMoveActionComponent;
+	
+	FOnUnitSpawned OnUnitSpawned;
+	FOnUnitDead OnUnitDead;
+	FOnActionPlayed OnActionPlayed;
 
 private:
 
@@ -49,4 +61,13 @@ public:
 
 	FGrid GetGrid();
 	void SetGrid(FGrid GridValue);
+
+	UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
+
+	UFUNCTION()
+	void OnTurnChanged();
+
+	UFUNCTION()
+		void OnSelectedUnitChanged();
+
 };

@@ -6,7 +6,7 @@
 
 #include "GridManager.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "AIController.h"
 
 UUnitMoveActionComponent::UUnitMoveActionComponent()
 {
@@ -16,8 +16,6 @@ UUnitMoveActionComponent::UUnitMoveActionComponent()
 void UUnitMoveActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Unit = Cast<AUnitCharacter>(GetOwner());
 
 }
 
@@ -118,5 +116,12 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 	}
 
+	Cast<AAIController>(Cast<ACharacter>(GetOwner())->GetController())->MoveToLocation(gridManager->GridToWorld(pathArray.Last()));
+	gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), pathArray.Last());
+	gridManager->RemoveAllGridVisual();
+	if (OnStartMoving.IsBound())
+	{
+		OnStartMoving.Broadcast();
+	}
 
 }
