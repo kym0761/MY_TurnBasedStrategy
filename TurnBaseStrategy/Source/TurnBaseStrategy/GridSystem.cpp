@@ -41,6 +41,8 @@ TArray<UGridObject*> UGridSystem::GetGridObjectArray() const
 
 FGrid UGridSystem::WorldToGrid(FVector WorldPosition) const
 {
+	// ?? Is Really Needed??
+
 	FGrid grid;
 	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
 	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
@@ -50,6 +52,8 @@ FGrid UGridSystem::WorldToGrid(FVector WorldPosition) const
 
 FVector UGridSystem::GridToWorld(FGrid Grid) const
 {
+	// ?? Is Really Needed??
+
 	FVector worldPosition;
 	worldPosition.X = Grid.X * CellSize;
 	worldPosition.Y = Grid.Y * CellSize;

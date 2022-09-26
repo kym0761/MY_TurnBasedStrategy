@@ -12,7 +12,16 @@ UGridObject::UGridObject()
 
 FString UGridObject::ToString()
 {
-	return Grid.ToString() + FString(" / ") + GetName();
+	FString str;
+
+	str += Grid.ToString() + FString(" / ") + GetName();
+
+	for (int32 i = 0; i < UnitArray.Num(); i++)
+	{
+		str += FString(" / ") + UnitArray[i]->GetName();
+	}
+
+	return str;
 }
 
 void UGridObject::AddUnit(AUnitCharacter* Unit)

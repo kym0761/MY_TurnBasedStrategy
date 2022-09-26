@@ -15,6 +15,13 @@ class AUnitCharacter;
 class UInstancedGridVisualComponent;
 class UPathFindingSystem;
 class UGridSystem;
+
+/* 
+ * GridSystem과 PathFindingSystem의 조화를 위해서
+ * 각 System은 각각의 UObject만 관리하고
+ * PathFinding같은 기능은 GridManager에서 관리해야함.
+*/
+
 UCLASS()
 class TURNBASESTRATEGY_API AGridManager : public AActor
 {
@@ -26,7 +33,7 @@ private:
 	UGridSystem* GridSystem;
 	
 	UPROPERTY()
-	UPathFindingSystem* PathFindingGridSystem;
+	UPathFindingSystem* PathFindingSystem;
 
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
 	int32 X_Length = 10;
@@ -35,25 +42,21 @@ private:
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
 	float CellSize = 100.0f;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-	//	TSubclassOf<AGridVisual> GridVisualClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+		UInstancedGridVisualComponent* GridVisual_OK;
 
-	//TArray<AGridVisual*> GridVisualArray;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+		UInstancedGridVisualComponent* GridVisual_NO;
+
 public:	
 	// Sets default values for this actor's properties
 	AGridManager();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid")
-		UInstancedGridVisualComponent* GridVisual_OK;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid")
-		UInstancedGridVisualComponent* GridVisual_NO;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	virtual void OnConstruction(const FTransform& Transform);
+	//virtual void OnConstruction(const FTransform& Transform);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -62,8 +65,6 @@ public:
 
 	void CreateGridSystem();
 
-	//void CreateGridVisual();
-	//void ShowAllGridVisual();
 	void HideAllGridVisual();
 
 	FGrid WorldToGrid(FVector WorldPosition);
@@ -74,7 +75,7 @@ public:
 	void ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType);
 	void ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType);
 
-	TArray<FGrid> FindPath(FGrid Start, FGrid End, int32& PathLength);
+	TArray<FGrid> FindPath(FGrid Start, FGrid End, int32& PathLength, bool bCanIgnoreUnit = false);
 	int32 CalculateGridDistance(FGrid a, FGrid b);
 	UPathNode* GetLowestFCostNode(TArray<UPathNode*> PathNodeList);
 	TArray<FGrid> CalculatePath(UPathNode* EndNode);
@@ -88,7 +89,6 @@ public:
 	int32 GetPathLength(FGrid Start, FGrid End);
 
 	void InitAllPathFindingNodes();
-
 
 	static AGridManager* GetGridManager();
 

@@ -42,4 +42,5 @@ public:
 	FVector GridToWorld(FGrid Grid) const;
 
 	UPathNode* GetValidPathNode(FGrid Grid) const;
+
 };
