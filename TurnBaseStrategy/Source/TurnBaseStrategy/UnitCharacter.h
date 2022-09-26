@@ -17,6 +17,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDead);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionPlayed); //??
 
 
+//Tag MyUnit , Enemy ??
+
 UCLASS()
 class TURNBASESTRATEGY_API AUnitCharacter : public ACharacter
 {

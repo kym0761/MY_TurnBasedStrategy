@@ -55,10 +55,10 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 			}
 			
 			////지금 현재 Unit의 위치
-			//if (testGrid == unitGrid)
-			//{
-			//	continue;
-			//}
+			if (testGrid == unitGrid)
+			{
+				continue;
+			}
 
 			//누군가 점유중이면 Skip
 			if (gridManager->HasAnyUnitOnGrid(testGrid))
@@ -96,7 +96,6 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 
 TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataArray() const
 {
-	//TArray<FGrid> validArray;
 	TArray<FGridVisualData> validVisualDataArray;
 	FGrid unitGrid = Unit->GetGrid();
 
