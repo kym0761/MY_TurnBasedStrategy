@@ -100,15 +100,22 @@ void AGridManager::RemoveAllGridVisual()
 
 FGrid AGridManager::WorldToGrid(FVector WorldPosition)
 {
+	FGrid grid;
+	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
+	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
 
-	return GridSystem->WorldToGrid(WorldPosition);
+	return grid;
+	//return GridSystem->WorldToGrid(WorldPosition);
 }
 
 FVector AGridManager::GridToWorld(FGrid Grid)
 {
+	FVector worldPosition;
+	worldPosition.X = Grid.X * CellSize;
+	worldPosition.Y = Grid.Y * CellSize;
 
-	return GridSystem->GridToWorld(Grid);
-
+	return worldPosition;
+	//return GridSystem->GridToWorld(Grid);
 }
 
 UGridObject* AGridManager::GetValidGridObject(FGrid Grid)

@@ -64,6 +64,7 @@ public:
 	FGrid GetGrid();
 	void SetGrid(FGrid GridValue);
 
+	bool HasActionComponent(EUnitActionType UnitActionType);
 	UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
 
 	UFUNCTION()

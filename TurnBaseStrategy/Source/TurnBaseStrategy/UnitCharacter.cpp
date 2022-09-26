@@ -100,6 +100,18 @@ void AUnitCharacter::OnTurnChanged()
 	UE_LOG(LogTemp, Warning, TEXT("OnTurnChanged -> %s"), *GetActorLabel());
 }
 
+bool AUnitCharacter::HasActionComponent(EUnitActionType UnitActionType)
+{
+	switch (UnitActionType)
+	{
+	case EUnitActionType::Move:
+		return IsValid(UnitMoveActionComponent);
+
+	default:
+		return false;
+	}
+}
+
 void AUnitCharacter::OnSelectedUnitChanged()
 {	
 	AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn();
