@@ -11,6 +11,7 @@
 class UStatComponent;
 class UUnitMoveActionComponent;
 class UUnitActionComponent;
+class UUnitAttackActionComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDead);
@@ -34,6 +35,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UUnitMoveActionComponent* UnitMoveActionComponent;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		UUnitAttackActionComponent* UnitAttackActionComponent;
+
 	FOnUnitSpawned OnUnitSpawned;
 	FOnUnitDead OnUnitDead;
 	FOnActionPlayed OnActionPlayed;

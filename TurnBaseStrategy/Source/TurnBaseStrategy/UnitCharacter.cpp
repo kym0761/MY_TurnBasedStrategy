@@ -5,6 +5,8 @@
 #include "StatComponent.h"
 
 #include "UnitMoveActionComponent.h"
+#include "UnitAttackActionComponent.h"
+
 
 #include "Kismet/GameplayStatics.h"
 #include "GridManager.h"
@@ -20,6 +22,7 @@ AUnitCharacter::AUnitCharacter()
 	StatComponent = CreateDefaultSubobject<UStatComponent>("StatComponent");
 
 	UnitMoveActionComponent = CreateDefaultSubobject<UUnitMoveActionComponent>("UnitMoveActionComponent");
+	UnitAttackActionComponent = CreateDefaultSubobject<UUnitAttackActionComponent>("UnitAttackActionComponent");
 }
 
 // Called when the game starts or when spawned
@@ -88,7 +91,9 @@ UUnitActionComponent* AUnitCharacter::GetUnitActionComponent(EUnitActionType Uni
 	{
 	case EUnitActionType::Move:
 		return UnitMoveActionComponent;
-	
+
+	case EUnitActionType::Attack:
+		return UnitAttackActionComponent;
 	default:
 		return nullptr;
 	}
@@ -106,6 +111,9 @@ bool AUnitCharacter::HasActionComponent(EUnitActionType UnitActionType)
 	{
 	case EUnitActionType::Move:
 		return IsValid(UnitMoveActionComponent);
+
+	case EUnitActionType::Attack:
+		return IsValid(UnitAttackActionComponent);
 
 	default:
 		return false;

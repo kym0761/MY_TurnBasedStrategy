@@ -45,55 +45,55 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 		{
 			FGrid offsetGrid = FGrid(x, y);
 
-			FGrid testGrid = unitGrid + offsetGrid;
+			FGrid resultGrid = unitGrid + offsetGrid;
 
 
 			//존재하지 않는 Grid
-			if (!gridManager->IsValidGrid(testGrid))
+			if (!gridManager->IsValidGrid(resultGrid))
 			{
 				continue;
 			}
 			
 			////지금 현재 Unit의 위치
-			if (testGrid == unitGrid)
+			if (resultGrid == unitGrid)
 			{
 				continue;
 			}
 
 			//누군가 점유중이면 Skip
-			if (gridManager->HasAnyUnitOnGrid(testGrid))
+			if (gridManager->HasAnyUnitOnGrid(resultGrid))
 			{
 				continue;
 			}
 
 			//걸을 수 있는 위치?
-			if (!gridManager->IsWalkableGrid(testGrid))
+			if (!gridManager->IsWalkableGrid(resultGrid))
 			{
 				continue;
 			}
 
 			bool bisFriend = false;
-			auto targetUnit = gridManager->GetUnitAtGrid(testGrid);
+			AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
 			{
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
 			}
 
 			//도착 가능한 위치?
-			if (bisFriend && !gridManager->HasPath(unitGrid, testGrid, true) || !gridManager->HasPath(unitGrid, testGrid))
+			if (bisFriend && !gridManager->HasPath(unitGrid, resultGrid, true) || !gridManager->HasPath(unitGrid, resultGrid))
 			{
 				continue;
 			}
 
 			//의도와 달리 먼 거리?
-			if (gridManager->GetPathLength(unitGrid, testGrid) > MaxActionRange)
+			if (gridManager->GetPathLength(unitGrid, resultGrid) > MaxActionRange)
 			{
 				continue;
 			}
 
 			//통과하면 문제없으니 validArray에 추가
 
-			validArray.Add(testGrid);
+			validArray.Add(resultGrid);
 		}
 	}
 
@@ -143,7 +143,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 				testData.GridVisualType = EGridVisualType::Warning;
 			}
 
-			//누군가 점유중이면 Skip
+			//누군가 점유중
 			if (gridManager->HasAnyUnitOnGrid(resultGrid))
 			{
 				testData.GridVisualType = EGridVisualType::NO;

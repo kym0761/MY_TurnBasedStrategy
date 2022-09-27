@@ -88,7 +88,7 @@ void AUnitSelectPawn::HandleSelectAction()
 {
 	bool unitSelected = TryUnitSelect();
 
-	if (unitSelected)
+	if (unitSelected) // 유닛이 설정되었을 때
 	{
 		if (!IsValid(SelectedUnit))
 		{
@@ -112,7 +112,7 @@ void AUnitSelectPawn::HandleSelectAction()
 		}
 
 	}
-	else
+	else // 유닛 설정이 아니라 어떤 Action을 취하고 있을 때
 	{
 		if (!IsValid(SelectedUnit))
 		{
@@ -167,18 +167,20 @@ void AUnitSelectPawn::HandleSelectAction()
 			FVector hitLocation = hit.Location;
 
 			AGridManager* gridManager = AGridManager::GetGridManager();
-			if (IsValid(gridManager))
+			if (!IsValid(gridManager))
 			{
-				FGrid grid = gridManager->WorldToGrid(hitLocation);
-
-				if (!gridManager->IsValidGrid(grid))
-				{
-					return;
-				}
-
-				SelectedAction->TakeAction(grid);
-
+				UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+				return;
 			}
+
+			FGrid grid = gridManager->WorldToGrid(hitLocation);
+
+			if (!gridManager->IsValidGrid(grid))
+			{
+				return;
+			}
+
+			SelectedAction->TakeAction(grid);
 		}
 
 	}
@@ -235,23 +237,27 @@ bool AUnitSelectPawn::TryUnitSelect()
 	{
 		FVector hitLocation = hit.Location;
 		AGridManager* gridManager = AGridManager::GetGridManager();
-		if (IsValid(gridManager))
+		if (!IsValid(gridManager))
 		{
-			FGrid hitGrid = gridManager->WorldToGrid(hitLocation);
-			if (gridManager->IsValidGrid(hitGrid))
-			{
-				auto gridUnitArr = gridManager->GetUnitArrayAtGrid(hitGrid);
-				if (gridUnitArr.Num() > 0)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("SET!"));
-					SetSelectUnit(gridUnitArr[0]);
-					return true;
-				}
-			}	
+			UE_LOG(LogTemp, Warning, TEXT("GridManager Not Valid"));
+			return false;
 		}
+
+		FGrid hitGrid = gridManager->WorldToGrid(hitLocation);
+		if (gridManager->IsValidGrid(hitGrid))
+		{
+			auto gridUnitArr = gridManager->GetUnitArrayAtGrid(hitGrid);
+			if (gridUnitArr.Num() > 0 && gridUnitArr[0]->ActorHasTag(FName("MyUnit")))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Unit Set!"));
+				SetSelectUnit(gridUnitArr[0]);
+				return true;
+			}
+		}
+		
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Nothing?"));
+	UE_LOG(LogTemp, Warning, TEXT("Nothing Unit Detected"));
 	return false;
 }
 
@@ -265,9 +271,9 @@ void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* Selected)
 			OnSelectedUnitChanged.Broadcast();
 		}
 		
-		if (IsValid(SelectedUnit->GetUnitActionComponent(EUnitActionType::Move)))
+		if (IsValid(SelectedUnit->GetUnitActionComponent(EUnitActionType::Attack)))
 		{
-			SelectedAction = SelectedUnit->GetUnitActionComponent(EUnitActionType::Move);
+			SelectedAction = SelectedUnit->GetUnitActionComponent(EUnitActionType::Attack);
 			if (OnSelectedActionChanged.IsBound())
 			{
 				OnSelectedActionChanged.Broadcast();
@@ -275,8 +281,6 @@ void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* Selected)
 			
 			SelectedAction->OnActionStart;
 			SelectedAction->OnActionEnd;
-
-
 		}
 	}
 }

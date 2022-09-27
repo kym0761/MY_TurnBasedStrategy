@@ -66,3 +66,16 @@ bool operator!=(const FGrid& a, const FGrid& b)
 {
 	return !(a==b);
 }
+
+TArray<FGrid> FGridVisualData::ParseToGridArray(TArray<FGridVisualData> GridVisualArray)
+{
+	TArray<FGrid> gridArray;
+
+	for(FGridVisualData visualData : GridVisualArray)
+	{
+		gridArray.Add(visualData.Grid);
+	}
+
+
+	return gridArray;
+}

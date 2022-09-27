@@ -41,8 +41,8 @@ enum class EGridVisualType : uint8
 	Move UMETA(DisplayName = "Move"), //이동?
 	OK UMETA(DisplayName = "OK"), //아군에게?
 	NO UMETA(DisplayName = "NO"), // 적에게?
-	NO_Soft UMETA(DisplayName = "No_Soft"), //몰?루
-	Warning UMETA(DisplayName = "Warning") // 공격 범위?
+	NO_Soft UMETA(DisplayName = "No_Soft"), //공격 가능한 칸
+	Warning UMETA(DisplayName = "Warning") // 범위 공격의 범위?
 
 };
 
@@ -56,6 +56,8 @@ public:
 		FGrid Grid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
 		EGridVisualType GridVisualType;
+
+	static TArray<FGrid> ParseToGridArray(TArray<FGridVisualData> GridVisualArray);
 };
 
 //USTRUCT(BlueprintType)
