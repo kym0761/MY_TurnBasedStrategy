@@ -31,7 +31,6 @@ private:
 
 public:
 
-	virtual FString GetActionName() const override;
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;
 	virtual void TakeAction(FGrid Grid) override;

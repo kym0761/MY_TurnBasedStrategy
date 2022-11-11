@@ -14,6 +14,9 @@ UUnitActionComponent::UUnitActionComponent()
 	// ...
 	MaxActionRange = 0;
 	bCanAction = true;
+
+	ActionName = FString("BaseAction");
+
 }
 
 
@@ -39,7 +42,7 @@ void UUnitActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 FString UUnitActionComponent::GetActionName() const
 {
-	return FString("BaseAction");
+	return ActionName;
 }
 
 void UUnitActionComponent::TakeAction(FGrid Grid)

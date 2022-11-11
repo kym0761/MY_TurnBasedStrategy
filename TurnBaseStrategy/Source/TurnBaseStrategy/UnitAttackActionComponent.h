@@ -14,14 +14,10 @@ class TURNBASESTRATEGY_API UUnitAttackActionComponent : public UUnitActionCompon
 {
 	GENERATED_BODY()
 	
-private:
-	int a = 0;
 public:
 	UUnitAttackActionComponent();
 
 public:
-
-	virtual FString GetActionName() const override;
 
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;

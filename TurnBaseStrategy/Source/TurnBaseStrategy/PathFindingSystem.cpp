@@ -39,6 +39,7 @@ TArray<UPathNode*> UPathFindingSystem::GetPathNodeArray() const
 FGrid UPathFindingSystem::WorldToGrid(FVector WorldPosition) const
 {
 	// ?? Is Really Needed??
+	// GridManager 안에 이미 존재함.
 
 	FGrid grid;
 	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
@@ -50,6 +51,7 @@ FGrid UPathFindingSystem::WorldToGrid(FVector WorldPosition) const
 FVector UPathFindingSystem::GridToWorld(FGrid Grid) const
 {
 	// ?? Is Really Needed??
+	// GridManager 안에 이미 존재함.
 
 	FVector worldPosition;
 	worldPosition.X = Grid.X * CellSize;

@@ -192,7 +192,7 @@ bool AUnitSelectPawn::TryUnitSelect()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("UnitSelect()"));
 
-	APlayerController* playerController= UGameplayStatics::GetPlayerController(GetWorld(),0);
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (!IsValid(playerController))
 	{
 		return false;
@@ -271,9 +271,9 @@ void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* Selected)
 			OnSelectedUnitChanged.Broadcast();
 		}
 		
-		if (IsValid(SelectedUnit->GetUnitActionComponent(EUnitActionType::Attack)))
+		if (IsValid(SelectedUnit->GetUnitActionComponent(EUnitActionType::Move)))
 		{
-			SelectedAction = SelectedUnit->GetUnitActionComponent(EUnitActionType::Attack);
+			SelectedAction = SelectedUnit->GetUnitActionComponent(EUnitActionType::Move);
 			if (OnSelectedActionChanged.IsBound())
 			{
 				OnSelectedActionChanged.Broadcast();

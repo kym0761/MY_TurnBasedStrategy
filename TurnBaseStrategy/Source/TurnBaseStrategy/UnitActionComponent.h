@@ -35,6 +35,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	bool bCanAction;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	FString ActionName;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -44,7 +47,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	virtual FString GetActionName() const;
+	FString GetActionName() const;
 	virtual void TakeAction(FGrid Grid);
 	virtual bool IsValidActionGrid(FGrid Grid) const;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;

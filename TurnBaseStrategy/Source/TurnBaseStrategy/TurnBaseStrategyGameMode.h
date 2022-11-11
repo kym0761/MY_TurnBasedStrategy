@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ // Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -13,6 +13,7 @@ class ATurnBaseStrategyGameMode : public AGameModeBase
 
 public:
 	ATurnBaseStrategyGameMode();
+
 };
 
 

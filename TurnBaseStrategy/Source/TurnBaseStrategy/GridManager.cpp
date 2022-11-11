@@ -90,8 +90,6 @@ void AGridManager::CreateGridSystem()
 
 void AGridManager::RemoveAllGridVisual()
 {
-	//auto gridvisual = GetComponentsByClass(UInstancedGridVisualComponent::StaticClass());
-
 	GridVisual_Move->RemoveGridVisuals();
 	GridVisual_OK->RemoveGridVisuals();
 	GridVisual_NO->RemoveGridVisuals();
@@ -105,7 +103,6 @@ FGrid AGridManager::WorldToGrid(FVector WorldPosition)
 	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
 
 	return grid;
-	//return GridSystem->WorldToGrid(WorldPosition);
 }
 
 FVector AGridManager::GridToWorld(FGrid Grid)
@@ -115,19 +112,16 @@ FVector AGridManager::GridToWorld(FGrid Grid)
 	worldPosition.Y = Grid.Y * CellSize;
 
 	return worldPosition;
-	//return GridSystem->GridToWorld(Grid);
 }
 
 UGridObject* AGridManager::GetValidGridObject(FGrid Grid)
 {
-
 	UGridObject* gridObj = GridSystem->GetValidGridObject(Grid);
 
 	if (gridObj->GetGrid() == Grid)
 	{
 		return gridObj;
 	}
-
 
 	return nullptr;
 }
@@ -224,28 +218,33 @@ void AGridManager::ShowFromGridVisualDataArray(TArray<FGridVisualData> GridVisua
 
 TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, bool bCanIgnoreUnit)
 {
+	//return 하기 전에 PathLength를 변경시켜야함.
+
+	//openList = 이동 가능할 위치 / closeList = 이동 불가능함이 확정된 위치.
 	TArray<UPathNode*> openList;
 	TArray<UPathNode*> closeList;
 
+	//시작 위치
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
-
 	if (!IsValid(startNode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StartNode Not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("StartNode is Not Valid"));
 		PathLength = -1;
 		return TArray<FGrid>();
 	}
 
 	openList.Add(startNode);
 
+	//목표 위치
 	UPathNode* endNode = PathFindingSystem->GetValidPathNode(End);
 	if (!IsValid(endNode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EndNode Not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("EndNode is Not Valid"));
 		PathLength = -1;
 		return TArray<FGrid>();
 	}
 
+	//모든 PathNode를 초기화 한 뒤에 시작함.
 	InitAllPathFindingNodes();
 
 	startNode->SetGCost(0);
@@ -284,7 +283,7 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, 
 			//bCanIgnoreUnit이 true일 때, 유닛이 존재하는 위치는 무시.
 			//GridVisual은 여기가 아니라 MoveActionComponent에서 ValidGridVisual을 체크함.
 			//유닛 정보는 GridSystem에 접근이 필요함.
-			auto gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
+			UGridObject* gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
 			if (!bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
 				closeList.Add(nearNode);
@@ -300,7 +299,8 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, 
 				nearNode->SetHCost(CalculateGridDistance(nearNode->GetGrid(), End));
 				nearNode->CalculateFCost();
 
-				if (!openList.Contains(nearNode))
+				
+				if (!openList.Contains(nearNode)) //!! 위에서 이미 closeList에 있다면 무시됨.
 				{
 					openList.Add(nearNode);
 				}
@@ -317,9 +317,9 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, 
 
 int32 AGridManager::CalculateGridDistance(FGrid a, FGrid b)
 {
-	FGrid grid = a - b;
+	//FGrid grid = a - b;
 
-	return FMath::Abs(grid.X) + FMath::Abs(grid.Y);
+	return FMath::Abs(a.X - b.X) + FMath::Abs(a.Y - b.Y);
 }
 
 UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*> PathNodeList)
@@ -343,7 +343,7 @@ UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*> PathNodeList)
 
 TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode)
 {
-	if (!IsValid( EndNode))
+	if (!IsValid(EndNode))
 	{
 		return TArray<FGrid>();
 	}
@@ -357,6 +357,7 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode)
 		current = current->GetParentNode();
 	}
 
+	//결과를 reverse하면 올바른 방향의 경로가 나옴.
 	Algo::Reverse(gridArray);
 
 	return gridArray;
@@ -465,6 +466,7 @@ int32 AGridManager::GetPathLength(FGrid Start, FGrid End)
 void AGridManager::InitAllPathFindingNodes()
 {
 	//PathFindingGridSystem의 Grid 값을 전부 초기화.
+
 	for (int x = 0; x < X_Length; x++)
 	{
 		for (int y = 0; y < Y_Length; y++)
@@ -475,6 +477,7 @@ void AGridManager::InitAllPathFindingNodes()
 			if (!IsValid(pathNode))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
+				continue;
 			}
 
 			pathNode->SetGCost(TNumericLimits<int32>::Max());

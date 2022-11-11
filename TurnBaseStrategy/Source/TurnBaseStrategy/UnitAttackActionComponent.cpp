@@ -9,11 +9,8 @@
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {
     MaxActionRange = 1;
-}
 
-FString UUnitAttackActionComponent::GetActionName() const
-{
-    return FString("Attack");
+	ActionName = FString("Attack");
 }
 
 TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
@@ -26,7 +23,7 @@ TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 
 	if (!IsValid(gridManager))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
 		return validArray;
 	}
 
@@ -81,7 +78,7 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 
 	if (!IsValid(gridManager))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
 		return validVisualDataArray;
 	}
 
@@ -114,12 +111,6 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 				continue;
 			}
 
-			////누군가 점유중
-			//if (gridManager->HasAnyUnitOnGrid(resultGrid))
-			//{
-			//	resultData.GridVisualType = EGridVisualType::NO;
-			//}
-
 			//상대가 같은 팀 tag가 붙어있으면 스킵.
 			AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
@@ -142,5 +133,21 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 
 void UUnitAttackActionComponent::TakeAction(FGrid Grid)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Attack At : %s"), *Grid.ToString());
+	TArray<FGrid> tempArr = GetValidActionGridArray();
+	
+
+	//TODO : 데미지 주는 Animation을 Play & 데미지 처리
+
+	if (tempArr.Contains(Grid))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attack At : %s"), *Grid.ToString());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("You Selected which is Not Valid Grid. ---> Grid Pos : %s"), *Grid.ToString());
+	}
+
+
+
+	
 }

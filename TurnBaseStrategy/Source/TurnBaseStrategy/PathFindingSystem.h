@@ -29,10 +29,8 @@ public:
 
 	UPathFindingSystem();
 
-	//FGridSystem();
-	//~FGridSystem();
-	//FGridSystem(int _X_Length, int _Y_Length, float _CellSize);
 
+	//Call Order in GridManager : NewObject<>(); -> SetPathFindingSystem();
 	void SetPathFindingSystem(int _X_Length, int _Y_Length, float _CellSize,
 		TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction);
 

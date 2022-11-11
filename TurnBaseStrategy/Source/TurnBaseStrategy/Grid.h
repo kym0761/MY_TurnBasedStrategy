@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Grid.generated.h"
 /**
- * 
+ * Grid Á¤º¸
  */
 USTRUCT(BlueprintType, Blueprintable)
 struct FGrid

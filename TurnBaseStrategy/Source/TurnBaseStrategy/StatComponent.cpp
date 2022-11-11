@@ -40,7 +40,7 @@ float UStatComponent::DealDamage(float DamageAmount)
 {
 	HP = FMath::Clamp(HP - DamageAmount, 0, MaxHP);
 
-	if (HP <= 0)
+	if (HP <= 0.0f)
 	{
 		//death
 	}

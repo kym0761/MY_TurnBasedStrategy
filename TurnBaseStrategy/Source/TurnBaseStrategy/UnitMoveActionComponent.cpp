@@ -11,17 +11,14 @@
 UUnitMoveActionComponent::UUnitMoveActionComponent()
 {
 	MaxActionRange = 5;
+
+	ActionName = FString("Move");
 }
 
 void UUnitMoveActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-}
-
-FString UUnitMoveActionComponent::GetActionName() const
-{
-	return FString("Move");
 }
 
 TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
@@ -34,7 +31,7 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 	
 	if (!IsValid(gridManager))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
 		return validArray;
 	}
 
@@ -110,7 +107,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 
 	if (!IsValid(gridManager))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
 		return validVisualDataArray;
 	}
 
@@ -137,7 +134,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 			testData.Grid = resultGrid;
 			testData.GridVisualType = EGridVisualType::Move;
 
-			////지금 현재 Unit의 위치
+			//지금 현재 Unit의 위치
 			if (resultGrid == unitGrid)
 			{
 				testData.GridVisualType = EGridVisualType::Warning;
@@ -198,16 +195,38 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 
 	if (pathLength > MaxActionRange)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Not Valid MovePosition"));
+		UE_LOG(LogTemp, Warning, TEXT("it's over MaxRange to Move here."));
 		return;
 	}
+
+	if (pathLength == -1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't reach to the Target Grid. there is no Path"));
+		return;
+	}
+
+	if (!pathArray.Contains(Grid))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("You Can't Move to Invalid Grid"));
+		return;
+	}
+
 
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
 		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 	}
 
-	Cast<AAIController>(Cast<ACharacter>(GetOwner())->GetController())->MoveToLocation(gridManager->GridToWorld(pathArray.Last()));
+	//a simple temp Move Function.
+	auto aiController = Cast<AAIController>(Unit->GetController());
+	if (!IsValid(aiController))
+	{
+		return;
+	}
+	aiController->MoveToLocation(gridManager->GridToWorld(pathArray.Last()));
+	
+
+
 	gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), pathArray.Last());
 	gridManager->RemoveAllGridVisual();
 	if (OnStartMoving.IsBound())
