@@ -28,7 +28,7 @@ void AUnitManager::Tick(float DeltaTime)
 
 AUnitManager* AUnitManager::GetUnitManager()
 {
-	if (!IsValid(GEngine) || GEngine->GameViewport.IsNull())
+	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))
 	{
 		return nullptr;
 	}

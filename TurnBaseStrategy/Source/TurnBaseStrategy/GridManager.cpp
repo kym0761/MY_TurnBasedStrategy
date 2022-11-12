@@ -490,7 +490,7 @@ void AGridManager::InitAllPathFindingNodes()
 
 AGridManager* AGridManager::GetGridManager()
 {
-	if (!IsValid(GEngine) || GEngine->GameViewport.IsNull())
+	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))
 	{
 		return nullptr;
 	}

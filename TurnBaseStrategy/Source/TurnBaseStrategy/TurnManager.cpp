@@ -30,7 +30,7 @@ void ATurnManager::Tick(float DeltaTime)
 
 ATurnManager* ATurnManager::GetTurnManager()
 {
-	if (!IsValid(GEngine) || GEngine->GameViewport.IsNull())
+	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))
 	{
 		return nullptr;
 	}

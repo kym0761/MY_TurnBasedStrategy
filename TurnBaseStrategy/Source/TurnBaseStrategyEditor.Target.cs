@@ -9,6 +9,7 @@ public class TurnBaseStrategyEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.Add("TurnBaseStrategy");
+        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
+        ExtraModuleNames.Add("TurnBaseStrategy");
 	}
 }

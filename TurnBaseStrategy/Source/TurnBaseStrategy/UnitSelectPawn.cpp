@@ -297,7 +297,7 @@ UUnitActionComponent* AUnitSelectPawn::GetSelectedAction()
 
 AUnitSelectPawn* AUnitSelectPawn::GetUnitSelectPawn()
 {
-	if (!IsValid(GEngine) || GEngine->GameViewport.IsNull())
+	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))
 	{
 		return nullptr;
 	}

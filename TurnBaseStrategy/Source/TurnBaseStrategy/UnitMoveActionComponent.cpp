@@ -212,6 +212,8 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 	}
 
 
+	//~~ Move Debug.
+
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
 		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
@@ -227,6 +229,7 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 	
 
 
+	//Update Grid Data
 	gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), pathArray.Last());
 	gridManager->RemoveAllGridVisual();
 	if (OnStartMoving.IsBound())

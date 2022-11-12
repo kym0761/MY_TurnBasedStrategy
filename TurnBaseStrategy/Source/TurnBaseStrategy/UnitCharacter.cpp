@@ -6,7 +6,7 @@
 
 #include "UnitMoveActionComponent.h"
 #include "UnitAttackActionComponent.h"
-
+#include "UnitInteractActionComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "GridManager.h"
@@ -94,6 +94,10 @@ UUnitActionComponent* AUnitCharacter::GetUnitActionComponent(EUnitActionType Uni
 
 	case EUnitActionType::Attack:
 		return UnitAttackActionComponent;
+
+	case EUnitActionType::Interact:
+		return UnitInteractActionComponent;
+
 	default:
 		return nullptr;
 	}
@@ -114,6 +118,9 @@ bool AUnitCharacter::HasActionComponent(EUnitActionType UnitActionType)
 
 	case EUnitActionType::Attack:
 		return IsValid(UnitAttackActionComponent);
+
+	case EUnitActionType::Interact:
+		return IsValid(UnitInteractActionComponent);
 
 	default:
 		return false;
