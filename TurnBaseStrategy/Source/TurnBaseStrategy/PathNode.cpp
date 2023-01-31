@@ -19,17 +19,17 @@ void UPathNode::SetGrid(FGrid InGrid)
 
 }
 
-int32 UPathNode::GetGCost()
+int32 UPathNode::GetGCost() const
 {
 	return G_Cost;
 }
 
-int32 UPathNode::GetHCost()
+int32 UPathNode::GetHCost() const
 {
 	return H_Cost;
 }
 
-int32 UPathNode::GetFCost()
+int32 UPathNode::GetFCost() const
 {
 	return F_Cost;
 }
@@ -59,17 +59,17 @@ void UPathNode::SetParentNode(UPathNode* InPathNode)
 	ParentNode = InPathNode;
 }
 
-UPathNode* UPathNode::GetParentNode()
+UPathNode* UPathNode::GetParentNode() const
 {
 	return ParentNode;
 }
 
-FGrid UPathNode::GetGrid()
+FGrid UPathNode::GetGrid() const
 {
 	return Grid;
 }
 
-bool UPathNode::GetIsWalkable()
+bool UPathNode::GetIsWalkable() const
 {
 	return bIsWalkable;
 }

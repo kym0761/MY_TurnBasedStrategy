@@ -10,7 +10,7 @@ UInstancedGridVisualComponent::UInstancedGridVisualComponent()
 	SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
 }
 
-void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(TArray<FGrid> GridArray)
+void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FGrid>& GridArray)
 {
 	FTransformArrayA2 VisualTransformArray;
 
@@ -42,7 +42,7 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(TArray<FGrid> G
 
 }
 
-void UInstancedGridVisualComponent::DrawGridVisualsWithGridVisualData(FGridVisualData GridVisualData)
+void UInstancedGridVisualComponent::DrawGridVisualsWithGridVisualData(const FGridVisualData& GridVisualData)
 {
 	AGridManager* gridManager = Cast<AGridManager>(GetOwner());
 	if (!IsValid(gridManager))

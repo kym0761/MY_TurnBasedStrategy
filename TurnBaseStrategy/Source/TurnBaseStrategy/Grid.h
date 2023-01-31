@@ -18,19 +18,19 @@ public:
 	int32 X;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	int32 Y;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	int32 Height;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
+	//int32 Height;
 
 	FGrid();
 	FGrid(int32 _X, int32 _Y);
-	FGrid(int32 _X, int32 _Y, int _Height);
-	FString ToString();
-	bool operator == (const FGrid& Other);
+	//FGrid(int32 _X, int32 _Y, int _Height);
+	FString ToString() const;
+	bool operator==(const FGrid& Other);
 	friend bool operator==(const FGrid& a, const FGrid& b); // contains() function needs it!
-	bool operator != (const FGrid& Other);
+	bool operator!= (const FGrid& Other);
 	friend bool operator!=(const FGrid& a, const FGrid& b);
-	FGrid operator +(FGrid b);
-	FGrid operator -(FGrid b);
+	FGrid operator+(const FGrid& b) const;
+	FGrid operator-(const FGrid& b) const;
 };
 
 

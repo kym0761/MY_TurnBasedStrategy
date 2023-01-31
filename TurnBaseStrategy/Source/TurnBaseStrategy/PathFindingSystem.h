@@ -36,9 +36,9 @@ public:
 
 	TArray<UPathNode*> GetPathNodeArray() const;
 
-	FGrid WorldToGrid(FVector WorldPosition) const;
-	FVector GridToWorld(FGrid Grid) const;
+	FGrid WorldToGrid(const FVector& WorldPosition) const;
+	FVector GridToWorld(const FGrid& Grid) const;
 
-	UPathNode* GetValidPathNode(FGrid Grid) const;
+	UPathNode* GetValidPathNode(const FGrid& Grid) const;
 
 };

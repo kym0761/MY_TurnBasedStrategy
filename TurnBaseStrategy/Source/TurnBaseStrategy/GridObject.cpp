@@ -10,7 +10,7 @@ UGridObject::UGridObject()
 	Grid = FGrid();
 }
 
-FString UGridObject::ToString()
+FString UGridObject::ToString() const
 {
 	FString str;
 
@@ -42,12 +42,12 @@ void UGridObject::RemoveUnit(AUnitCharacter* Unit)
 	
 }
 
-bool UGridObject::HasAnyUnit()
+bool UGridObject::HasAnyUnit() const
 {
 	return UnitArray.Num() > 0;
 }
 
-AUnitCharacter* UGridObject::GetUnit()
+AUnitCharacter* UGridObject::GetUnit() const
 {
 	if (HasAnyUnit())
 	{
@@ -57,7 +57,7 @@ AUnitCharacter* UGridObject::GetUnit()
 	return nullptr;
 }
 
-TArray<AUnitCharacter*> UGridObject::GetUnitArray()
+TArray<AUnitCharacter*> UGridObject::GetUnitArray() const
 {
 	return UnitArray;
 }

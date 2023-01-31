@@ -6,8 +6,8 @@
 #include "UnitActionComponent.h"
 #include "UnitMoveActionComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartMoving);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndMoving);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartMoving);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndMoving);
 
 /**
  * 
@@ -20,12 +20,22 @@ class TURNBASESTRATEGY_API UUnitMoveActionComponent : public UUnitActionComponen
 public:
 		UUnitMoveActionComponent();
 
-		FOnStartMoving OnStartMoving;
-		FOnEndMoving OnEndMoving;
+		//FOnStartMoving OnStartMoving;
+		//FOnEndMoving OnEndMoving;
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+		FGrid Destination;
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+		bool bMoveActivate = false;
+		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+		TArray<FGrid> Path;
+
+		bool bIsMoving = false;
 protected:
 
 	virtual void BeginPlay() override;
+
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 private: 
 

@@ -12,6 +12,7 @@
 #include "GridManager.h"
 #include "TurnManager.h"
 #include "UnitSelectPawn.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AUnitCharacter::AUnitCharacter()
@@ -23,6 +24,8 @@ AUnitCharacter::AUnitCharacter()
 
 	UnitMoveActionComponent = CreateDefaultSubobject<UUnitMoveActionComponent>("UnitMoveActionComponent");
 	UnitAttackActionComponent = CreateDefaultSubobject<UUnitAttackActionComponent>("UnitAttackActionComponent");
+
+	GetCharacterMovement()->SetFixedBrakingDistance(20.0f);
 }
 
 // Called when the game starts or when spawned

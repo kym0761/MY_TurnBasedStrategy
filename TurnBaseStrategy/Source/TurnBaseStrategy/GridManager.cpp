@@ -60,7 +60,7 @@ void AGridManager::Tick(float DeltaTime)
 
 }
 
-bool AGridManager::IsValidGrid(FGrid Grid)
+bool AGridManager::IsValidGrid(const FGrid& Grid)
 {
 	return Grid.X >= 0 && Grid.Y >= 0 && Grid.X < X_Length&& Grid.Y < Y_Length;
 }
@@ -96,7 +96,7 @@ void AGridManager::RemoveAllGridVisual()
 	GridVisual_Warning->RemoveGridVisuals();
 }
 
-FGrid AGridManager::WorldToGrid(FVector WorldPosition)
+FGrid AGridManager::WorldToGrid(const FVector& WorldPosition)
 {
 	FGrid grid;
 	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
@@ -105,7 +105,7 @@ FGrid AGridManager::WorldToGrid(FVector WorldPosition)
 	return grid;
 }
 
-FVector AGridManager::GridToWorld(FGrid Grid)
+FVector AGridManager::GridToWorld(const FGrid& Grid)
 {
 	FVector worldPosition;
 	worldPosition.X = Grid.X * CellSize;
@@ -114,9 +114,14 @@ FVector AGridManager::GridToWorld(FGrid Grid)
 	return worldPosition;
 }
 
-UGridObject* AGridManager::GetValidGridObject(FGrid Grid)
+UGridObject* AGridManager::GetValidGridObject(const FGrid& Grid)
 {
 	UGridObject* gridObj = GridSystem->GetValidGridObject(Grid);
+
+	if (!IsValid(gridObj))
+	{
+		return nullptr;
+	}
 
 	if (gridObj->GetGrid() == Grid)
 	{
@@ -126,8 +131,9 @@ UGridObject* AGridManager::GetValidGridObject(FGrid Grid)
 	return nullptr;
 }
 
-void AGridManager::ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType)
+void AGridManager::ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType)
 {
+
 	TArray<FGrid> gridList;
 
 	for (int32 x = -Range; x <= Range; x++)
@@ -154,7 +160,7 @@ void AGridManager::ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVi
 	ShowFromGridArray(gridList, GridVisualType);
 }
 
-void AGridManager::ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType)
+void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType)
 {
 	UInstancedGridVisualComponent* toDraw = nullptr;
 
@@ -183,7 +189,7 @@ void AGridManager::ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType Gr
 
 }
 
-void AGridManager::ShowFromGridVisualDataArray(TArray<FGridVisualData> GridVisualDataArray)
+void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray)
 {
 	for (auto visualData : GridVisualDataArray)
 	{
@@ -216,7 +222,7 @@ void AGridManager::ShowFromGridVisualDataArray(TArray<FGridVisualData> GridVisua
 
 }
 
-TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, bool bCanIgnoreUnit)
+TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit)
 {
 	//return 하기 전에 PathLength를 변경시켜야함.
 
@@ -315,14 +321,14 @@ TArray<FGrid> AGridManager::FindPath(FGrid Start, FGrid End, int32& PathLength, 
 	return TArray<FGrid>();
 }
 
-int32 AGridManager::CalculateGridDistance(FGrid a, FGrid b)
+int32 AGridManager::CalculateGridDistance(const FGrid& a, const FGrid& b)
 {
 	//FGrid grid = a - b;
 
 	return FMath::Abs(a.X - b.X) + FMath::Abs(a.Y - b.Y);
 }
 
-UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*> PathNodeList)
+UPathNode* AGridManager::GetLowestFCostNode(const TArray<UPathNode*>& PathNodeList)
 {
 	if (PathNodeList.Num() == 0)
 	{
@@ -399,7 +405,7 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
 	return nearNodeList;
 }
 
-TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(FGrid GridValue)
+TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue)
 {
 
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
@@ -413,7 +419,7 @@ TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(FGrid GridValue)
 
 }
 
-AUnitCharacter* AGridManager::GetUnitAtGrid(FGrid GridValue)
+AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue)
 {
 	TArray<AUnitCharacter*> gridArray = GetUnitArrayAtGrid(GridValue);
 
@@ -425,7 +431,7 @@ AUnitCharacter* AGridManager::GetUnitAtGrid(FGrid GridValue)
 	return gridArray[0];
 }
 
-bool AGridManager::HasAnyUnitOnGrid(FGrid GridValue)
+bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue)
 {
 
 	auto gridObj = GridSystem->GetValidGridObject(GridValue);
@@ -437,7 +443,7 @@ bool AGridManager::HasAnyUnitOnGrid(FGrid GridValue)
 	return false;
 }
 
-bool AGridManager::HasPath(FGrid Start, FGrid End, bool bCanIgnoreUnit)
+bool AGridManager::HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit)
 {
 	int32 pathLength = 0;
 	FindPath(Start, End, pathLength, bCanIgnoreUnit);
@@ -445,7 +451,7 @@ bool AGridManager::HasPath(FGrid Start, FGrid End, bool bCanIgnoreUnit)
 	return pathLength != -1;
 }
 
-bool AGridManager::IsWalkableGrid(FGrid GridValue)
+bool AGridManager::IsWalkableGrid(const FGrid& GridValue)
 {
 	UPathNode* pathNode = PathFindingSystem->GetValidPathNode(GridValue);
 	if (IsValid(pathNode))
@@ -456,7 +462,7 @@ bool AGridManager::IsWalkableGrid(FGrid GridValue)
 	return false;
 }
 
-int32 AGridManager::GetPathLength(FGrid Start, FGrid End)
+int32 AGridManager::GetPathLength(const FGrid& Start, const FGrid& End)
 {
 	int32 pathLength = 0;
 	FindPath(Start,End, pathLength);
@@ -501,7 +507,7 @@ AGridManager* AGridManager::GetGridManager()
 	return gridManager;
 }
 
-void AGridManager::AddUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue)
+void AGridManager::AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
 {
 
 	auto gridObject = GridSystem->GetValidGridObject(GridValue);
@@ -509,13 +515,13 @@ void AGridManager::AddUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue)
 
 }
 
-void AGridManager::RemoveUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue)
+void AGridManager::RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
 {
 	auto gridObject = GridSystem->GetValidGridObject(GridValue);
 	gridObject->RemoveUnit(Unit);
 }
 
-void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, FGrid From, FGrid to)
+void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to)
 {
 	RemoveUnitAtGrid(Unit, From);
 	AddUnitAtGrid(Unit, to);

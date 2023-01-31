@@ -32,12 +32,12 @@ private:
 
 public:
 
-	FString ToString();
+	FString ToString() const;
 	void AddUnit(AUnitCharacter* Unit);
 	void RemoveUnit(AUnitCharacter* Unit);
-	bool HasAnyUnit();
-	AUnitCharacter* GetUnit();
-	TArray<AUnitCharacter*> GetUnitArray();
+	bool HasAnyUnit() const;
+	AUnitCharacter* GetUnit() const;
+	TArray<AUnitCharacter*> GetUnitArray() const;
 	void SetGrid(FGrid InGrid);
 	FGrid GetGrid() const;
 

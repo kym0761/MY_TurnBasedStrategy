@@ -31,9 +31,9 @@ private:
 public:
 
 	void SetGrid(FGrid InGrid);
-	int32 GetGCost();
-	int32 GetHCost();
-	int32 GetFCost();
+	int32 GetGCost() const;
+	int32 GetHCost() const;
+	int32 GetFCost() const;
 
 	void SetGCost(int32 Value);
 	void SetHCost(int32 Value);
@@ -42,10 +42,10 @@ public:
 	void CalculateFCost();
 
 	void SetParentNode(UPathNode* InPathNode);
-	UPathNode* GetParentNode();
+	UPathNode* GetParentNode() const;
 
-	FGrid GetGrid();
-	bool GetIsWalkable();
+	FGrid GetGrid() const;
+	bool GetIsWalkable() const;
 	void SetIsWalkable(bool InVal);
 
 

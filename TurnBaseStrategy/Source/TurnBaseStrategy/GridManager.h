@@ -72,41 +72,41 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool IsValidGrid(FGrid Grid);
+	bool IsValidGrid(const FGrid& Grid);
 
 	void CreateGridSystem();
 
 	void RemoveAllGridVisual();
 
-	FGrid WorldToGrid(FVector WorldPosition);
-	FVector GridToWorld(FGrid Grid);
+	FGrid WorldToGrid(const FVector& WorldPosition);
+	FVector GridToWorld(const FGrid& Grid);
 
-	UGridObject* GetValidGridObject(FGrid Grid);
+	UGridObject* GetValidGridObject(const FGrid& Grid);
 
-	void ShowGridRange(FGrid Grid, int32 Range, EGridVisualType GridVisualType);
-	void ShowFromGridArray(TArray<FGrid> GridArray, EGridVisualType GridVisualType);
-	void ShowFromGridVisualDataArray(TArray<FGridVisualData> GridVisualDataArray);
+	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
+	void ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType);
+	void ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray);
 
 
-	TArray<FGrid> FindPath(FGrid Start, FGrid End, int32& PathLength, bool bCanIgnoreUnit = false);
-	int32 CalculateGridDistance(FGrid a, FGrid b);
-	UPathNode* GetLowestFCostNode(TArray<UPathNode*> PathNodeList);
+	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
+	int32 CalculateGridDistance(const FGrid& a, const FGrid& b);
+	UPathNode* GetLowestFCostNode(const TArray<UPathNode*>& PathNodeList);
 	TArray<FGrid> CalculatePath(UPathNode* EndNode);
 	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode);
 
-	TArray<AUnitCharacter*> GetUnitArrayAtGrid(FGrid GridValue);
-	AUnitCharacter* GetUnitAtGrid(FGrid GridValue);
-	bool HasAnyUnitOnGrid(FGrid GridValue);
-	bool HasPath(FGrid Start, FGrid End, bool bCanIgnoreUnit = false);
-	bool IsWalkableGrid(FGrid GridValue);
-	int32 GetPathLength(FGrid Start, FGrid End);
+	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue);
+	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue);
+	bool HasAnyUnitOnGrid(const FGrid& GridValue);
+	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
+	bool IsWalkableGrid(const FGrid& GridValue);
+	int32 GetPathLength(const FGrid& Start, const FGrid& End);
 
 	void InitAllPathFindingNodes();
 
 	static AGridManager* GetGridManager();
 
-	void AddUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue);
-	void RemoveUnitAtGrid(AUnitCharacter* Unit, FGrid GridValue);
-	void MoveUnitGrid(AUnitCharacter* Unit, FGrid From, FGrid to);
+	void AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
+	void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
+	void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
 
 };

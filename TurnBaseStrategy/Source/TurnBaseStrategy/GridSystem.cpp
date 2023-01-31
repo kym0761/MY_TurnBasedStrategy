@@ -39,7 +39,7 @@ TArray<UGridObject*> UGridSystem::GetGridObjectArray() const
 	return GridObjectArray;
 }
 
-FGrid UGridSystem::WorldToGrid(FVector WorldPosition) const
+FGrid UGridSystem::WorldToGrid(const FVector& WorldPosition) const
 {
 	// ?? Is Really Needed??
 
@@ -50,7 +50,7 @@ FGrid UGridSystem::WorldToGrid(FVector WorldPosition) const
 	return grid;
 }
 
-FVector UGridSystem::GridToWorld(FGrid Grid) const
+FVector UGridSystem::GridToWorld(const FGrid& Grid) const
 {
 	// ?? Is Really Needed??
 
@@ -61,7 +61,7 @@ FVector UGridSystem::GridToWorld(FGrid Grid) const
 	return worldPosition;
 }
 
-UGridObject* UGridSystem::GetValidGridObject(FGrid Grid) const
+UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 {
 	int32 x = Grid.X;
 	int32 y = Grid.Y;

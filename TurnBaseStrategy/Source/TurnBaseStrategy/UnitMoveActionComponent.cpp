@@ -10,6 +10,8 @@
 
 UUnitMoveActionComponent::UUnitMoveActionComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+
 	MaxActionRange = 5;
 
 	ActionName = FString("Move");
@@ -18,6 +20,85 @@ UUnitMoveActionComponent::UUnitMoveActionComponent()
 void UUnitMoveActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+}
+
+// Called every frame
+void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bMoveActivate)
+	{
+		AGridManager* gridManager = AGridManager::GetGridManager();
+		if (!IsValid(gridManager))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+			return;
+		}
+
+		if (Path.Num() > 0)
+		{
+			FVector currentLocation = GetOwner()->GetActorLocation();
+			FVector worldLocation = gridManager->GridToWorld(Path[0]) + FVector(0.0f, 0.0f, currentLocation.Z);
+
+			float dist = FVector::Distance(currentLocation, worldLocation);
+
+			//UE_LOG(LogTemp, Warning, TEXT("Dist : %f"), dist);
+
+			if (FMath::IsNearlyEqual(dist, 0.0f, 50.0f))
+			{
+				Path.RemoveAt(0);
+				bIsMoving = false;
+				UE_LOG(LogTemp, Warning, TEXT("a"));
+				return;
+			}
+			else if(bIsMoving == false)
+			{
+				//a simple temp Move Function.
+				auto aiController = Cast<AAIController>(Unit->GetController());
+				if (!IsValid(aiController))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("b"));
+					return;
+				}
+
+				aiController->MoveToLocation(worldLocation, 0.0f, false);
+				bIsMoving = true;
+				UE_LOG(LogTemp, Warning, TEXT("Moving"));
+				return;
+			}
+
+		}
+		else
+		{
+			////속도가 0이 됐을 때 도착할거라 판단함.
+			//FVector velocity = GetOwner()->GetVelocity();
+			//if (!FMath::IsNearlyZero(velocity.Size()))
+			//{
+			//	return;
+			//}
+
+			FVector currentLocation = GetOwner()->GetActorLocation();
+
+			FGrid currentGrid = gridManager->WorldToGrid(currentLocation);
+			if (currentGrid == Destination)
+			{
+				//Update Grid Data
+				gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), Destination);
+				gridManager->RemoveAllGridVisual();
+				bMoveActivate = false;
+				if (OnActionEnd.IsBound())
+				{
+					OnActionEnd.Broadcast();
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Stopped."));
+				return;
+			}
+		}
+
+	}
+
 
 }
 
@@ -219,22 +300,21 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 	}
 
-	//a simple temp Move Function.
-	auto aiController = Cast<AAIController>(Unit->GetController());
-	if (!IsValid(aiController))
+	FGrid dest = pathArray.Last();
+
+	if (!gridManager->IsValidGrid(dest))
 	{
 		return;
 	}
-	aiController->MoveToLocation(gridManager->GridToWorld(pathArray.Last()));
 	
+	Destination = dest;
+	Path = pathArray;
 
-
-	//Update Grid Data
-	gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), pathArray.Last());
-	gridManager->RemoveAllGridVisual();
-	if (OnStartMoving.IsBound())
+	bMoveActivate = true;
+	if (OnActionStart.IsBound())
 	{
-		OnStartMoving.Broadcast();
+		OnActionStart.Broadcast();
 	}
+
 
 }

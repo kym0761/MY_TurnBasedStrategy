@@ -40,9 +40,9 @@ public:
 
 	TArray<UGridObject*> GetGridObjectArray() const;
 
-	FGrid WorldToGrid(FVector WorldPosition) const;
-	FVector GridToWorld(FGrid Grid) const;
+	FGrid WorldToGrid(const FVector& WorldPosition) const;
+	FVector GridToWorld(const FGrid& Grid) const;
 
-	UGridObject* GetValidGridObject(FGrid Grid) const;
+	UGridObject* GetValidGridObject(const FGrid& Grid) const;
 
 };

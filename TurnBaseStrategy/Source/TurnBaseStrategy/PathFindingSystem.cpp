@@ -36,7 +36,7 @@ TArray<UPathNode*> UPathFindingSystem::GetPathNodeArray() const
 	return PathNodeArray;
 }
 
-FGrid UPathFindingSystem::WorldToGrid(FVector WorldPosition) const
+FGrid UPathFindingSystem::WorldToGrid(const FVector& WorldPosition) const
 {
 	// ?? Is Really Needed??
 	// GridManager 안에 이미 존재함.
@@ -48,7 +48,7 @@ FGrid UPathFindingSystem::WorldToGrid(FVector WorldPosition) const
 	return grid;
 }
 
-FVector UPathFindingSystem::GridToWorld(FGrid Grid) const
+FVector UPathFindingSystem::GridToWorld(const FGrid& Grid) const
 {
 	// ?? Is Really Needed??
 	// GridManager 안에 이미 존재함.
@@ -60,7 +60,7 @@ FVector UPathFindingSystem::GridToWorld(FGrid Grid) const
 	return worldPosition;
 }
 
-UPathNode* UPathFindingSystem::GetValidPathNode(FGrid Grid) const
+UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
 {
 	int32 x = Grid.X;
 	int32 y = Grid.Y;
