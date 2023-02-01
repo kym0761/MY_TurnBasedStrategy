@@ -50,7 +50,7 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			{
 				Path.RemoveAt(0);
 				bIsMoving = false;
-				UE_LOG(LogTemp, Warning, TEXT("a"));
+				//UE_LOG(LogTemp, Warning, TEXT("a"));
 				return;
 			}
 			else if(bIsMoving == false)
@@ -59,26 +59,19 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 				auto aiController = Cast<AAIController>(Unit->GetController());
 				if (!IsValid(aiController))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("b"));
+					//UE_LOG(LogTemp, Warning, TEXT("b"));
 					return;
 				}
 
 				aiController->MoveToLocation(worldLocation, 0.0f, false);
 				bIsMoving = true;
-				UE_LOG(LogTemp, Warning, TEXT("Moving"));
+				//UE_LOG(LogTemp, Warning, TEXT("Moving"));
 				return;
 			}
 
 		}
 		else
 		{
-			////속도가 0이 됐을 때 도착할거라 판단함.
-			//FVector velocity = GetOwner()->GetVelocity();
-			//if (!FMath::IsNearlyZero(velocity.Size()))
-			//{
-			//	return;
-			//}
-
 			FVector currentLocation = GetOwner()->GetActorLocation();
 
 			FGrid currentGrid = gridManager->WorldToGrid(currentLocation);
@@ -227,7 +220,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 				testData.GridVisualType = EGridVisualType::NO;
 			}
 
-			//걸을 수 있는 위치?
+			//걸을 수 없는 위치?
 			if (!gridManager->IsWalkableGrid(resultGrid))
 			{
 				testData.GridVisualType = EGridVisualType::NO;
@@ -240,7 +233,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
 			}
 
-			//도착 가능한 위치?
+			//도착 불가능한 위치?
 			if (bisFriend &&!gridManager->HasPath(unitGrid, resultGrid,true) || !gridManager->HasPath(unitGrid, resultGrid))
 			{
 				testData.GridVisualType = EGridVisualType::NO;

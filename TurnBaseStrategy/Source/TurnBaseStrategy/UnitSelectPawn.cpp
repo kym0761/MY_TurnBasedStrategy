@@ -12,6 +12,12 @@
 #include "GridManager.h"
 #include "Grid.h"
 #include "Kismet/GameplayStatics.h"
+#include "UMG/UnitActionListWidget.h"
+#include "UMG/MainCanvasWidget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/CanvasPanel.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AUnitSelectPawn::AUnitSelectPawn()
@@ -27,6 +33,13 @@ void AUnitSelectPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MainCanvasWidget = CreateWidget<UMainCanvasWidget>(GetWorld(), UMainCanvasWidgetClass);
+	MainCanvasWidget->AddToViewport();
+
+	OnSelectedActionChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedActionChangedFunc);
+	OnSelectedUnitChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedUnitChangedFunc);
+	OnBusyChanged.AddDynamic(this, &AUnitSelectPawn::OnBusyChangedFunc);
+
 }
 
 // Called every frame
@@ -86,6 +99,11 @@ void AUnitSelectPawn::LookUp(float Value)
 
 void AUnitSelectPawn::HandleSelectAction()
 {
+	if (bIsBusy)
+	{
+		return;
+	}
+
 	bool unitSelected = TryUnitSelect();
 
 	if (unitSelected) // 유닛이 설정되었을 때
@@ -96,20 +114,31 @@ void AUnitSelectPawn::HandleSelectAction()
 			return;
 		}
 
-		if (!IsValid(SelectedAction))
+		//if (!IsValid(SelectedAction))
+		//{
+		//	UE_LOG(LogTemp, Warning, TEXT("true.. Selected Action Not Valid"));
+		//	return;
+		//}
+
+		if (IsValid(UnitActionsWidget))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("true.. Selected Action Not Valid"));
-			return;
+			UnitActionsWidget->RemoveFromParent();
 		}
 
-		auto gridarray = SelectedAction->GetValidActionGridArray();
-		AGridManager* gridManager = AGridManager::GetGridManager();
-		if (IsValid(gridManager))
-		{
-			gridManager->RemoveAllGridVisual();
-			//gridManager->ShowFromGridArray(gridarray, EGridVisualType::Warning);
-			gridManager->ShowFromGridVisualDataArray(SelectedAction->GetValidActionGridVisualDataArray());
-		}
+		UnitActionsWidget = CreateWidget<UUnitActionListWidget>(GetWorld(), UnitActionListWidgetClass);
+		MainCanvasWidget->MainCanvas->AddChild(UnitActionsWidget);
+		UnitActionsWidget->InitUnitActionsWidget(SelectedUnit);
+
+		FVector2D screenPos;
+		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(GetWorld(), 0),
+			SelectedUnit->GetActorLocation(), screenPos);
+
+		//screenPos += FVector2D(150, 250);
+
+		auto canvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(UnitActionsWidget);
+		canvasSlot->SetPosition(screenPos);
+		canvasSlot->SetSize(FVector2D(300,500));
+		canvasSlot->SetAlignment(FVector2D(0.5f,0.5f));
 
 	}
 	else // 유닛 설정이 아니라 어떤 Action을 취하고 있을 때
@@ -247,7 +276,26 @@ bool AUnitSelectPawn::TryUnitSelect()
 		if (gridManager->IsValidGrid(hitGrid))
 		{
 			auto gridUnitArr = gridManager->GetUnitArrayAtGrid(hitGrid);
-			if (gridUnitArr.Num() > 0 && gridUnitArr[0]->ActorHasTag(FName("MyUnit")))
+
+			if (gridUnitArr.Num() == 0)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Unit Num 0"));
+				return false;
+			}
+
+			if (IsValid(SelectedUnit) && SelectedUnit == gridUnitArr[0] )
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Same Unit"));
+				return true;
+			}
+
+			if (  !(gridUnitArr[0]->IsThisUnitCanAction()))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("this Unit Can't Do AnyThing."));
+				return false;
+			}
+
+			if (gridUnitArr[0]->ActorHasTag(FName("MyUnit")))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Unit Set!"));
 				SetSelectUnit(gridUnitArr[0]);
@@ -261,28 +309,44 @@ bool AUnitSelectPawn::TryUnitSelect()
 	return false;
 }
 
-void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* Selected)
+void AUnitSelectPawn::SetSelectUnit(AUnitCharacter* InputUnit)
 {
-	if (IsValid(Selected) && SelectedUnit != Selected)
+	if (!IsValid(InputUnit)
+		|| !IsValid(InputUnit) ||
+		SelectedUnit == InputUnit)
 	{
-		SelectedUnit = Selected;
-		if (OnSelectedUnitChanged.IsBound())
-		{
-			OnSelectedUnitChanged.Broadcast();
-		}
-		
-		if (IsValid(SelectedUnit->GetUnitActionComponent(EUnitActionType::Move)))
-		{
-			SelectedAction = SelectedUnit->GetUnitActionComponent(EUnitActionType::Move);
-			if (OnSelectedActionChanged.IsBound())
-			{
-				OnSelectedActionChanged.Broadcast();
-			}
-			
-			SelectedAction->OnActionStart;
-			SelectedAction->OnActionEnd;
-		}
+		return;
 	}
+
+	SelectedUnit = InputUnit;
+
+	if (OnSelectedUnitChanged.IsBound())
+	{
+		OnSelectedUnitChanged.Broadcast();
+	}
+		
+
+}
+
+void AUnitSelectPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
+{
+	if (SelectedAction == InputUnitAction)
+	{
+		return;
+	}
+
+	SelectedAction = InputUnitAction;
+
+	if (OnSelectedActionChanged.IsBound())
+	{
+		OnSelectedActionChanged.Broadcast();
+	}
+
+	if (SelectedAction->OnActionSelected.IsBound())
+	{
+		SelectedAction->OnActionSelected.Broadcast();
+	}
+
 }
 
 AUnitCharacter* AUnitSelectPawn::GetSelectedUnit()
@@ -306,5 +370,63 @@ AUnitSelectPawn* AUnitSelectPawn::GetUnitSelectPawn()
 	AUnitSelectPawn* unitSelectPawn = Cast<AUnitSelectPawn>(UGameplayStatics::GetActorOfClass(world, AUnitSelectPawn::StaticClass()));
 
 	return unitSelectPawn;
+}
+
+bool AUnitSelectPawn::GetIsBusy() const
+{
+	return bIsBusy;
+}
+
+void AUnitSelectPawn::SetIsBusy(bool InputBool)
+{
+	if (bIsBusy == InputBool)
+	{
+		return;
+	}
+
+	bIsBusy = InputBool;
+	if (OnBusyChanged.IsBound())
+	{
+		OnBusyChanged.Broadcast(InputBool);
+	}
+}
+
+void AUnitSelectPawn::DeSelect()
+{
+	SelectedUnit = nullptr;
+	SelectedAction = nullptr;
+
+	if (OnSelectedActionChanged.IsBound())
+	{
+		OnSelectedActionChanged.Broadcast();
+	}
+
+	if (OnSelectedUnitChanged.IsBound())
+	{
+		OnSelectedUnitChanged.Broadcast();
+	}
+}
+
+void AUnitSelectPawn::OnSelectedActionChangedFunc()
+{
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
+	{
+		gridManager->RemoveAllGridVisual();
+	}
+}
+
+void AUnitSelectPawn::OnSelectedUnitChangedFunc()
+{
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
+	{
+		gridManager->RemoveAllGridVisual();
+	}
+}
+
+void AUnitSelectPawn::OnBusyChangedFunc(bool InputBool)
+{
+
 }
 

@@ -11,6 +11,7 @@ class AUnitCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionSelected);
 
 UCLASS(abstract ,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TURNBASESTRATEGY_API UUnitActionComponent : public UActorComponent
@@ -23,6 +24,7 @@ public:
 
 	FOnActionStart OnActionStart;
 	FOnActionEnd OnActionEnd;
+	FOnActionSelected OnActionSelected;
 
 protected:
 
@@ -54,4 +56,13 @@ public:
 	virtual TArray<FGrid> GetValidActionGridArray() const;
 	AUnitCharacter* GetUnit() const;
 
+	bool ThisActionCanBeDo() const;
+	void SetCanAction(bool InputBool);
+
+	UFUNCTION()
+	virtual void OnActionStartFunc();
+	UFUNCTION()
+	virtual void OnActionEndFunc();
+	UFUNCTION()
+	virtual void OnActionSelectedFunc();
 };

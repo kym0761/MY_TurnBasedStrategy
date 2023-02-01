@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TURNBASESTRATEGY_API UUnitAttackActionComponent : public UUnitActionComponent
 {
 	GENERATED_BODY()
@@ -20,6 +20,6 @@ public:
 public:
 
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
-	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;
+	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
 	virtual void TakeAction(FGrid Grid) override;
 };

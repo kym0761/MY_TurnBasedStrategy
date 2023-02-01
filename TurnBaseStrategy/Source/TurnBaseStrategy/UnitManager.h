@@ -40,4 +40,5 @@ public:
 	TArray<AUnitCharacter*> GetUnitArray();
 	TArray<AUnitCharacter*> GetFriendlyUnitArray();
 	TArray<AUnitCharacter*> GetEnemyUnitArray();
+
 };

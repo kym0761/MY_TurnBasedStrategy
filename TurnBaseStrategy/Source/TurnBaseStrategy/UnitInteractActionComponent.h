@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TURNBASESTRATEGY_API UUnitInteractActionComponent : public UUnitActionComponent
 {
 	GENERATED_BODY()
@@ -18,7 +18,15 @@ public:
 
 	UUnitInteractActionComponent();
 
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
-	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;
+	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
 	virtual void TakeAction(FGrid Grid) override;
 };

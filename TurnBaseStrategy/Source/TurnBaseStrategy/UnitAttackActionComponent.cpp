@@ -147,7 +147,10 @@ void UUnitAttackActionComponent::TakeAction(FGrid Grid)
 		UE_LOG(LogTemp, Warning, TEXT("You Selected which is Not Valid Grid. ---> Grid Pos : %s"), *Grid.ToString());
 	}
 
-
+	if (OnActionEnd.IsBound())
+	{
+		OnActionEnd.Broadcast();
+	}
 
 	
 }

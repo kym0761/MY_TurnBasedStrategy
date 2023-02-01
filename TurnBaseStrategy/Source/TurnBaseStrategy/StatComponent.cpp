@@ -15,6 +15,15 @@ UStatComponent::UStatComponent()
 	HP = 100;
 	MaxHP = 100;
 
+
+	STR = 5;
+	INT = 5;
+	SPD = 5;
+	SKL = 5;
+	LUK = 5;
+	DEF = 5;
+	RES = 5;
+
 }
 
 

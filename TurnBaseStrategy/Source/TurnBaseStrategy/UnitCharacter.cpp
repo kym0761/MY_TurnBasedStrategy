@@ -7,6 +7,7 @@
 #include "UnitMoveActionComponent.h"
 #include "UnitAttackActionComponent.h"
 #include "UnitInteractActionComponent.h"
+#include "WaitActionComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "GridManager.h"
@@ -24,6 +25,7 @@ AUnitCharacter::AUnitCharacter()
 
 	UnitMoveActionComponent = CreateDefaultSubobject<UUnitMoveActionComponent>("UnitMoveActionComponent");
 	UnitAttackActionComponent = CreateDefaultSubobject<UUnitAttackActionComponent>("UnitAttackActionComponent");
+	WaitActionComponent = CreateDefaultSubobject<UWaitActionComponent>("WaitActionComponent");
 
 	GetCharacterMovement()->SetFixedBrakingDistance(20.0f);
 }
@@ -140,5 +142,29 @@ void AUnitCharacter::OnSelectedUnitChanged()
 			UE_LOG(LogTemp, Warning, TEXT("OnSelectedUnitChanged -> %s"), *GetActorLabel());
 		}
 	}
+}
+
+bool AUnitCharacter::IsThisUnitCanAction() const
+{
+	TArray<UActorComponent*> unitActions;
+	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
+
+	for (auto unitAction : unitActions)
+	{
+		auto unitAction_Cast =
+			Cast<UUnitActionComponent>(unitAction);
+
+		if (!IsValid(unitAction_Cast))
+		{
+			continue;
+		}
+
+		if (unitAction_Cast->ThisActionCanBeDo())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 

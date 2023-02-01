@@ -10,6 +10,16 @@ UUnitInteractActionComponent::UUnitInteractActionComponent()
 	ActionName = FString("Interact");
 }
 
+void UUnitInteractActionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void UUnitInteractActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
 TArray<FGrid> UUnitInteractActionComponent::GetValidActionGridArray() const
 {
 	return TArray<FGrid>();

@@ -10,10 +10,11 @@
 class UFloatingPawnMovement;
 class AUnitCharacter;
 class UUnitActionComponent;
+class UUnitActionListWidget;
+class UMainCanvasWidget;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedUnitChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedActionChanged);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBusyChanged, bool, bIsBusy);
 
 UCLASS()
@@ -27,6 +28,21 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UFloatingPawnMovement* PawnMovement;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UMG")
+		TSubclassOf<UUnitActionListWidget> UnitActionListWidgetClass;
+
+	UPROPERTY()
+	UUnitActionListWidget* UnitActionsWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UMG")
+		TSubclassOf<UMainCanvasWidget> UMainCanvasWidgetClass;
+
+	UPROPERTY()
+	UMainCanvasWidget* MainCanvasWidget;
+
+	UPROPERTY()
+		bool bIsBusy;
 
 	FOnSelectedActionChanged OnSelectedActionChanged;
 	FOnSelectedUnitChanged OnSelectedUnitChanged;
@@ -62,12 +78,25 @@ public:
 
 	bool TryUnitSelect();
 
-	void SetSelectUnit(AUnitCharacter* Selected);
+	void SetSelectUnit(AUnitCharacter* InputUnit);
+	void SetSelectedAction(UUnitActionComponent* InputUnitAction);
 
 	UFUNCTION(BlueprintCallable)
-	AUnitCharacter* GetSelectedUnit();
+		AUnitCharacter* GetSelectedUnit();
 	UFUNCTION(BlueprintCallable)
-	UUnitActionComponent* GetSelectedAction();
+		UUnitActionComponent* GetSelectedAction();
 
 	static AUnitSelectPawn* GetUnitSelectPawn();
+
+	bool GetIsBusy() const;
+	void SetIsBusy(bool InputBool);
+
+	void DeSelect();
+
+	UFUNCTION()
+		void OnSelectedActionChangedFunc();
+	UFUNCTION()
+		void OnSelectedUnitChangedFunc();
+	UFUNCTION()
+		void OnBusyChangedFunc(bool InputBool);
 };

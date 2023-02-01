@@ -54,3 +54,4 @@ TArray<AUnitCharacter*> AUnitManager::GetEnemyUnitArray()
 	return EnemyUnitArray;
 }
 
+

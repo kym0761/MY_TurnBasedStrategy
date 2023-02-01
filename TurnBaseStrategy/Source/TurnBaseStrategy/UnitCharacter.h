@@ -13,6 +13,7 @@ class UUnitMoveActionComponent;
 class UUnitActionComponent;
 class UUnitAttackActionComponent;
 class UUnitInteractActionComponent;
+class UWaitActionComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDead);
@@ -41,6 +42,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UUnitInteractActionComponent* UnitInteractActionComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		UWaitActionComponent* WaitActionComponent;
 
 	FOnUnitSpawned OnUnitSpawned;
 	FOnUnitDead OnUnitDead;
@@ -80,5 +84,8 @@ public:
 
 	UFUNCTION()
 		void OnSelectedUnitChanged();
+
+
+	bool IsThisUnitCanAction() const;
 
 };
