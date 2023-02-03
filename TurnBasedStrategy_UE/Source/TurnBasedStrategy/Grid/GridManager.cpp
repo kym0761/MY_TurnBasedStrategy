@@ -9,7 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PathFindingSystem.h"
 #include "GridSystem.h"
-#include "UnitCharacter.h"
+#include "../UnitCharacter.h"
 
 // Sets default values
 AGridManager::AGridManager()

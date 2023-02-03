@@ -4,10 +4,10 @@
 #include "ActionSelectButtonWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "../UnitActionComponent.h"
+#include "../UnitAction/UnitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../UnitSelectPawn.h"
-#include "../GridManager.h"
+#include "../Grid/GridManager.h"
 
 void UActionSelectButtonWidget::InitActionSelectButton(UUnitActionComponent* InputAction)
 {

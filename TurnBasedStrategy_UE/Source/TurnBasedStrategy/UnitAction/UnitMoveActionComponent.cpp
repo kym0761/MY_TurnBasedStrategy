@@ -2,9 +2,9 @@
 
 
 #include "UnitMoveActionComponent.h"
-#include "UnitCharacter.h"
+#include "../UnitCharacter.h"
 
-#include "GridManager.h"
+#include "../Grid/GridManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "AIController.h"
 

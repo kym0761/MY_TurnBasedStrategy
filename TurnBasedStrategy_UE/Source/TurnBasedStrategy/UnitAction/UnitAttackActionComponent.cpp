@@ -2,8 +2,8 @@
 
 
 #include "UnitAttackActionComponent.h"
-#include "UnitCharacter.h"
-#include "GridManager.h"
+#include "../UnitCharacter.h"
+#include "../Grid/GridManager.h"
 
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()

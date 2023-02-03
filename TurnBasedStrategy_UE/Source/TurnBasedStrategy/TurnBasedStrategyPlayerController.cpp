@@ -9,11 +9,11 @@
 #include "Engine/World.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "GridManager.h"
+#include "Grid/GridManager.h"
 
 
 #include "DrawDebugHelpers.h"// draw line
-#include "GridObject.h"
+#include "Grid/GridObject.h"
 
 ATurnBasedStrategyPlayerController::ATurnBasedStrategyPlayerController()
 {

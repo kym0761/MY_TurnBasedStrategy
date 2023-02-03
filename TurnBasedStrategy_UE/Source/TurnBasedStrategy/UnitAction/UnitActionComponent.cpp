@@ -2,9 +2,9 @@
 
 
 #include "UnitActionComponent.h"
-#include "UnitCharacter.h"
+#include "../UnitCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "UnitSelectPawn.h"
+#include "../UnitSelectPawn.h"
 
 
 // Sets default values for this component's properties

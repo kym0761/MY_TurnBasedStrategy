@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Grid.h"
-#include "UnitAction.h"
+#include "Grid/Grid.h"
+#include "UnitAction/UnitAction.h"
 #include "UnitCharacter.generated.h"
 
 class UStatComponent;

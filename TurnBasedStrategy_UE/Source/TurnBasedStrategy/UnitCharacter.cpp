@@ -4,13 +4,13 @@
 #include "UnitCharacter.h"
 #include "StatComponent.h"
 
-#include "UnitMoveActionComponent.h"
-#include "UnitAttackActionComponent.h"
-#include "UnitInteractActionComponent.h"
-#include "WaitActionComponent.h"
+#include "UnitAction/UnitMoveActionComponent.h"
+#include "UnitAction/UnitAttackActionComponent.h"
+#include "UnitAction/UnitInteractActionComponent.h"
+#include "UnitAction/WaitActionComponent.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "GridManager.h"
+#include "Grid/GridManager.h"
 #include "TurnManager.h"
 #include "UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"

@@ -8,9 +8,9 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "UnitCharacter.h"
 
-#include "UnitMoveActionComponent.h"
-#include "GridManager.h"
-#include "Grid.h"
+#include "UnitAction/UnitMoveActionComponent.h"
+#include "Grid/GridManager.h"
+#include "Grid/Grid.h"
 #include "Kismet/GameplayStatics.h"
 #include "UMG/UnitActionListWidget.h"
 #include "UMG/MainCanvasWidget.h"
