@@ -29,7 +29,14 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 			continue;
 		}
 
-		if (!unitAction_Cast->ThisActionCanBeDo())
+		//이 액션이 이번 턴에 사용이 가능한지
+		if (!unitAction_Cast->IsCanDoActionThisTurn())
+		{
+			continue;
+		}
+
+		//이 액션이 현재 위치에서 사용가능한 칸이 존재하는지
+		if (!unitAction_Cast->IsCurrentlyAvailableAction())
 		{
 			continue;
 		}

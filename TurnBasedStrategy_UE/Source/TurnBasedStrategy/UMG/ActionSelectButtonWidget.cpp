@@ -50,7 +50,6 @@ void UActionSelectButtonWidget::OnButtonClicked()
 	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
 	pawn->SetSelectedAction(UnitAction);
 
-	auto gridarray = UnitAction->GetValidActionGridArray();
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (IsValid(gridManager))
 	{

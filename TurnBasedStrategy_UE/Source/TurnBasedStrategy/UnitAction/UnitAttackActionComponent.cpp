@@ -13,6 +13,12 @@ UUnitAttackActionComponent::UUnitAttackActionComponent()
 	ActionName = FString("Attack");
 }
 
+void UUnitAttackActionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
 TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 {
 	TArray<FGrid> validArray;
@@ -54,7 +60,7 @@ TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 
 			//상대가 같은 팀 tag가 붙어있으면 스킵.
 			AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
+			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 			{
 				continue;
 			}
@@ -113,7 +119,7 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 
 			//상대가 같은 팀 tag가 붙어있으면 스킵.
 			AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
+			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 			{
 				continue;
 			}
@@ -153,4 +159,31 @@ void UUnitAttackActionComponent::TakeAction(FGrid Grid)
 	}
 
 	
+}
+
+void UUnitAttackActionComponent::OnActionStartFunc()
+{
+	Super::OnActionStartFunc();
+}
+
+void UUnitAttackActionComponent::OnActionEndFunc()
+{
+	Super::OnActionEndFunc();
+
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		return;
+	}
+
+	gridManager->RemoveAllGridVisual();
+
+}
+
+void UUnitAttackActionComponent::OnActionSelectedFunc()
+{
+	Super::OnActionSelectedFunc();
 }

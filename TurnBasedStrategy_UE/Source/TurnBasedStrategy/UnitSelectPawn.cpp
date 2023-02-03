@@ -18,6 +18,8 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+
 
 // Sets default values
 AUnitSelectPawn::AUnitSelectPawn()
@@ -46,6 +48,49 @@ void AUnitSelectPawn::BeginPlay()
 void AUnitSelectPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (PawnMode != EPawnMode::Action)
+	{
+		return;
+	}
+
+	FHitResult hit;
+	bool result = TraceToGrid(hit);
+
+	if (result)
+	{
+		FVector hitLocation = hit.Location;
+
+		AGridManager* gridManager = AGridManager::GetGridManager();
+		if (!IsValid(gridManager))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+			return;
+		}
+
+		FGrid grid = gridManager->WorldToGrid(hitLocation);
+
+		if (!gridManager->IsValidGrid(grid))
+		{
+			return;
+		}
+
+		if (IsValid(SelectedAction))
+		{
+			auto gridArray = SelectedAction->GetValidActionGridArray();
+			if (gridArray.Contains(grid))
+			{
+				FVector unitLoc = SelectedAction->GetOwner()->GetActorLocation();
+				FVector hitLoc = gridManager->GridToWorld(grid);
+				hitLoc.Z = unitLoc.Z;
+				FRotator look = UKismetMathLibrary::FindLookAtRotation(unitLoc, hitLoc);
+				
+				SelectedAction->GetOwner()->SetActorRotation(look);
+			}
+		}
+
+	}
+
 
 }
 
@@ -104,6 +149,70 @@ void AUnitSelectPawn::HandleSelectAction()
 		return;
 	}
 
+	switch (PawnMode)
+	{
+	case EPawnMode::Selection:
+
+		DoSelection();
+
+		break;
+	case EPawnMode::Action:
+
+		DoAction();
+
+		break;
+	default:
+
+		break;
+	}
+
+
+}
+
+bool AUnitSelectPawn::TraceToGrid(FHitResult& OutHit)
+{
+
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!IsValid(playerController))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("false.. Player Controller Not Valid"));
+		return false;
+	}
+
+	FVector loc;
+	FVector rot;
+	playerController->DeprojectMousePositionToWorld(loc, rot);
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> objects;
+
+	objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
+	//objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
+	TArray<AActor*> ignores;
+	//ignores.Add(this);
+
+	//GetWorld()->LineTraceSingleByChannel(hit, loc, loc + rot * 1000, ECollisionChannel::ECC_Visibility);
+	bool result = UKismetSystemLibrary::LineTraceSingleForObjects(
+		GetWorld(),
+		loc,
+		loc + rot * 10000,
+		objects,
+		true,
+		ignores,
+		EDrawDebugTrace::None,
+		//EDrawDebugTrace::ForDuration,
+		OutHit,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Blue,
+		5.0f
+	);
+
+
+	return result;
+}
+
+void AUnitSelectPawn::DoSelection()
+{
 	bool unitSelected = TryUnitSelect();
 
 	if (unitSelected) // 유닛이 설정되었을 때
@@ -137,89 +246,58 @@ void AUnitSelectPawn::HandleSelectAction()
 
 		auto canvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(UnitActionsWidget);
 		canvasSlot->SetPosition(screenPos);
-		canvasSlot->SetSize(FVector2D(300,500));
-		canvasSlot->SetAlignment(FVector2D(0.5f,0.5f));
+		canvasSlot->SetSize(FVector2D(300, 500));
+		canvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
 
 	}
-	else // 유닛 설정이 아니라 어떤 Action을 취하고 있을 때
+}
+
+void AUnitSelectPawn::DoAction()
+{
+	if (!IsValid(SelectedUnit))
 	{
-		if (!IsValid(SelectedUnit))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("false.. Selected Unit Not Valid"));
-			return;
-		}
-
-		if (!IsValid(SelectedAction))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("false.. Selected Action Not Valid"));
-			return;
-		}
-
-		APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-		if (!IsValid(playerController))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("false.. Player Controller Not Valid"));
-			return;
-		}
-
-		FVector loc;
-		FVector rot;
-		playerController->DeprojectMousePositionToWorld(loc, rot);
-
-		TArray<TEnumAsByte<EObjectTypeQuery>> objects;
-
-		objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldStatic));
-		//objects.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic));
-		TArray<AActor*> ignores;
-		//ignores.Add(this);
-
-		FHitResult hit;
-		GetWorld()->LineTraceSingleByChannel(hit, loc, loc + rot * 1000, ECollisionChannel::ECC_Visibility);
-		bool result = UKismetSystemLibrary::LineTraceSingleForObjects(
-			GetWorld(),
-			loc,
-			loc + rot * 10000,
-			objects,
-			true,
-			ignores,
-			//EDrawDebugTrace::None,
-			EDrawDebugTrace::ForDuration,
-			hit,
-			true,
-			FLinearColor::Red,
-			FLinearColor::Blue,
-			5.0f
-		);
-
-		if (result)
-		{
-			FVector hitLocation = hit.Location;
-
-			AGridManager* gridManager = AGridManager::GetGridManager();
-			if (!IsValid(gridManager))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
-				return;
-			}
-
-			FGrid grid = gridManager->WorldToGrid(hitLocation);
-
-			if (!gridManager->IsValidGrid(grid))
-			{
-				return;
-			}
-
-			SelectedAction->TakeAction(grid);
-		}
-
+		UE_LOG(LogTemp, Warning, TEXT("false.. Selected Unit Not Valid"));
+		return;
 	}
 
+	if (!IsValid(SelectedAction))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("false.. Selected Action Not Valid"));
+		return;
+	}
 
+	FHitResult hit;
+	bool result = TraceToGrid(hit);
+
+	if (result)
+	{
+		FVector hitLocation = hit.Location;
+
+		AGridManager* gridManager = AGridManager::GetGridManager();
+		if (!IsValid(gridManager))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+			return;
+		}
+
+		FGrid grid = gridManager->WorldToGrid(hitLocation);
+
+		if (!gridManager->IsValidGrid(grid))
+		{
+			return;
+		}
+
+		SelectedAction->TakeAction(grid);
+	}
+}
+
+void AUnitSelectPawn::SetPawnMode(EPawnMode InputMode)
+{
+	PawnMode = InputMode;
 }
 
 bool AUnitSelectPawn::TryUnitSelect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("UnitSelect()"));
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (!IsValid(playerController))
@@ -253,8 +331,8 @@ bool AUnitSelectPawn::TryUnitSelect()
 		objects,
 		true,
 		ignores,
-		//EDrawDebugTrace::None,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
+		//EDrawDebugTrace::ForDuration,
 		hit,
 		true,
 		FLinearColor::Red,

@@ -16,7 +16,7 @@ UUnitActionComponent::UUnitActionComponent()
 
 	// ...
 	MaxActionRange = 0;
-	bCanAction = true;
+	bCanDoActionThisTurn = true;
 
 	ActionName = FString("BaseAction");
 
@@ -54,7 +54,11 @@ FString UUnitActionComponent::GetActionName() const
 void UUnitActionComponent::TakeAction(FGrid Grid)
 {
 	//Do Nothing?
-	return;
+
+	if (OnActionEnd.IsBound())
+	{
+		OnActionEnd.Broadcast();
+	}
 }
 
 bool UUnitActionComponent::IsValidActionGrid(FGrid Grid) const
@@ -70,14 +74,12 @@ TArray<FGridVisualData> UUnitActionComponent::GetValidActionGridVisualDataArray(
 	TArray<FGridVisualData> temp;
 	temp.Add(data);
 
-	return temp;
+	return TArray<FGridVisualData>();
 }
 
 TArray<FGrid> UUnitActionComponent::GetValidActionGridArray() const
 {
-	TArray<FGrid> temp;
-	temp.Add(Unit->GetGrid());
-	return temp;
+	return TArray<FGrid>();
 }
 
 AUnitCharacter* UUnitActionComponent::GetUnit() const
@@ -85,20 +87,31 @@ AUnitCharacter* UUnitActionComponent::GetUnit() const
 	return Unit;
 }
 
-bool UUnitActionComponent::ThisActionCanBeDo() const
+bool UUnitActionComponent::IsCanDoActionThisTurn() const
 {
-	return bCanAction;
+	return bCanDoActionThisTurn;
 }
 
-void UUnitActionComponent::SetCanAction(bool InputBool)
+bool UUnitActionComponent::IsCurrentlyAvailableAction() const
 {
-	bCanAction = InputBool;
+	if (ActionName != "Wait")
+	{
+		return GetValidActionGridArray().Num() != 0;
+	}
+
+	return true;
+}
+
+void UUnitActionComponent::SetCanDoActionThisTurn(bool InputBool)
+{
+	bCanDoActionThisTurn = InputBool;
 }
 
 void UUnitActionComponent::OnActionStartFunc()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	pawn->SetPawnMode(EPawnMode::Busy);
 	pawn->SetIsBusy(true);
 }
 
@@ -106,13 +119,16 @@ void UUnitActionComponent::OnActionEndFunc()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	pawn->SetPawnMode(EPawnMode::Selection);
 	pawn->SetIsBusy(false);
-
-	bCanAction = false;
+	pawn->DeSelect();
+	SetCanDoActionThisTurn(false);
 }
 
 void UUnitActionComponent::OnActionSelectedFunc()
 {
-
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	pawn->SetPawnMode(EPawnMode::Action);
 }
 

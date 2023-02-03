@@ -35,7 +35,7 @@ protected:
 	int32 MaxActionRange;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-	bool bCanAction;
+	bool bCanDoActionThisTurn;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	FString ActionName;
@@ -56,8 +56,9 @@ public:
 	virtual TArray<FGrid> GetValidActionGridArray() const;
 	AUnitCharacter* GetUnit() const;
 
-	bool ThisActionCanBeDo() const;
-	void SetCanAction(bool InputBool);
+	bool IsCanDoActionThisTurn() const;
+	void SetCanDoActionThisTurn(bool InputBool);
+	bool IsCurrentlyAvailableAction() const;
 
 	UFUNCTION()
 	virtual void OnActionStartFunc();

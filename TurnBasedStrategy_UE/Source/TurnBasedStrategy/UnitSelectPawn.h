@@ -17,6 +17,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedUnitChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedActionChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBusyChanged, bool, bIsBusy);
 
+UENUM(BlueprintType)
+enum class EPawnMode : uint8
+{
+	Selection UMETA(DisplayName = "Selection"),
+	Action UMETA(DisplayName = "Action"),
+	Busy UMETA(DisplayName = "Busy")
+};
+
+
 UCLASS()
 class TURNBASEDSTRATEGY_API AUnitSelectPawn : public APawn
 {
@@ -43,6 +52,9 @@ public:
 
 	UPROPERTY()
 		bool bIsBusy;
+
+	UPROPERTY()
+		EPawnMode PawnMode = EPawnMode::Selection;
 
 	FOnSelectedActionChanged OnSelectedActionChanged;
 	FOnSelectedUnitChanged OnSelectedUnitChanged;
@@ -75,6 +87,14 @@ public:
 	void LookUp(float Value);
 
 	void HandleSelectAction();
+
+	bool TraceToGrid(FHitResult &OutHit);
+
+	void DoSelection();
+	void DoAction();
+
+	void SetPawnMode(EPawnMode InputMode);
+
 
 	bool TryUnitSelect();
 

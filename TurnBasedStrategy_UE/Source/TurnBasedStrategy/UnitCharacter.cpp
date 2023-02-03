@@ -25,6 +25,7 @@ AUnitCharacter::AUnitCharacter()
 
 	UnitMoveActionComponent = CreateDefaultSubobject<UUnitMoveActionComponent>("UnitMoveActionComponent");
 	UnitAttackActionComponent = CreateDefaultSubobject<UUnitAttackActionComponent>("UnitAttackActionComponent");
+	UnitInteractActionComponent = CreateDefaultSubobject<UUnitInteractActionComponent>("UnitInteractActionComponent");
 	WaitActionComponent = CreateDefaultSubobject<UWaitActionComponent>("WaitActionComponent");
 
 	GetCharacterMovement()->SetFixedBrakingDistance(20.0f);
@@ -159,7 +160,7 @@ bool AUnitCharacter::IsThisUnitCanAction() const
 			continue;
 		}
 
-		if (unitAction_Cast->ThisActionCanBeDo())
+		if (unitAction_Cast->IsCanDoActionThisTurn())
 		{
 			return true;
 		}

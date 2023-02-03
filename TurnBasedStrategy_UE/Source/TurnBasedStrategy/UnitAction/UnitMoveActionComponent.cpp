@@ -50,16 +50,14 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			{
 				Path.RemoveAt(0);
 				bIsMoving = false;
-				//UE_LOG(LogTemp, Warning, TEXT("a"));
 				return;
 			}
 			else if(bIsMoving == false)
 			{
 				//a simple temp Move Function.
-				auto aiController = Cast<AAIController>(Unit->GetController());
+				AAIController* aiController = Cast<AAIController>(Unit->GetController());
 				if (!IsValid(aiController))
 				{
-					//UE_LOG(LogTemp, Warning, TEXT("b"));
 					return;
 				}
 
@@ -73,14 +71,11 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		else
 		{
 			FVector currentLocation = GetOwner()->GetActorLocation();
-
 			FGrid currentGrid = gridManager->WorldToGrid(currentLocation);
+
+			//현재 위치가 목적지면 멈추어야함.
 			if (currentGrid == Destination)
 			{
-				//Update Grid Data
-				gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), Destination);
-				gridManager->RemoveAllGridVisual();
-				bMoveActivate = false;
 				if (OnActionEnd.IsBound())
 				{
 					OnActionEnd.Broadcast();
@@ -115,7 +110,6 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
 		{
 			FGrid offsetGrid = FGrid(x, y);
-
 			FGrid resultGrid = unitGrid + offsetGrid;
 
 
@@ -303,11 +297,37 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 	Destination = dest;
 	Path = pathArray;
 
-	bMoveActivate = true;
 	if (OnActionStart.IsBound())
 	{
 		OnActionStart.Broadcast();
 	}
 
 
+}
+
+void UUnitMoveActionComponent::OnActionStartFunc()
+{
+	Super::OnActionStartFunc();
+
+	bMoveActivate = true;
+}
+
+void UUnitMoveActionComponent::OnActionEndFunc()
+{
+	Super::OnActionEndFunc();
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	//Update Grid Data
+	gridManager->MoveUnitGrid(Unit, Unit->GetGrid(), Destination);
+	gridManager->RemoveAllGridVisual();
+
+	bMoveActivate = false;
+
+
+}
+
+void UUnitMoveActionComponent::OnActionSelectedFunc()
+{
+	Super::OnActionSelectedFunc();
 }

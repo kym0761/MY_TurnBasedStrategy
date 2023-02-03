@@ -17,9 +17,17 @@ class TURNBASEDSTRATEGY_API UUnitAttackActionComponent : public UUnitActionCompo
 public:
 	UUnitAttackActionComponent();
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
 	virtual void TakeAction(FGrid Grid) override;
+
+	virtual void OnActionStartFunc() override;
+	virtual void OnActionEndFunc() override;
+	virtual void OnActionSelectedFunc() override;
+
 };

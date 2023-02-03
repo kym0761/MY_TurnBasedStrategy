@@ -7,7 +7,9 @@
 
 UWaitActionComponent::UWaitActionComponent()
 {
-	ActionName = "Wait";
+	ActionName = TEXT("Wait");
+
+	MaxActionRange = -1;
 }
 
 void UWaitActionComponent::BeginPlay()
@@ -25,9 +27,9 @@ void UWaitActionComponent::TakeAction(FGrid Grid)
 	TArray<UActorComponent*> unitActions;
 	GetOwner()->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
 
-	for (auto unitAction : unitActions)
+	for (UActorComponent* unitAction : unitActions)
 	{
-		auto unitAction_Cast =
+		UUnitActionComponent* unitAction_Cast =
 			Cast<UUnitActionComponent>(unitAction);
 
 		if (!IsValid(unitAction_Cast))
@@ -35,17 +37,17 @@ void UWaitActionComponent::TakeAction(FGrid Grid)
 			continue;
 		}
 
-		unitAction_Cast->SetCanAction(false);
+		unitAction_Cast->SetCanDoActionThisTurn(false);
 	}
 
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	pawn->DeSelect();
+	//APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	//pawn->DeSelect();
 
-	//if (OnActionEnd.IsBound())
-	//{
-	//	OnActionEnd.Broadcast();
-	//}
+	if (OnActionEnd.IsBound())
+	{
+		OnActionEnd.Broadcast();
+	}
 
 }
 
