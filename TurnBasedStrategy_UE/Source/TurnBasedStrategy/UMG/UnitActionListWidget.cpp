@@ -17,11 +17,10 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 	TArray<UActorComponent*> unitActions;
 
 	SelectedCharacter->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
-	//auto unitActions = SelectedCharacter->GetComponentsByClass(UUnitActionComponent::StaticClass());
 
-	for (auto* unitAction : unitActions)
+	for (UActorComponent* unitAction : unitActions)
 	{
-		auto unitAction_Cast=
+		UUnitActionComponent* unitAction_Cast=
 		Cast<UUnitActionComponent>(unitAction);
 
 		if (!IsValid(unitAction_Cast))
@@ -41,7 +40,7 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 			continue;
 		}
 
-		auto buttonWidget = CreateWidget<UActionSelectButtonWidget>(GetWorld(), ChooseActionButtonWidgetClass);
+		UActionSelectButtonWidget* buttonWidget = CreateWidget<UActionSelectButtonWidget>(GetWorld(), ChooseActionButtonWidgetClass);
 		
 		if (!IsValid(buttonWidget))
 		{

@@ -42,55 +42,14 @@ void AUnitSelectPawn::BeginPlay()
 	OnSelectedUnitChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedUnitChangedFunc);
 	OnBusyChanged.AddDynamic(this, &AUnitSelectPawn::OnBusyChangedFunc);
 
+	//GetWorldTimerManager().SetTimer(TraceTimer, this, &AUnitSelectPawn::UnitLook, 0.12f, true);
+
 }
 
 // Called every frame
 void AUnitSelectPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (PawnMode != EPawnMode::Action)
-	{
-		return;
-	}
-
-	FHitResult hit;
-	bool result = TraceToGrid(hit);
-
-	if (result)
-	{
-		FVector hitLocation = hit.Location;
-
-		AGridManager* gridManager = AGridManager::GetGridManager();
-		if (!IsValid(gridManager))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
-			return;
-		}
-
-		FGrid grid = gridManager->WorldToGrid(hitLocation);
-
-		if (!gridManager->IsValidGrid(grid))
-		{
-			return;
-		}
-
-		if (IsValid(SelectedAction))
-		{
-			auto gridArray = SelectedAction->GetValidActionGridArray();
-			if (gridArray.Contains(grid))
-			{
-				FVector unitLoc = SelectedAction->GetOwner()->GetActorLocation();
-				FVector hitLoc = gridManager->GridToWorld(grid);
-				hitLoc.Z = unitLoc.Z;
-				FRotator look = UKismetMathLibrary::FindLookAtRotation(unitLoc, hitLoc);
-				
-				SelectedAction->GetOwner()->SetActorRotation(look);
-			}
-		}
-
-	}
-
 
 }
 
@@ -209,6 +168,31 @@ bool AUnitSelectPawn::TraceToGrid(FHitResult& OutHit)
 
 
 	return result;
+}
+
+void AUnitSelectPawn::OnTracedGridChanged()
+{
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+		return;
+	}
+
+	if (IsValid(SelectedAction))
+	{
+		auto gridArray = SelectedAction->GetValidActionGridArray();
+		if (gridArray.Contains(CurrentTracedGrid))
+		{
+			FVector unitLoc = SelectedAction->GetOwner()->GetActorLocation();
+			FVector hitLoc = gridManager->GridToWorld(CurrentTracedGrid);
+			hitLoc.Z = unitLoc.Z;
+			FRotator look = UKismetMathLibrary::FindLookAtRotation(unitLoc, hitLoc);
+
+			SelectedAction->GetOwner()->SetActorRotation(look);
+		}
+	}
 }
 
 void AUnitSelectPawn::DoSelection()
@@ -506,5 +490,39 @@ void AUnitSelectPawn::OnSelectedUnitChangedFunc()
 void AUnitSelectPawn::OnBusyChangedFunc(bool InputBool)
 {
 
+}
+
+void AUnitSelectPawn::UnitLook()
+{
+	if (PawnMode == EPawnMode::Action)
+	{
+		FHitResult hit;
+		bool result = TraceToGrid(hit);
+
+		if (result)
+		{
+			FVector hitLocation = hit.Location;
+
+			AGridManager* gridManager = AGridManager::GetGridManager();
+			if (!IsValid(gridManager))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+				return;
+			}
+
+			FGrid grid = gridManager->WorldToGrid(hitLocation);
+
+			if (!gridManager->IsValidGrid(grid))
+			{
+				return;
+			}
+
+			if (CurrentTracedGrid != grid)
+			{
+				CurrentTracedGrid = grid;
+				OnTracedGridChanged();
+			}
+		}
+	}
 }
 

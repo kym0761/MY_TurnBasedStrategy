@@ -4,6 +4,7 @@
 #include "GridManager.h"
 #include "GridObject.h"
 #include "PathNode.h"
+#include "Components/BillboardComponent.h"
 #include "InstancedGridVisualComponent.h"
 
 #include "Kismet/GameplayStatics.h"
@@ -22,6 +23,9 @@ AGridManager::AGridManager()
 	X_Length = 10;
 	Y_Length = 10;
 	CellSize = 100.0f;
+
+	BillboardComponent = CreateDefaultSubobject<UBillboardComponent>(TEXT("BillBoardComponent"));
+	SetRootComponent(BillboardComponent);
 
 	GridVisual_Move = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_Move"));
 	GridVisual_Move->SetupAttachment(GetRootComponent());
@@ -107,7 +111,7 @@ FGrid AGridManager::WorldToGrid(const FVector& WorldPosition)
 
 FVector AGridManager::GridToWorld(const FGrid& Grid)
 {
-	FVector worldPosition;
+	FVector worldPosition = FVector::ZeroVector;
 	worldPosition.X = Grid.X * CellSize;
 	worldPosition.Y = Grid.Y * CellSize;
 
@@ -191,7 +195,7 @@ void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisual
 
 void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray)
 {
-	for (auto visualData : GridVisualDataArray)
+	for (const FGridVisualData& visualData : GridVisualDataArray)
 	{
 		UInstancedGridVisualComponent* toDraw = nullptr;
 
@@ -230,6 +234,12 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	TArray<UPathNode*> openList;
 	TArray<UPathNode*> closeList;
 
+	//TSet<UPathNode*> openList;
+	//TSet<UPathNode*> closeList;
+
+
+	//TPriorityQueue<UPathNode*> priorityQueue;
+
 	//시작 위치
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
 	if (!IsValid(startNode))
@@ -239,10 +249,8 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 		return TArray<FGrid>();
 	}
 
-	openList.Add(startNode);
-
 	//목표 위치
-	UPathNode* endNode = PathFindingSystem->GetValidPathNode(End);
+ 	UPathNode* endNode = PathFindingSystem->GetValidPathNode(End);
 	if (!IsValid(endNode))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("EndNode is Not Valid"));
@@ -257,11 +265,15 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	startNode->SetHCost(CalculateGridDistance(Start, End));
 	startNode->CalculateFCost();
 
+	openList.Add(startNode);
+
 	while (openList.Num() > 0)
 	{
 		UPathNode* currentNode = GetLowestFCostNode(openList);
 
-		if (currentNode == endNode)
+		//DrawDebugSphere(GetWorld(), GridToWorld(currentNode->GetGrid()), 10, 12, FColor::Red, false, 0.05f, 0, 2.0f);
+
+		if (currentNode == endNode) //Break Point.
 		{
 			PathLength = endNode->GetFCost();
 			return CalculatePath(endNode);
@@ -323,8 +335,6 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 
 int32 AGridManager::CalculateGridDistance(const FGrid& a, const FGrid& b)
 {
-	//FGrid grid = a - b;
-
 	return FMath::Abs(a.X - b.X) + FMath::Abs(a.Y - b.Y);
 }
 
@@ -335,17 +345,41 @@ UPathNode* AGridManager::GetLowestFCostNode(const TArray<UPathNode*>& PathNodeLi
 		return nullptr;
 	}
 
-	UPathNode* pathNode = PathNodeList[0];
-	for (UPathNode* node : PathNodeList)
+	//Algo::Sort(PathNodeList, [](const UPathNode& A, const UPathNode& B)
+	//	{
+	//		return A.GetFCost() < B.GetFCost();
+	//	});
+
+	UPathNode* lowestNode = PathNodeList[0];
+	for (UPathNode* pathNode : PathNodeList)
 	{
-		if (node->GetFCost() < pathNode->GetFCost())
+		if (pathNode->GetFCost() < lowestNode->GetFCost())
 		{
-			pathNode = node;
+			lowestNode = pathNode;
 		}
 	}
 
-	return pathNode;
+	return lowestNode;
 }
+
+//UPathNode* AGridManager::GetLowestFCostNode(const TSet<UPathNode*>& PathNodeList)
+//{
+//	if (PathNodeList.Num() == 0)
+//	{
+//		return nullptr;
+//	}
+//
+//	UPathNode* lowestNode = nullptr;
+//	for (UPathNode* pathNode : PathNodeList)
+//	{
+//		if (lowestNode ==nullptr || pathNode->GetFCost() < lowestNode->GetFCost())
+//		{
+//			lowestNode = pathNode;
+//		}
+//	}
+//
+//	return lowestNode;
+//}
 
 TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode)
 {
@@ -356,6 +390,7 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode)
 
 	TArray<FGrid> gridArray;
 
+	gridArray.Add(EndNode->GetGrid());
 	UPathNode* current = EndNode;
 	while (IsValid(current))
 	{
@@ -375,20 +410,15 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
 
 	FGrid grid = CurrentNode->GetGrid();
 
-	FGrid upGrid = grid + FGrid(1, 0);
-	FGrid downGrid = grid + FGrid(-1, 0);
-	FGrid rightGrid = grid + FGrid(0, 1);
-	FGrid leftGrid = grid + FGrid(0, -1);
+	TArray<int32> dx{ 1,-1,0,0 };
+	TArray<int32> dy{ 0,0,1,-1 };
 
-	TArray<FGrid> nearGrid;
-
-	nearGrid.Add(upGrid);
-	nearGrid.Add(downGrid);
-	nearGrid.Add(rightGrid);
-	nearGrid.Add(leftGrid);
-
-	for (auto near : nearGrid)
+	for (int32 i = 0; i<dx.Num();i++)
 	{
+		FGrid near = grid;
+		near.X += dx[i];
+		near.Y += dy[i];
+
 		if (IsValidGrid(near))
 		{
 			UPathNode* nearNode = PathFindingSystem->GetValidPathNode(near);
@@ -473,24 +503,20 @@ void AGridManager::InitAllPathFindingNodes()
 {
 	//PathFindingGridSystem의 Grid 값을 전부 초기화.
 
-	for (int x = 0; x < X_Length; x++)
+	TArray<UPathNode*> pathNodes = PathFindingSystem->GetPathNodeArray();
+
+	for (UPathNode* pathNode : pathNodes)
 	{
-		for (int y = 0; y < Y_Length; y++)
+		if (!IsValid(pathNode))
 		{
-			FGrid grid = FGrid(x, y);
-			UPathNode* pathNode = PathFindingSystem->GetValidPathNode(grid);
-
-			if (!IsValid(pathNode))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
-				continue;
-			}
-
-			pathNode->SetGCost(TNumericLimits<int32>::Max());
-			pathNode->SetHCost(0);
-			pathNode->CalculateFCost();
-			pathNode->SetParentNode(nullptr);
+			//UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
+			continue;
 		}
+
+		pathNode->SetGCost(TNumericLimits<int32>::Max());
+		pathNode->SetHCost(0);
+		pathNode->CalculateFCost();
+		pathNode->SetParentNode(nullptr);
 	}
 }
 
@@ -509,16 +535,20 @@ AGridManager* AGridManager::GetGridManager()
 
 void AGridManager::AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
 {
-
-	auto gridObject = GridSystem->GetValidGridObject(GridValue);
-	gridObject->AddUnit(Unit);
-
+	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
+	if (IsValid(gridObject))
+	{
+		gridObject->AddUnit(Unit);
+	}
 }
 
 void AGridManager::RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
 {
-	auto gridObject = GridSystem->GetValidGridObject(GridValue);
-	gridObject->RemoveUnit(Unit);
+	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
+	if (IsValid(gridObject))
+	{
+		gridObject->RemoveUnit(Unit);
+	}
 }
 
 void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to)

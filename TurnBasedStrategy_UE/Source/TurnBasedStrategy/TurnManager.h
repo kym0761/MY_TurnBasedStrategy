@@ -24,15 +24,16 @@ class TURNBASEDSTRATEGY_API ATurnManager : public AActor
 	GENERATED_BODY()
 	
 private:
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
 	int32 TurnNumber = 1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
+		ETurnType Turn;
 
 public:	
 	// Sets default values for this actor's properties
 	ATurnManager();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite,Category ="Turn", Meta = (AllowPrivateAccess = true))
-	ETurnType Turn;
 
 	FOnTurnChanged OnTurnChanged;
 

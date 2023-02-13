@@ -57,6 +57,26 @@ FGrid FGrid::operator -(const FGrid& b) const
 	return temp;
 }
 
+FGrid& FGrid::operator=(const FGrid& b)
+{
+	X = b.X;
+	Y = b.Y;
+
+	return *this;
+}
+
+FGrid& FGrid::operator+=(const FGrid& b)
+{
+	(*this) = (*this) + b;
+	return *this;
+}
+
+FGrid& FGrid::operator-=(const FGrid& b)
+{
+	(*this) = (*this) - b;
+	return *this;
+}
+
 bool operator==(const FGrid& a, const FGrid& b)
 {
 	return a.X == b.X && a.Y == b.Y;

@@ -9,7 +9,6 @@
  * 
  */
 
-
 UCLASS()
 class TURNBASEDSTRATEGY_API UPathNode : public UObject
 {
@@ -48,5 +47,77 @@ public:
 	bool GetIsWalkable() const;
 	void SetIsWalkable(bool InVal);
 
+	bool operator<(const UPathNode* Other) const
+	{
+		return GetGCost() < Other->GetGCost();
+	}
 
+	//friend bool operator<(const UPathNode* A, const UPathNode* B);
+
+};
+
+
+template <typename InElementType>
+struct TPriorityQueueNode {
+    InElementType Element;
+    float Priority;
+
+    TPriorityQueueNode()
+    {
+    }
+
+    TPriorityQueueNode(InElementType InElement, float InPriority)
+    {
+        Element = InElement;
+        Priority = InPriority;
+    }
+
+    bool operator<(const TPriorityQueueNode<InElementType> Other) const
+    {
+        return Priority < Other.Priority;
+    }
+};
+
+template <typename InElementType>
+class TPriorityQueue {
+public:
+    TPriorityQueue()
+    {
+        Array.Heapify();
+    }
+
+public:
+    // Always check if IsEmpty() before Pop-ing!
+    InElementType Pop()
+    {
+        TPriorityQueueNode<InElementType> Node;
+        Array.HeapPop(Node);
+        return Node.Element;
+    }
+
+    TPriorityQueueNode<InElementType> PopNode()
+    {
+        TPriorityQueueNode<InElementType> Node;
+        Array.HeapPop(Node);
+        return Node;
+    }
+
+    void Push(InElementType Element, float Priority)
+    {
+        Array.HeapPush(TPriorityQueueNode<InElementType>(Element, Priority));
+    }
+
+    bool IsEmpty() const
+    {
+        return Array.Num() == 0;
+    }
+
+    int32 Num() const
+    {
+        return Array.Num();
+    }
+
+
+private:
+    TArray<TPriorityQueueNode<InElementType>> Array;
 };

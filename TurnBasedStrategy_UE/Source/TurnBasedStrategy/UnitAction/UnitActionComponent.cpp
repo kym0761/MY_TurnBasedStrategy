@@ -51,6 +51,10 @@ FString UUnitActionComponent::GetActionName() const
 	return ActionName;
 }
 
+void UUnitActionComponent::ReceiveGridBeforeAction(FGrid& Grid)
+{
+}
+
 void UUnitActionComponent::TakeAction(FGrid Grid)
 {
 	//Do Nothing?
@@ -68,11 +72,11 @@ bool UUnitActionComponent::IsValidActionGrid(FGrid Grid) const
 
 TArray<FGridVisualData> UUnitActionComponent::GetValidActionGridVisualDataArray() const
 {
-	FGridVisualData data;
-	data.Grid = Unit->GetGrid();
-	data.GridVisualType = EGridVisualType::OK;
-	TArray<FGridVisualData> temp;
-	temp.Add(data);
+	//FGridVisualData data;
+	//data.Grid = Unit->GetGrid();
+	//data.GridVisualType = EGridVisualType::OK;
+	//TArray<FGridVisualData> temp;
+	//temp.Add(data);
 
 	return TArray<FGridVisualData>();
 }

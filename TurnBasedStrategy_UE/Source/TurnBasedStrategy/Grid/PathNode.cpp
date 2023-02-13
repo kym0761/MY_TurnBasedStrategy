@@ -5,9 +5,9 @@
 
 UPathNode::UPathNode()
 {
-	G_Cost = 1;
-	H_Cost = 2;
-	F_Cost = 3;
+	G_Cost = 0;
+	H_Cost = 0;
+	F_Cost = 0;
 
 	bIsWalkable = true;
 	ParentNode = nullptr;
@@ -78,3 +78,4 @@ void UPathNode::SetIsWalkable(bool InVal)
 {
 	bIsWalkable = InVal;
 }
+

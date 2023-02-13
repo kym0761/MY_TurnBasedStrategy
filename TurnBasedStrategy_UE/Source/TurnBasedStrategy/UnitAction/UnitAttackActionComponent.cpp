@@ -19,6 +19,13 @@ void UUnitAttackActionComponent::BeginPlay()
 
 }
 
+void UUnitAttackActionComponent::ReceiveGridBeforeAction(FGrid& Grid)
+{
+	//UI를 띄우기.
+	//UI에서 Attack OK 명령을 받았을 시에 공격하기.
+
+}
+
 TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 {
 	TArray<FGrid> validArray;
@@ -37,9 +44,8 @@ TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 	{
 		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
 		{
-			FGrid offsetGrid = FGrid(x, y);
-
-			FGrid resultGrid = unitGrid + offsetGrid;
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += unitGrid;
 
 			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
 			{
@@ -98,8 +104,8 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 				continue;
 			}
 
-			FGrid offsetGrid = FGrid(x, y);
-			FGrid resultGrid = unitGrid + offsetGrid;
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += unitGrid;
 
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))

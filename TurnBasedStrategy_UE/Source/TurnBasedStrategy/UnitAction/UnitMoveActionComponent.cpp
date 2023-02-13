@@ -109,8 +109,8 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 	{
 		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
 		{
-			FGrid offsetGrid = FGrid(x, y);
-			FGrid resultGrid = unitGrid + offsetGrid;
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += unitGrid;
 
 
 			//존재하지 않는 Grid
@@ -189,8 +189,8 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 				continue;
 			}
 
-			FGrid offsetGrid = FGrid(x, y);
-			FGrid resultGrid = unitGrid + offsetGrid;
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += unitGrid;
 			
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))

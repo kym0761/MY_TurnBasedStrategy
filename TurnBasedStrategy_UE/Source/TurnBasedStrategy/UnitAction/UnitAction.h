@@ -13,6 +13,6 @@ enum class EUnitActionType : uint8
 {
 	Move UMETA(DisplayName = "Move"),
 	Attack UMETA(DisplayName = "Attack"),
-	Interact UMETA(DisplayName = "Interact")
-
+	Interact UMETA(DisplayName = "Interact"),
+	Wait UMETA(DisplayName = "Wait")
 };

@@ -31,6 +31,9 @@ public:
 	friend bool operator!=(const FGrid& a, const FGrid& b);
 	FGrid operator+(const FGrid& b) const;
 	FGrid operator-(const FGrid& b) const;
+	FGrid& operator=(const FGrid& b);
+	FGrid& operator+=(const FGrid& b);
+	FGrid& operator-=(const FGrid& b);
 };
 
 

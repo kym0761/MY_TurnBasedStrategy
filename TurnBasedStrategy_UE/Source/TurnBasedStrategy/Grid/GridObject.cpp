@@ -26,6 +26,11 @@ FString UGridObject::ToString() const
 
 void UGridObject::AddUnit(AUnitCharacter* Unit)
 {
+	if (!IsValid(Unit))
+	{
+		return;
+	}
+
 	UnitArray.Add(Unit);
 }
 

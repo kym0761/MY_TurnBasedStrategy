@@ -84,8 +84,8 @@ TArray<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDa
 
 	for (int i = 0; i < dx.Num(); i++)
 	{
-		FGrid offsetGrid = FGrid(dx[i], dy[i]);
-		FGrid resultGrid = unitGrid + offsetGrid;
+		FGrid resultGrid = FGrid(dx[i], dy[i]);
+		resultGrid += unitGrid;
 
 		//존재하지 않는 Grid
 		if (!gridManager->IsValidGrid(resultGrid))

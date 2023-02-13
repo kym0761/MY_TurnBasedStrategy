@@ -12,6 +12,7 @@ class AGridVisual;
 class UGridObject;
 class UPathNode;
 class AUnitCharacter;
+class UBillboardComponent;
 class UInstancedGridVisualComponent;
 class UPathFindingSystem;
 class UGridSystem;
@@ -23,7 +24,6 @@ class UGridSystem;
 */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnyUnitMoved);
-
 
 UCLASS()
 class TURNBASEDSTRATEGY_API AGridManager : public AActor
@@ -44,6 +44,9 @@ private:
 	int32 Y_Length = 10;
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
 	float CellSize = 100.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+		UBillboardComponent* BillboardComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_Move;
@@ -91,6 +94,7 @@ public:
 	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
 	int32 CalculateGridDistance(const FGrid& a, const FGrid& b);
 	UPathNode* GetLowestFCostNode(const TArray<UPathNode*>& PathNodeList);
+	//UPathNode* GetLowestFCostNode(const TSet<UPathNode*>& PathNodeList);
 	TArray<FGrid> CalculatePath(UPathNode* EndNode);
 	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode);
 

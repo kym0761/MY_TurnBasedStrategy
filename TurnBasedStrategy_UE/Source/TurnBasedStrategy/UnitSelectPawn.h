@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "UnitAction/UnitAction.h"
+#include "Grid/Grid.h"
 #include "UnitSelectPawn.generated.h"
 
 class UFloatingPawnMovement;
@@ -53,8 +54,11 @@ public:
 	UPROPERTY()
 		bool bIsBusy;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="SRPG")
 		EPawnMode PawnMode = EPawnMode::Selection;
+
+	FTimerHandle TraceTimer;
+	FGrid CurrentTracedGrid;
 
 	FOnSelectedActionChanged OnSelectedActionChanged;
 	FOnSelectedUnitChanged OnSelectedUnitChanged;
@@ -89,6 +93,7 @@ public:
 	void HandleSelectAction();
 
 	bool TraceToGrid(FHitResult &OutHit);
+	void OnTracedGridChanged();
 
 	void DoSelection();
 	void DoAction();
@@ -119,4 +124,8 @@ public:
 		void OnSelectedUnitChangedFunc();
 	UFUNCTION()
 		void OnBusyChangedFunc(bool InputBool);
+
+	UFUNCTION()
+		void UnitLook();
+
 };

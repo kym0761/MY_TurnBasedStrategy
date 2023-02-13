@@ -150,9 +150,9 @@ bool AUnitCharacter::IsThisUnitCanAction() const
 	TArray<UActorComponent*> unitActions;
 	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
 
-	for (auto unitAction : unitActions)
+	for (UActorComponent* unitAction : unitActions)
 	{
-		auto unitAction_Cast =
+		UUnitActionComponent* unitAction_Cast =
 			Cast<UUnitActionComponent>(unitAction);
 
 		if (!IsValid(unitAction_Cast))

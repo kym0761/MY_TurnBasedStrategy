@@ -25,19 +25,6 @@ void ATurnBasedStrategyPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	APawn* const pawn = GetPawn();
-	FGrid pawnGrid = FGrid(0,0);
-	if (pawn)
-	{
-		FVector pawnLocation = pawn->GetActorLocation();
-		AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
-		if (gridManager)
-		{
-			pawnGrid = gridManager->WorldToGrid(pawnLocation);
-			//UE_LOG(LogTemp, Warning, TEXT("PawnGrid : %s"), *pawnGrid.ToString());
-		}
-	}
-
 	if(bInputPressed)
 	{
 		FollowTime += DeltaTime;
@@ -55,69 +42,14 @@ void ATurnBasedStrategyPlayerController::PlayerTick(float DeltaTime)
 		}
 		HitLocation = Hit.Location;
 
-		AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
-		if (gridManager)
-		{
-			FGrid grid = gridManager->WorldToGrid(Hit.Location);
 
-			bool isvalid = gridManager->IsValidGrid(grid);
-
-			//UE_LOG(LogTemp, Warning, TEXT("%s"), *grid.ToString());
-			if (isvalid)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Valid Grid"));
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Not Valid Grid"));
-				return;
-			}
-
-			
-			auto gridObj = gridManager->GetValidGridObject(grid);
-
-			if (IsValid(gridObj))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s"), *gridObj->ToString());
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("there is no such GridObj.."));
-			}
-
-			gridManager->RemoveAllGridVisual();
-			gridManager->ShowGridRange(grid, 1, EGridVisualType::OK);
-
-			int32 pathLength;
-			auto path = gridManager->FindPath(pawnGrid, grid, pathLength);
-			if (path.Num() == 0)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Grid path is zero"));
-				return;
-			}
-			UE_LOG(LogTemp, Warning, TEXT("target grid : %s"), *grid.ToString());
-			UE_LOG(LogTemp, Warning, TEXT("Path Length : %d "), pathLength);
-			for (int i = 0; i < path.Num(); i++)
-			{
-				//UE_LOG(LogTemp, Warning, TEXT("path[%d] : %s"), i,*path[i].ToString());
-
-				//FVector start = gridManager->GridToWorld(path[i]) + FVector(0, 0, 10);
-				//FVector  end = gridManager->GridToWorld(path[i + 1]) + FVector(0, 0, 10);
-
-				//DrawDebugLine(GetWorld(), start, end, FColor::Black, false, 5.0f, 0, 2.0f);
-				DrawDebugSphere(GetWorld(), gridManager->GridToWorld(path[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
-
-			}
-		}
-
-
-		// Direct the Pawn towards that location
-		APawn* const MyPawn = GetPawn();
-		if(MyPawn)
-		{
-			FVector WorldDirection = (HitLocation - MyPawn->GetActorLocation()).GetSafeNormal();
-			MyPawn->AddMovementInput(WorldDirection, 1.f, false);
-		}
+		//// Direct the Pawn towards that location
+		//APawn* const MyPawn = GetPawn();
+		//if(MyPawn)
+		//{
+		//	FVector WorldDirection = (HitLocation - MyPawn->GetActorLocation()).GetSafeNormal();
+		//	MyPawn->AddMovementInput(WorldDirection, 1.f, false);
+		//}
 	}
 	else
 	{

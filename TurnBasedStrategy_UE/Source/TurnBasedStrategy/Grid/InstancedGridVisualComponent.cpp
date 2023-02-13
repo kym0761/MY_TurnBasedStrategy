@@ -6,6 +6,7 @@
 
 UInstancedGridVisualComponent::UInstancedGridVisualComponent()
 {
+	SetCollisionProfileName(TEXT("NoCollision"));
 
 	SetRelativeScale3D(FVector(0.95f, 0.95f, 0.95f));
 }
@@ -21,7 +22,7 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 		return;
 	}
 
-	for (FGrid grid : GridArray)
+	for (const FGrid& grid : GridArray)
 	{
 		if (!gridManager->IsValidGrid(grid))
 		{
@@ -38,6 +39,7 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 		VisualTransformArray.Add(visualTransform);
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualswithGridArray"),*GetName());
 	AddInstances(VisualTransformArray, false, true);
 
 }
@@ -57,6 +59,8 @@ void UInstancedGridVisualComponent::DrawGridVisualsWithGridVisualData(const FGri
 	visualTransform.SetLocation(worldPos);
 	visualTransform.SetRotation(FQuat::Identity);
 	visualTransform.SetScale3D(GetComponentScale());
+
+	UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualsWithGridVisualData"), *GetName());
 
 	AddInstance(visualTransform,true);
 }

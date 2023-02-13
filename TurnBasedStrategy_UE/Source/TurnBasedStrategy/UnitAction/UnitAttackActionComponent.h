@@ -22,6 +22,8 @@ protected:
 
 public:
 
+	virtual void ReceiveGridBeforeAction(FGrid& Grid) override;
+
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
 	virtual void TakeAction(FGrid Grid) override;
