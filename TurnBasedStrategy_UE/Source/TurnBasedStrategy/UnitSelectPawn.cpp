@@ -228,10 +228,13 @@ void AUnitSelectPawn::DoSelection()
 
 		//screenPos += FVector2D(150, 250);
 
-		auto canvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(UnitActionsWidget);
-		canvasSlot->SetPosition(screenPos);
-		canvasSlot->SetSize(FVector2D(300, 500));
-		canvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		UCanvasPanelSlot* canvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(UnitActionsWidget);
+		if (IsValid(canvasSlot))
+		{
+			canvasSlot->SetPosition(screenPos);
+			canvasSlot->SetSize(FVector2D(300, 500));
+			canvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		}
 
 	}
 }
@@ -271,7 +274,7 @@ void AUnitSelectPawn::DoAction()
 			return;
 		}
 
-		SelectedAction->TakeAction(grid);
+		SelectedAction->DealWithGridBeforeAction(grid);
 	}
 }
 

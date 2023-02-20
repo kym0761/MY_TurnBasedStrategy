@@ -46,7 +46,7 @@ void UActionSelectButtonWidget::OnButtonClicked()
 	UE_LOG(LogTemp, Warning, TEXT("Button Clicked! --> %s"), *UnitAction->GetActionName());
 	// Do Something.
 
-	APlayerController* playerController =UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
 	pawn->SetSelectedAction(UnitAction);
 

@@ -12,8 +12,8 @@ UStatComponent::UStatComponent()
 
 	// ...
 
-	HP = 100;
-	MaxHP = 100;
+	HP = 20;
+	MaxHP = 20;
 
 
 	STR = 5;
@@ -65,4 +65,39 @@ float UStatComponent::GetHP() const
 float UStatComponent::GetMaxHP() const
 {
 	return MaxHP;
+}
+
+int32 UStatComponent::GetSTR() const
+{
+	return STR;
+}
+
+int32 UStatComponent::GetINT() const
+{
+	return INT;
+}
+
+int32 UStatComponent::GetSPD() const
+{
+	return SPD;
+}
+
+int32 UStatComponent::GetSKL() const
+{
+	return SKL;
+}
+
+int32 UStatComponent::GetLUK() const
+{
+	return LUK;
+}
+
+int32 UStatComponent::GetDEF() const
+{
+	return DEF;
+}
+
+int32 UStatComponent::GetRES() const
+{
+	return RES;
 }

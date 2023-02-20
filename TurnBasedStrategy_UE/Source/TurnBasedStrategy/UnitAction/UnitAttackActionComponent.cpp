@@ -4,7 +4,7 @@
 #include "UnitAttackActionComponent.h"
 #include "../UnitCharacter.h"
 #include "../Grid/GridManager.h"
-
+#include"../UMG/AttackCalculationWidget.h"
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {
@@ -19,10 +19,38 @@ void UUnitAttackActionComponent::BeginPlay()
 
 }
 
-void UUnitAttackActionComponent::ReceiveGridBeforeAction(FGrid& Grid)
+void UUnitAttackActionComponent::DealWithGridBeforeAction(FGrid& Grid)
 {
 	//UI를 띄우기.
 	//UI에서 Attack OK 명령을 받았을 시에 공격하기.
+
+	if (!IsValid(AttackCalculationWidgetClass))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AttackCalculationWidgetClass is not Valid"));
+		return;
+	}
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		return;
+	}
+
+	AUnitCharacter* unit = gridManager->GetUnitAtGrid(Grid);
+	if (!IsValid(unit))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("there is no unit at you selected."));
+		return;
+	}
+
+	AttackCalculationWidget = CreateWidget<UAttackCalculationWidget>(GetWorld(), AttackCalculationWidgetClass);
+	if (IsValid(AttackCalculationWidget))
+	{
+		AttackCalculationWidget->AddToViewport();
+		AttackCalculationWidget->
+			InitAttackCalculationWidget(GetOwner(), gridManager->GetUnitAtGrid(Grid));
+	}
 
 }
 
@@ -145,19 +173,19 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 
 void UUnitAttackActionComponent::TakeAction(FGrid Grid)
 {
-	TArray<FGrid> tempArr = GetValidActionGridArray();
-	
+	//TArray<FGrid> tempArr = GetValidActionGridArray();
+	//
 
-	//TODO : 데미지 주는 Animation을 Play & 데미지 처리
+	////TODO : 데미지 주는 Animation을 Play & 데미지 처리
 
-	if (tempArr.Contains(Grid))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Attack At : %s"), *Grid.ToString());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("You Selected which is Not Valid Grid. ---> Grid Pos : %s"), *Grid.ToString());
-	}
+	//if (tempArr.Contains(Grid))
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Attack At : %s"), *Grid.ToString());
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("You Selected which is Not Valid Grid. ---> Grid Pos : %s"), *Grid.ToString());
+	//}
 
 	if (OnActionEnd.IsBound())
 	{

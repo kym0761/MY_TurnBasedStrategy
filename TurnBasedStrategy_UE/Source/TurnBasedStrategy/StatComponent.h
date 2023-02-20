@@ -57,5 +57,11 @@ public:
 
 	float GetHP() const;
 	float GetMaxHP() const;
-
+	int32 GetSTR() const;
+	int32 GetINT() const;
+	int32 GetSPD() const;
+	int32 GetSKL() const;
+	int32 GetLUK() const;
+	int32 GetDEF() const;
+	int32 GetRES() const;
 };

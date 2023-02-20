@@ -51,7 +51,7 @@ public:
 
 	FString GetActionName() const;
 
-	virtual void ReceiveGridBeforeAction(FGrid& Grid);
+	virtual void DealWithGridBeforeAction(FGrid& Grid);
 
 	virtual void TakeAction(FGrid Grid);
 	virtual bool IsValidActionGrid(FGrid Grid) const;

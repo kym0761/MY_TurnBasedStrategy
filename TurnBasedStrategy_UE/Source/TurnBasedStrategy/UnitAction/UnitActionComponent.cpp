@@ -51,8 +51,9 @@ FString UUnitActionComponent::GetActionName() const
 	return ActionName;
 }
 
-void UUnitActionComponent::ReceiveGridBeforeAction(FGrid& Grid)
+void UUnitActionComponent::DealWithGridBeforeAction(FGrid& Grid)
 {
+	UE_LOG(LogTemp, Warning, TEXT(" :) "));
 }
 
 void UUnitActionComponent::TakeAction(FGrid Grid)

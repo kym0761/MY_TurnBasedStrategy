@@ -11,7 +11,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Grid/GridManager.h"
-#include "TurnManager.h"
+#include "Manager/TurnManager.h"
 #include "UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"
 

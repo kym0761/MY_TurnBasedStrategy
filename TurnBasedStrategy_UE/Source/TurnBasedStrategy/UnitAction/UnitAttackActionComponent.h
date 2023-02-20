@@ -6,6 +6,8 @@
 #include "UnitActionComponent.h"
 #include "UnitAttackActionComponent.generated.h"
 
+class UAttackCalculationWidget;
+
 /**
  * 
  */
@@ -17,12 +19,18 @@ class TURNBASEDSTRATEGY_API UUnitAttackActionComponent : public UUnitActionCompo
 public:
 	UUnitAttackActionComponent();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UMG")
+		TSubclassOf<UAttackCalculationWidget> AttackCalculationWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UMG")
+		UAttackCalculationWidget* AttackCalculationWidget;
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
 
-	virtual void ReceiveGridBeforeAction(FGrid& Grid) override;
+	virtual void DealWithGridBeforeAction(FGrid& Grid) override;
 
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
