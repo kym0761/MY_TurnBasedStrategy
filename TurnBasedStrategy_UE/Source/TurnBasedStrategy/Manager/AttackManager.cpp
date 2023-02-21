@@ -37,15 +37,19 @@ void AAttackManager::SetupAttackManager(AActor* InAttacker, AActor* InDefender)
 
 void AAttackManager::StartAttack()
 {
-	//OnAttackEnd.Clear();
-	//OnHitEnd.Clear();
+	if (IsValid(Attacker))
+	{
+		FRotator attackerLookRot = UKismetMathLibrary::FindLookAtRotation(Attacker->GetActorLocation(), Defender->GetActorLocation());
+		Attacker->SetActorRotation(attackerLookRot);
 
-	FRotator attackerLookRot= UKismetMathLibrary::FindLookAtRotation(Attacker->GetActorLocation(), Defender->GetActorLocation());
-	Attacker->SetActorRotation(attackerLookRot);
+	}
 
-	FRotator defenderLookRot = UKismetMathLibrary::FindLookAtRotation(Defender->GetActorLocation(), Attacker->GetActorLocation());
-	Defender->SetActorRotation(defenderLookRot);
-
+	if (IsValid(Defender))
+	{
+		FRotator defenderLookRot = UKismetMathLibrary::FindLookAtRotation(Defender->GetActorLocation(), Attacker->GetActorLocation());
+		Defender->SetActorRotation(defenderLookRot);
+	}
+	
 	CurrentAttacker = nullptr;
 	CurrentDefender = nullptr;
 
@@ -99,7 +103,7 @@ void AAttackManager::PlayAttack()
 				BindOnHit(defenderAnim);
 				BindOnHitEnd(defenderAnim);
 			
-				UE_LOG(LogTemp, Warning, TEXT("Play Montage?"));
+				//UE_LOG(LogTemp, Warning, TEXT("Play Montage?"));
 				attackerAnim->PlayUnitAttackMontage();
 				bAttackerWaiting = false;
 				bDefenderWaiting = false;

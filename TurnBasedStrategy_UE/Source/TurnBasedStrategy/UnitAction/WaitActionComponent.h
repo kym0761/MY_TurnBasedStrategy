@@ -27,6 +27,7 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 	virtual void TakeAction(FGrid Grid) override;
+	virtual void DealWithGridBeforeAction(FGrid& Grid) override;
 
 	virtual void OnActionSelectedFunc() override;
 };

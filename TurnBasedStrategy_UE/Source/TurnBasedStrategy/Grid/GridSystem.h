@@ -9,9 +9,7 @@
 
 /*
  * https://docs.unrealengine.com/5.0/en-US/API/Runtime/Core/GenericPlatform/TFunction/
- * https://stackoverflow.com/questions/1639797/template-issue-causes-linker-error-c
  * 
- * Pure C++ Class는 UObject의 GC을 막을 수 없음.
  */
 
 class UGridObject;

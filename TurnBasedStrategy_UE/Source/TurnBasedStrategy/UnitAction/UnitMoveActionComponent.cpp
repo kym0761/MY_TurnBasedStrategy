@@ -76,6 +76,16 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			//현재 위치가 목적지면 멈추어야함.
 			if (currentGrid == Destination)
 			{
+				//a simple temp Move Function.
+				AAIController* aiController = Cast<AAIController>(Unit->GetController());
+				if (!IsValid(aiController))
+				{
+					return;
+				}
+
+				//Stop은 이후에 Rotation 이 바뀔 때의 문제를 해결하기 위해서 꼭 필요함.
+				aiController->StopMovement();
+
 				if (OnActionEnd.IsBound())
 				{
 					OnActionEnd.Broadcast();
@@ -303,6 +313,11 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 	}
 
 
+}
+
+void UUnitMoveActionComponent::DealWithGridBeforeAction(FGrid& Grid)
+{
+	TakeAction(Grid);
 }
 
 void UUnitMoveActionComponent::OnActionStartFunc()

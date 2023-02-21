@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Grid.generated.h"
+
 /**
  * Grid Á¤º¸
  */
+
 USTRUCT(BlueprintType, Blueprintable)
 struct FGrid
 {
@@ -18,12 +20,9 @@ public:
 	int32 X;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	int32 Y;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	//int32 Height;
 
 	FGrid();
 	FGrid(int32 _X, int32 _Y);
-	//FGrid(int32 _X, int32 _Y, int _Height);
 	FString ToString() const;
 	bool operator==(const FGrid& Other);
 	friend bool operator==(const FGrid& a, const FGrid& b); // contains() function needs it!
@@ -62,14 +61,3 @@ public:
 
 	static TArray<FGrid> ParseToGridArray(TArray<FGridVisualData> GridVisualArray);
 };
-
-//USTRUCT(BlueprintType)
-//struct FGridVisualTypeMaterial
-//{
-//	GENERATED_BODY()
-//public:
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-//		EGridVisualType GridVisualType;
-//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-//		UMaterialInstance* Material;
-//};

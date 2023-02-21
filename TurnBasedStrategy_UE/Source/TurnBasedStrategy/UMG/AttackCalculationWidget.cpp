@@ -34,15 +34,18 @@ void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, A
 
 	if (!IsValid(Attacker))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Attacker is Invalid. - UAttackCalculationWidget::InitAttackCalculationWidget()"));
+
 		return;
 	}
 
 	if (!IsValid(Defender))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Defender is Invalid. - UAttackCalculationWidget::InitAttackCalculationWidget()"));
+
 		return;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Update Ally Stat"));
 	CalculationStat_Ally->InitCalculationUnitStat(Attacker);
 	if (IsValid(TextBlock_AllyName))
 	{
@@ -50,7 +53,6 @@ void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, A
 	}
 
 	CalculationStat_Enemy->InitCalculationUnitStat(Defender);
-
 	if (IsValid(TextBlock_EnemyName))
 	{
 		TextBlock_EnemyName->SetText(FText::FromString(Defender->GetActorLabel()));
@@ -86,6 +88,7 @@ void UAttackCalculationWidget::SetAttackOrders()
 
 	if (!IsValid(AllyAttackOrder) || !IsValid(EnemyAttackOrder))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Please Set up UMG BP. -- UAttackCalculationWidget::OnButton_AttackClicked()"));
 		return;
 	}
 

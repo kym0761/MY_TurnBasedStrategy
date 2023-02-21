@@ -51,6 +51,11 @@ void UWaitActionComponent::TakeAction(FGrid Grid)
 
 }
 
+void UWaitActionComponent::DealWithGridBeforeAction(FGrid& Grid)
+{
+	TakeAction(Grid);
+}
+
 void UWaitActionComponent::OnActionSelectedFunc()
 {
 	TakeAction(FGrid());

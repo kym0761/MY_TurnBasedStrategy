@@ -43,7 +43,7 @@ void UActionSelectButtonWidget::OnButtonClicked()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Button Clicked! --> %s"), *UnitAction->GetActionName());
+	//UE_LOG(LogTemp, Warning, TEXT("Button Clicked! --> %s"), *UnitAction->GetActionName());
 	// Do Something.
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

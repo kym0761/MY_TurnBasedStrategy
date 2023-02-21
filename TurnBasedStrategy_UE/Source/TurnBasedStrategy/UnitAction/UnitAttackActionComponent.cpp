@@ -37,10 +37,23 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(FGrid& Grid)
 		return;
 	}
 
+	TArray<FGrid> validAttackRange = GetValidActionGridArray();
+	if (!validAttackRange.Contains(Grid))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't Attack."));
+		return;
+	}
+
 	AUnitCharacter* unit = gridManager->GetUnitAtGrid(Grid);
 	if (!IsValid(unit))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("there is no unit at you selected."));
+		return;
+	}
+
+	if (unit == GetOwner())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't Attack Yourself..."));
 		return;
 	}
 
