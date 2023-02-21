@@ -21,7 +21,6 @@ private:
 
 	int32 X_Length;
 	int32 Y_Length;
-	//float CellSize;
 
 	UPROPERTY()
 		TArray<UPathNode*> PathNodeArray;
@@ -31,7 +30,7 @@ public:
 
 
 	//Call Order in GridManager : NewObject<>(); -> SetPathFindingSystem();
-	void SetPathFindingSystem(int _X_Length, int _Y_Length, //float _CellSize,
+	void SetPathFindingSystem(int _X_Length, int _Y_Length,
 		TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction);
 
 	TArray<UPathNode*> GetPathNodeArray() const;

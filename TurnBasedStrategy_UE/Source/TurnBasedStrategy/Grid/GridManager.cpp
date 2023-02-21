@@ -75,8 +75,7 @@ void AGridManager::CreateGridSystem()
 
 	GridSystem->SetGridSystem(
 		X_Length, 
-		Y_Length, 
-		//CellSize, 
+		Y_Length,
 		[](UGridSystem* gs, FGrid grid) {
 		UGridObject* gridObj = NewObject<UGridObject>();
 		gridObj->SetGrid(grid);

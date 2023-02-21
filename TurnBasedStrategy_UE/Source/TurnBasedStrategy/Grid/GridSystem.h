@@ -23,7 +23,6 @@ class TURNBASEDSTRATEGY_API UGridSystem : public UObject
 private:
 	int32 X_Length;
 	int32 Y_Length;
-	//float CellSize;
 
 	UPROPERTY()
 		TArray<UGridObject*> GridObjectArray;
@@ -33,14 +32,10 @@ public:
 
 public:
 
-	void SetGridSystem(int _X_Length, int _Y_Length, //float _CellSize,
+	void SetGridSystem(int _X_Length, int _Y_Length,
 		TFunctionRef<UGridObject* (UGridSystem*, FGrid)> CreateObjectFunction);
 
 	TArray<UGridObject*> GetGridObjectArray() const;
-
-	//FGrid WorldToGrid(const FVector& WorldPosition) const;
-	//FVector GridToWorld(const FGrid& Grid) const;
-
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
 
 };
