@@ -144,18 +144,15 @@ void AAttackManager::OnAttackHit()
 	}
 
 	USkeletalMeshComponent* defenderMesh = CurrentDefender->FindComponentByClass<USkeletalMeshComponent>();
-
 	if (!IsValid(defenderMesh))
 	{
 		return;
 	}
 
 	UUnitAnimInstance* defenderAnim = Cast<UUnitAnimInstance>(defenderMesh->GetAnimInstance());
-
 	if (IsValid(defenderAnim))
 	{
-
-		UE_LOG(LogTemp, Warning, TEXT("Play Hit Montage?"));
+		//UE_LOG(LogTemp, Warning, TEXT("Play Hit Montage?"));
 		defenderAnim->PlayUnitHitMontage();
 	}
 

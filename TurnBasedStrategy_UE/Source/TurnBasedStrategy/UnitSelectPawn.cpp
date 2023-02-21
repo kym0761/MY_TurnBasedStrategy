@@ -207,33 +207,43 @@ void AUnitSelectPawn::DoSelection()
 			return;
 		}
 
-		//if (!IsValid(SelectedAction))
-		//{
-		//	UE_LOG(LogTemp, Warning, TEXT("true.. Selected Action Not Valid"));
-		//	return;
-		//}
-
 		if (IsValid(UnitActionsWidget))
 		{
 			UnitActionsWidget->RemoveFromParent();
 		}
 
+		FVector2D screenPos;
+		FVector unitLocation = SelectedUnit->GetActorLocation();
+		APlayerController* playerController = Cast<APlayerController>(GetController());
+		bool bisOK = UGameplayStatics::ProjectWorldToScreen(
+			playerController,
+			unitLocation, 
+			screenPos,
+			true);
+
+		//if (bisOK)
+		//{
+		//	UE_LOG(LogTemp, Warning, TEXT("projection ok"));
+		//}
+		//else
+		//{
+		//	UE_LOG(LogTemp, Warning, TEXT("projection failed"));
+		//}
+
 		UnitActionsWidget = CreateWidget<UUnitActionListWidget>(GetWorld(), UnitActionListWidgetClass);
 		MainCanvasWidget->MainCanvas->AddChild(UnitActionsWidget);
 		UnitActionsWidget->InitUnitActionsWidget(SelectedUnit);
 
-		FVector2D screenPos;
-		UGameplayStatics::ProjectWorldToScreen(UGameplayStatics::GetPlayerController(GetWorld(), 0),
-			SelectedUnit->GetActorLocation(), screenPos);
-
-		//screenPos += FVector2D(150, 250);
-
 		UCanvasPanelSlot* canvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(UnitActionsWidget);
 		if (IsValid(canvasSlot))
 		{
+			//UE_LOG(LogTemp, Warning, TEXT("unitLocation : %f, %f, %f"), unitLocation.X,unitLocation.Y,unitLocation.Z);
+			//UE_LOG(LogTemp, Warning, TEXT("screenPos : %f, %f"), screenPos.X, screenPos.Y);
 			canvasSlot->SetPosition(screenPos);
+			//UE_LOG(LogTemp, Warning, TEXT("canvasSlot position : %f, %f"), canvasSlot->GetPosition().X, canvasSlot->GetPosition().Y);
+
 			canvasSlot->SetSize(FVector2D(300, 500));
-			canvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+			//canvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
 		}
 
 	}

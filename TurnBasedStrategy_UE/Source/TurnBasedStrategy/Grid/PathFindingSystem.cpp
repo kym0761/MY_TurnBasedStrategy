@@ -8,14 +8,14 @@ UPathFindingSystem::UPathFindingSystem()
 {
 	X_Length = 10;
 	Y_Length = 10;
-	CellSize = 100.0f;
+	//CellSize = 100.0f;
 }
 
-void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, float _CellSize, TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction)
+void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction)
 {
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
-	CellSize = _CellSize;
+	//CellSize = _CellSize;
 
 	for (int x = 0; x < X_Length; x++)
 	{
@@ -36,29 +36,29 @@ TArray<UPathNode*> UPathFindingSystem::GetPathNodeArray() const
 	return PathNodeArray;
 }
 
-FGrid UPathFindingSystem::WorldToGrid(const FVector& WorldPosition) const
-{
-	// ?? Is Really Needed??
-	// GridManager 안에 이미 존재함.
-
-	FGrid grid;
-	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
-	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
-
-	return grid;
-}
-
-FVector UPathFindingSystem::GridToWorld(const FGrid& Grid) const
-{
-	// ?? Is Really Needed??
-	// GridManager 안에 이미 존재함.
-
-	FVector worldPosition;
-	worldPosition.X = Grid.X * CellSize;
-	worldPosition.Y = Grid.Y * CellSize;
-
-	return worldPosition;
-}
+//FGrid UPathFindingSystem::WorldToGrid(const FVector& WorldPosition) const
+//{
+//	// ?? Is Really Needed??
+//	// GridManager 안에 이미 존재함.
+//
+//	FGrid grid;
+//	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
+//	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
+//
+//	return grid;
+//}
+//
+//FVector UPathFindingSystem::GridToWorld(const FGrid& Grid) const
+//{
+//	// ?? Is Really Needed??
+//	// GridManager 안에 이미 존재함.
+//
+//	FVector worldPosition;
+//	worldPosition.X = Grid.X * CellSize;
+//	worldPosition.Y = Grid.Y * CellSize;
+//
+//	return worldPosition;
+//}
 
 UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
 {

@@ -25,10 +25,13 @@ public:
 private:
 
 	UPROPERTY()
-	UGridSystem* GridSystem;
+		UGridSystem* GridSystem;
 
-	FGrid Grid;
-	TArray<AUnitCharacter*> UnitArray;
+	UPROPERTY()
+		FGrid Grid;
+
+	UPROPERTY()
+		TArray<AUnitCharacter*> UnitArray;
 
 public:
 

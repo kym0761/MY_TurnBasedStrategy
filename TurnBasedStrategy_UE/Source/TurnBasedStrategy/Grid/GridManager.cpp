@@ -73,7 +73,11 @@ void AGridManager::CreateGridSystem()
 {
 	GridSystem = NewObject<UGridSystem>();
 
-	GridSystem->SetGridSystem(X_Length, Y_Length, CellSize, [](UGridSystem* gs, FGrid grid) {
+	GridSystem->SetGridSystem(
+		X_Length, 
+		Y_Length, 
+		//CellSize, 
+		[](UGridSystem* gs, FGrid grid) {
 		UGridObject* gridObj = NewObject<UGridObject>();
 		gridObj->SetGrid(grid);
 		gridObj->SetGridSystem(gs);
@@ -82,7 +86,9 @@ void AGridManager::CreateGridSystem()
 
 	PathFindingSystem = NewObject<UPathFindingSystem>();
 
-	PathFindingSystem->SetPathFindingSystem(X_Length, Y_Length, CellSize,
+	PathFindingSystem->SetPathFindingSystem(
+		X_Length, 
+		Y_Length,
 		[](UPathFindingSystem* pfs, FGrid grid)
 		{
 			UPathNode* pathNode = NewObject<UPathNode>();
@@ -236,9 +242,6 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 
 	//TSet<UPathNode*> openList;
 	//TSet<UPathNode*> closeList;
-
-
-	//TPriorityQueue<UPathNode*> priorityQueue;
 
 	//시작 위치
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);

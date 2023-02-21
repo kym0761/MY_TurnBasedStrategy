@@ -52,8 +52,6 @@ public:
 		return GetGCost() < Other->GetGCost();
 	}
 
-	//friend bool operator<(const UPathNode* A, const UPathNode* B);
-
 };
 
 

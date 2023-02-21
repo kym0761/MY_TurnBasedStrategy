@@ -3,22 +3,24 @@
 
 #include "GridSystem.h"
 #include "GridObject.h"
+
 /*
 * 언리얼 C++ Template는 cpp에 구현이 생기지 않는다
 * 여기에 구현이 있으면 문제가 있는 것이니 참고.
 * 구현은 헤더 안에서 해결해야함.
 */
+
 UGridSystem::UGridSystem()
 {
 	X_Length = 10;
 	Y_Length = 10;
-	CellSize = 100.0f;
+	//CellSize = 100.0f;
 }
-void UGridSystem::SetGridSystem(int _X_Length, int _Y_Length, float _CellSize, TFunctionRef<UGridObject* (UGridSystem*, FGrid)> CreateObjectFunction)
+void UGridSystem::SetGridSystem(int _X_Length, int _Y_Length, TFunctionRef<UGridObject* (UGridSystem*, FGrid)> CreateObjectFunction)
 {
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
-	CellSize = _CellSize;
+	//CellSize = _CellSize;
 
 	for (int x = 0; x < X_Length; x++)
 	{
@@ -39,27 +41,23 @@ TArray<UGridObject*> UGridSystem::GetGridObjectArray() const
 	return GridObjectArray;
 }
 
-FGrid UGridSystem::WorldToGrid(const FVector& WorldPosition) const
-{
-	// ?? Is Really Needed??
-
-	FGrid grid;
-	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
-	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
-
-	return grid;
-}
-
-FVector UGridSystem::GridToWorld(const FGrid& Grid) const
-{
-	// ?? Is Really Needed??
-
-	FVector worldPosition;
-	worldPosition.X = Grid.X * CellSize;
-	worldPosition.Y = Grid.Y * CellSize;
-
-	return worldPosition;
-}
+//FGrid UGridSystem::WorldToGrid(const FVector& WorldPosition) const
+//{
+//	FGrid grid;
+//	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
+//	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
+//
+//	return grid;
+//}
+//
+//FVector UGridSystem::GridToWorld(const FGrid& Grid) const
+//{
+//	FVector worldPosition;
+//	worldPosition.X = Grid.X * CellSize;
+//	worldPosition.Y = Grid.Y * CellSize;
+//
+//	return worldPosition;
+//}
 
 UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 {

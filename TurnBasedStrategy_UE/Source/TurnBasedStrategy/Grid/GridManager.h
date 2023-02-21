@@ -30,6 +30,7 @@ class TURNBASEDSTRATEGY_API AGridManager : public AActor
 {
 	GENERATED_BODY()
 	
+#pragma region PrivateData
 private:
 
 	UPROPERTY()
@@ -59,7 +60,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_Warning;
-
+#pragma endregion
 public:	
 	// Sets default values for this actor's properties
 	AGridManager();
