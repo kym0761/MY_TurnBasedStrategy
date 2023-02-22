@@ -39,17 +39,17 @@ AUnitManager* AUnitManager::GetUnitManager()
 	return unitManager;
 }
 
-TArray<AUnitCharacter*> AUnitManager::GetUnitArray()
+TArray<AUnitCharacter*> AUnitManager::GetUnitArray() const
 {
 	return UnitArray;
 }
 
-TArray<AUnitCharacter*> AUnitManager::GetFriendlyUnitArray()
+TArray<AUnitCharacter*> AUnitManager::GetFriendlyUnitArray() const
 {
 	return FriendlyUnitArray;
 }
 
-TArray<AUnitCharacter*> AUnitManager::GetEnemyUnitArray()
+TArray<AUnitCharacter*> AUnitManager::GetEnemyUnitArray() const
 {
 	return EnemyUnitArray;
 }

@@ -51,10 +51,10 @@ public:
 
 	FString GetActionName() const;
 
-	virtual void DealWithGridBeforeAction(FGrid& Grid);
+	virtual void DealWithGridBeforeAction(const FGrid& Grid);
 
-	virtual void TakeAction(FGrid Grid);
-	virtual bool IsValidActionGrid(FGrid Grid) const;
+	virtual void TakeAction(const FGrid& Grid);
+	virtual bool IsValidActionGrid(const FGrid& Grid) const;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;
 	virtual TArray<FGrid> GetValidActionGridArray() const;
 	AUnitCharacter* GetUnit() const;

@@ -111,7 +111,7 @@ TArray<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDa
 	return validVisualDataArray;
 }
 
-void UUnitInteractActionComponent::TakeAction(FGrid Grid)
+void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 {
 	TArray<FGrid> tempArr = GetValidActionGridArray();
 

@@ -230,6 +230,12 @@ void AUnitSelectPawn::DoSelection()
 		//	UE_LOG(LogTemp, Warning, TEXT("projection failed"));
 		//}
 
+		if (IsValid(UnitActionsWidget))
+		{
+			UnitActionsWidget->RemoveFromParent();
+			UnitActionsWidget = nullptr;
+		}
+
 		UnitActionsWidget = CreateWidget<UUnitActionListWidget>(GetWorld(), UnitActionListWidgetClass);
 		MainCanvasWidget->MainCanvas->AddChild(UnitActionsWidget);
 		UnitActionsWidget->InitUnitActionsWidget(SelectedUnit);

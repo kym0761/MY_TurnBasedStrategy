@@ -39,7 +39,7 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 		VisualTransformArray.Add(visualTransform);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualswithGridArray"),*GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualswithGridArray"),*GetName());
 	AddInstances(VisualTransformArray, false, true);
 
 }
@@ -60,12 +60,17 @@ void UInstancedGridVisualComponent::DrawGridVisualsWithGridVisualData(const FGri
 	visualTransform.SetRotation(FQuat::Identity);
 	visualTransform.SetScale3D(GetComponentScale());
 
-	UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualsWithGridVisualData"), *GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualsWithGridVisualData"), *GetName());
 
 	AddInstance(visualTransform,true);
 }
 
 void UInstancedGridVisualComponent::RemoveGridVisuals()
 {
+	if (GetInstanceCount() == 0)
+	{
+		return;
+	}
+
 	ClearInstances();
 }

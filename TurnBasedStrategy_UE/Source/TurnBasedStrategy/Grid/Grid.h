@@ -24,10 +24,8 @@ public:
 	FGrid();
 	FGrid(int32 _X, int32 _Y);
 	FString ToString() const;
-	bool operator==(const FGrid& Other);
-	friend bool operator==(const FGrid& a, const FGrid& b); // contains() function needs it!
-	bool operator!= (const FGrid& Other);
-	friend bool operator!=(const FGrid& a, const FGrid& b);
+	bool operator==(const FGrid& Other) const;
+	bool operator!= (const FGrid& Other) const;
 	FGrid operator+(const FGrid& b) const;
 	FGrid operator-(const FGrid& b) const;
 	FGrid& operator=(const FGrid& b);

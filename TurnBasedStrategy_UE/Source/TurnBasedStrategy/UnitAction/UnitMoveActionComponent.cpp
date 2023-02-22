@@ -260,7 +260,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 	return validVisualDataArray;
 }
 
-void UUnitMoveActionComponent::TakeAction(FGrid Grid)
+void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 {
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
@@ -315,7 +315,7 @@ void UUnitMoveActionComponent::TakeAction(FGrid Grid)
 
 }
 
-void UUnitMoveActionComponent::DealWithGridBeforeAction(FGrid& Grid)
+void UUnitMoveActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 {
 	TakeAction(Grid);
 }

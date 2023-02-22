@@ -19,7 +19,7 @@ void UUnitAttackActionComponent::BeginPlay()
 
 }
 
-void UUnitAttackActionComponent::DealWithGridBeforeAction(FGrid& Grid)
+void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 {
 	//UI를 띄우기.
 	//UI에서 Attack OK 명령을 받았을 시에 공격하기.
@@ -184,7 +184,7 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 
 }
 
-void UUnitAttackActionComponent::TakeAction(FGrid Grid)
+void UUnitAttackActionComponent::TakeAction(const FGrid& Grid)
 {
 	//TArray<FGrid> tempArr = GetValidActionGridArray();
 	//

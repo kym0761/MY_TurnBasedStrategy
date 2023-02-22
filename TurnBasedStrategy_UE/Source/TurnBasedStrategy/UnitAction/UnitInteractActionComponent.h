@@ -28,7 +28,7 @@ public:
 
 	virtual TArray<FGrid> GetValidActionGridArray() const override;
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
-	virtual void TakeAction(FGrid Grid) override;
+	virtual void TakeAction(const FGrid& Grid) override;
 
 
 	virtual void OnActionStartFunc() override;

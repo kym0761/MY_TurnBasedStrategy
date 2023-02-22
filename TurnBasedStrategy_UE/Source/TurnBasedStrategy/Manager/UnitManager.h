@@ -37,8 +37,8 @@ public:
 
 	static AUnitManager* GetUnitManager();
 
-	TArray<AUnitCharacter*> GetUnitArray();
-	TArray<AUnitCharacter*> GetFriendlyUnitArray();
-	TArray<AUnitCharacter*> GetEnemyUnitArray();
+	TArray<AUnitCharacter*> GetUnitArray() const;
+	TArray<AUnitCharacter*> GetFriendlyUnitArray() const;
+	TArray<AUnitCharacter*> GetEnemyUnitArray() const;
 
 };

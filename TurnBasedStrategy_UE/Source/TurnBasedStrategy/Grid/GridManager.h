@@ -76,34 +76,30 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	bool IsValidGrid(const FGrid& Grid);
-
+	bool IsValidGrid(const FGrid& Grid) const;
 	void CreateGridSystem();
-
 	void RemoveAllGridVisual();
 
-	FGrid WorldToGrid(const FVector& WorldPosition);
-	FVector GridToWorld(const FGrid& Grid);
+	FGrid WorldToGrid(const FVector& WorldPosition) const;
+	FVector GridToWorld(const FGrid& Grid) const;
 
-	UGridObject* GetValidGridObject(const FGrid& Grid);
+	UGridObject* GetValidGridObject(const FGrid& Grid) const;
 
 	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
 	void ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType);
 	void ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray);
 
-
 	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
-	int32 CalculateGridDistance(const FGrid& a, const FGrid& b);
-	UPathNode* GetLowestFCostNode(const TArray<UPathNode*>& PathNodeList);
-	//UPathNode* GetLowestFCostNode(const TSet<UPathNode*>& PathNodeList);
-	TArray<FGrid> CalculatePath(UPathNode* EndNode);
-	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode);
+	int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
+	UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
+	TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
+	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
 
-	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue);
-	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue);
-	bool HasAnyUnitOnGrid(const FGrid& GridValue);
+	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
+	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
+	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
-	bool IsWalkableGrid(const FGrid& GridValue);
+	bool IsWalkableGrid(const FGrid& GridValue) const;
 	int32 GetPathLength(const FGrid& Start, const FGrid& End);
 
 	void InitAllPathFindingNodes();

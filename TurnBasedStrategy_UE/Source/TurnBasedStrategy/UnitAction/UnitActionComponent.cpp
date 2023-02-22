@@ -51,12 +51,12 @@ FString UUnitActionComponent::GetActionName() const
 	return ActionName;
 }
 
-void UUnitActionComponent::DealWithGridBeforeAction(FGrid& Grid)
+void UUnitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 {
 	UE_LOG(LogTemp, Warning, TEXT(" :) "));
 }
 
-void UUnitActionComponent::TakeAction(FGrid Grid)
+void UUnitActionComponent::TakeAction(const FGrid& Grid)
 {
 	//Do Nothing?
 
@@ -66,7 +66,7 @@ void UUnitActionComponent::TakeAction(FGrid Grid)
 	}
 }
 
-bool UUnitActionComponent::IsValidActionGrid(FGrid Grid) const
+bool UUnitActionComponent::IsValidActionGrid(const FGrid& Grid) const
 {
 	return GetValidActionGridArray().Contains(Grid);
 }
@@ -99,12 +99,14 @@ bool UUnitActionComponent::IsCanDoActionThisTurn() const
 
 bool UUnitActionComponent::IsCurrentlyAvailableAction() const
 {
-	if (ActionName != "Wait")
+	if (ActionName == "Wait" || ActionName == "Move")
 	{
-		return GetValidActionGridArray().Num() != 0;
+		return IsCanDoActionThisTurn();
 	}
 
-	return true;
+
+	return GetValidActionGridArray().Num() != 0;
+
 }
 
 void UUnitActionComponent::SetCanDoActionThisTurn(bool InputBool)

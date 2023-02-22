@@ -22,7 +22,7 @@ void UWaitActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UWaitActionComponent::TakeAction(FGrid Grid)
+void UWaitActionComponent::TakeAction(const FGrid& Grid)
 {
 	TArray<UActorComponent*> unitActions;
 	GetOwner()->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
@@ -51,7 +51,7 @@ void UWaitActionComponent::TakeAction(FGrid Grid)
 
 }
 
-void UWaitActionComponent::DealWithGridBeforeAction(FGrid& Grid)
+void UWaitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 {
 	TakeAction(Grid);
 }

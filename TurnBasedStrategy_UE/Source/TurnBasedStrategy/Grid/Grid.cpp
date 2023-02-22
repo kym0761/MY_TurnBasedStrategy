@@ -20,12 +20,12 @@ FString FGrid::ToString() const
 	return FString("X : ") + FString::FromInt(X) + FString(" / Y : ") + FString::FromInt(Y);
 }
 
-bool FGrid::operator==(const FGrid& Other)
+bool FGrid::operator==(const FGrid& Other) const
 {
 	return X == Other.X && Y == Other.Y;
 }
 
-bool FGrid::operator!=(const FGrid& Other)
+bool FGrid::operator!=(const FGrid& Other) const
 {
 	return !(*this == Other);
 }
@@ -64,16 +64,6 @@ FGrid& FGrid::operator-=(const FGrid& b)
 {
 	(*this) = (*this) - b;
 	return *this;
-}
-
-bool operator==(const FGrid& a, const FGrid& b)
-{
-	return a.X == b.X && a.Y == b.Y;
-}
-
-bool operator!=(const FGrid& a, const FGrid& b)
-{
-	return !(a == b);
 }
 
 TArray<FGrid> FGridVisualData::ParseToGridArray(TArray<FGridVisualData> GridVisualArray)

@@ -74,24 +74,23 @@ void UAttackCalculationWidget::OnButton_AttackClicked()
 
 
 	RemoveFromParent();
+	MarkPendingKill();
 }
 
 void UAttackCalculationWidget::SetAttackOrders()
 {
-	AAttackManager* attackManager = AAttackManager::GetAttackManager();
-	if (IsValid(attackManager))
-	{
-		attackManager->SetupAttackManager(Attacker, Defender);
-		AttackOrders = attackManager->CalculateAttackOrder();
-	}
-
-
 	if (!IsValid(AllyAttackOrder) || !IsValid(EnemyAttackOrder))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Please Set up UMG BP. -- UAttackCalculationWidget::OnButton_AttackClicked()"));
 		return;
 	}
 
+	AAttackManager* attackManager = AAttackManager::GetAttackManager();
+	if (IsValid(attackManager))
+	{
+		attackManager->SetupAttackManager(Attacker, Defender);
+		AttackOrders = attackManager->CalculateAttackOrder();
+	}
 
 	for (FAttackOrder& order : AttackOrders)
 	{

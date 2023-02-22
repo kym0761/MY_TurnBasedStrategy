@@ -64,7 +64,7 @@ void AGridManager::Tick(float DeltaTime)
 
 }
 
-bool AGridManager::IsValidGrid(const FGrid& Grid)
+bool AGridManager::IsValidGrid(const FGrid& Grid) const
 {
 	return Grid.X >= 0 && Grid.Y >= 0 && Grid.X < X_Length&& Grid.Y < Y_Length;
 }
@@ -105,7 +105,7 @@ void AGridManager::RemoveAllGridVisual()
 	GridVisual_Warning->RemoveGridVisuals();
 }
 
-FGrid AGridManager::WorldToGrid(const FVector& WorldPosition)
+FGrid AGridManager::WorldToGrid(const FVector& WorldPosition) const
 {
 	FGrid grid;
 	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
@@ -114,7 +114,7 @@ FGrid AGridManager::WorldToGrid(const FVector& WorldPosition)
 	return grid;
 }
 
-FVector AGridManager::GridToWorld(const FGrid& Grid)
+FVector AGridManager::GridToWorld(const FGrid& Grid) const
 {
 	FVector worldPosition = FVector::ZeroVector;
 	worldPosition.X = Grid.X * CellSize;
@@ -123,7 +123,7 @@ FVector AGridManager::GridToWorld(const FGrid& Grid)
 	return worldPosition;
 }
 
-UGridObject* AGridManager::GetValidGridObject(const FGrid& Grid)
+UGridObject* AGridManager::GetValidGridObject(const FGrid& Grid) const
 {
 	UGridObject* gridObj = GridSystem->GetValidGridObject(Grid);
 
@@ -235,12 +235,18 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 {
 	//return 하기 전에 PathLength를 변경시켜야함.
 
+	//TSet<UPathNode*> openList;
+	//TSet<UPathNode*> closeList;
+
 	//openList = 이동 가능할 위치 / closeList = 이동 불가능함이 확정된 위치.
 	TArray<UPathNode*> openList;
 	TArray<UPathNode*> closeList;
 
-	//TSet<UPathNode*> openList;
-	//TSet<UPathNode*> closeList;
+	//Heap화 == PriorityQueue
+	Algo::Heapify(openList, [](UPathNode* A, UPathNode* B)
+		{
+			return A->GetFCost() < B->GetFCost();
+		});
 
 	//시작 위치
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
@@ -335,55 +341,30 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	return TArray<FGrid>();
 }
 
-int32 AGridManager::CalculateGridDistance(const FGrid& a, const FGrid& b)
+int32 AGridManager::CalculateGridDistance(const FGrid& a, const FGrid& b) const
 {
 	return FMath::Abs(a.X - b.X) + FMath::Abs(a.Y - b.Y);
 }
 
-UPathNode* AGridManager::GetLowestFCostNode(const TArray<UPathNode*>& PathNodeList)
+UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*>& PathNodeList)
 {
 	if (PathNodeList.Num() == 0)
 	{
 		return nullptr;
 	}
 
-	//Algo::Sort(PathNodeList, [](const UPathNode& A, const UPathNode& B)
-	//	{
-	//		return A.GetFCost() < B.GetFCost();
-	//	});
-
-	UPathNode* lowestNode = PathNodeList[0];
-	for (UPathNode* pathNode : PathNodeList)
-	{
-		if (pathNode->GetFCost() < lowestNode->GetFCost())
+	Algo::HeapSort(PathNodeList, [](UPathNode* A, UPathNode* B)
 		{
-			lowestNode = pathNode;
-		}
-	}
+			return A->GetFCost() < B->GetFCost();
+		});
+
+	//HeapSort된 것의 첫번째 원소가 가장 F 값이 낮은 Node다.
+	UPathNode* lowestNode = PathNodeList[0];
 
 	return lowestNode;
 }
 
-//UPathNode* AGridManager::GetLowestFCostNode(const TSet<UPathNode*>& PathNodeList)
-//{
-//	if (PathNodeList.Num() == 0)
-//	{
-//		return nullptr;
-//	}
-//
-//	UPathNode* lowestNode = nullptr;
-//	for (UPathNode* pathNode : PathNodeList)
-//	{
-//		if (lowestNode ==nullptr || pathNode->GetFCost() < lowestNode->GetFCost())
-//		{
-//			lowestNode = pathNode;
-//		}
-//	}
-//
-//	return lowestNode;
-//}
-
-TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode)
+TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode) const
 {
 	if (!IsValid(EndNode))
 	{
@@ -406,7 +387,7 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode)
 	return gridArray;
 }
 
-TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
+TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode) const
 {
 	TArray<UPathNode*> nearNodeList;
 
@@ -437,7 +418,7 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode)
 	return nearNodeList;
 }
 
-TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue)
+TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue) const
 {
 
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
@@ -451,7 +432,7 @@ TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue)
 
 }
 
-AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue)
+AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue) const
 {
 	TArray<AUnitCharacter*> gridArray = GetUnitArrayAtGrid(GridValue);
 
@@ -463,10 +444,10 @@ AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue)
 	return gridArray[0];
 }
 
-bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue)
+bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue) const
 {
 
-	auto gridObj = GridSystem->GetValidGridObject(GridValue);
+	UGridObject* gridObj = GridSystem->GetValidGridObject(GridValue);
 	if (IsValid(gridObj))
 	{
 		return gridObj->HasAnyUnit();
@@ -483,7 +464,7 @@ bool AGridManager::HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnore
 	return pathLength != -1;
 }
 
-bool AGridManager::IsWalkableGrid(const FGrid& GridValue)
+bool AGridManager::IsWalkableGrid(const FGrid& GridValue) const
 {
 	UPathNode* pathNode = PathFindingSystem->GetValidPathNode(GridValue);
 	if (IsValid(pathNode))
