@@ -7,7 +7,7 @@
 #include "../UnitAction/UnitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "../UnitSelectPawn.h"
-#include "../Grid/GridManager.h"
+#include "../Manager/GridManager.h"
 
 void UActionSelectButtonWidget::InitActionSelectButton(UUnitActionComponent* InputAction)
 {

@@ -2,14 +2,14 @@
 
 
 #include "GridManager.h"
-#include "GridObject.h"
-#include "PathNode.h"
-#include "Components/BillboardComponent.h"
-#include "InstancedGridVisualComponent.h"
+#include "../Grid/GridObject.h"
+#include "../Grid/PathNode.h"
+#include "../Grid/InstancedGridVisualComponent.h"
+#include "../Grid/PathFindingSystem.h"
+#include "../Grid/GridSystem.h"
 
+#include "Components/BillboardComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PathFindingSystem.h"
-#include "GridSystem.h"
 #include "../UnitCharacter.h"
 
 // Sets default values
@@ -233,10 +233,7 @@ void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& Gr
 
 TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit)
 {
-	//return 하기 전에 PathLength를 변경시켜야함.
-
-	//TSet<UPathNode*> openList;
-	//TSet<UPathNode*> closeList;
+	//!주의! return 하기 전에 PathLength를 변경시켜야함.
 
 	//openList = 이동 가능할 위치 / closeList = 이동 불가능함이 확정된 위치.
 	TArray<UPathNode*> openList;
@@ -279,16 +276,29 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	{
 		UPathNode* currentNode = GetLowestFCostNode(openList);
 
-		//DrawDebugSphere(GetWorld(), GridToWorld(currentNode->GetGrid()), 10, 12, FColor::Red, false, 0.05f, 0, 2.0f);
-
 		if (currentNode == endNode) //Break Point.
 		{
+			FGrid currentGrid = currentNode->GetGrid();
+			AUnitCharacter* currentUnit = GetUnitAtGrid(currentGrid);
+			AUnitCharacter* startUnit = GetUnitAtGrid(Start);
+			
+			//적군이든 아군이든 누군가가 존재한다면, 해당 Grid를 점유할 수 없으므로
+			//경로가 존재할 수 없게됨.
+			//다만, 자기 자신이라면 가능함.
+			if (IsValid(currentUnit) && currentUnit != startUnit)
+			{
+				PathLength = -1;
+				return TArray<FGrid>();
+			}
+
 			PathLength = endNode->GetFCost();
 			return CalculatePath(endNode);
 		}
 
 		openList.Remove(currentNode);
 		closeList.Add(currentNode);
+
+		//UE_LOG(LogTemp, Warning, TEXT("Node Position : %d, %d"), currentNode->GetGrid().X, currentNode->GetGrid().Y);
 
 		TArray<UPathNode*> nearNodeArray = GetNearNodeArray(currentNode);
 		for (UPathNode* nearNode : nearNodeArray)
@@ -306,14 +316,26 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 				continue;
 			}
 
-			//bCanIgnoreUnit이 true일 때, 유닛이 존재하는 위치는 무시.
+			//bCanIgnoreUnit이 true일 때, 적 유닛을 통과할 수 있음.
 			//GridVisual은 여기가 아니라 MoveActionComponent에서 ValidGridVisual을 체크함.
 			//유닛 정보는 GridSystem에 접근이 필요함.
 			UGridObject* gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
 			if (!bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
-				closeList.Add(nearNode);
-				continue;
+				AUnitCharacter* currentUnit = gridObj->GetUnit();
+				AUnitCharacter* startUnit = GetUnitAtGrid(Start);
+				if (IsValid(currentUnit) && IsValid(startUnit))
+				{
+					if (currentUnit->ActorHasTag(startUnit->Tags[0]))
+					{
+						//아군이면 일단 통과가 가능함.
+					}
+					else
+					{
+						closeList.Add(nearNode);
+						continue;
+					}
+				}
 			}
 
 			int tempGCost = currentNode->GetGCost() + CalculateGridDistance(currentNode->GetGrid(), nearNode->GetGrid());
@@ -325,12 +347,10 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 				nearNode->SetHCost(CalculateGridDistance(nearNode->GetGrid(), End));
 				nearNode->CalculateFCost();
 
-				
-				if (!openList.Contains(nearNode)) //!! 위에서 이미 closeList에 있다면 무시됨.
+				if (!openList.Contains(nearNode))
 				{
 					openList.Add(nearNode);
 				}
-
 			}
 		}
 	}

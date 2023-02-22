@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Grid.h"
-#include "GridVisual.h"
+#include "../Grid/Grid.h"
+#include "../Grid/GridVisual.h"
 #include "GridManager.generated.h"
 
 class AGridVisual;

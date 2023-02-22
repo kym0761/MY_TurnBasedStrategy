@@ -4,7 +4,7 @@
 #include "UnitInteractActionComponent.h"
 
 #include "../UnitCharacter.h"
-#include "../Grid/GridManager.h"
+#include "../Manager/GridManager.h"
 
 
 UUnitInteractActionComponent::UUnitInteractActionComponent()

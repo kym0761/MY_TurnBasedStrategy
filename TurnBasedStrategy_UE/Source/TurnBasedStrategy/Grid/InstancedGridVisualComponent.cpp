@@ -2,7 +2,7 @@
 
 
 #include "InstancedGridVisualComponent.h"
-#include "GridManager.h"
+#include "../Manager/GridManager.h"
 
 UInstancedGridVisualComponent::UInstancedGridVisualComponent()
 {

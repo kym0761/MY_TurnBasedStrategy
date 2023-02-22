@@ -4,7 +4,7 @@
 #include "UnitMoveActionComponent.h"
 #include "../UnitCharacter.h"
 
-#include "../Grid/GridManager.h"
+#include "../Manager/GridManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "AIController.h"
 
@@ -212,20 +212,14 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 			testData.Grid = resultGrid;
 			testData.GridVisualType = EGridVisualType::Move;
 
-			//지금 현재 Unit의 위치
-			if (resultGrid == unitGrid)
+			if (resultGrid == unitGrid) //지금 현재 Unit의 위치
 			{
 				testData.GridVisualType = EGridVisualType::Warning;
 			}
-
-			//누군가 점유중
-			if (gridManager->HasAnyUnitOnGrid(resultGrid))
-			{
-				testData.GridVisualType = EGridVisualType::NO;
-			}
-
-			//걸을 수 없는 위치?
-			if (!gridManager->IsWalkableGrid(resultGrid))
+			else if (gridManager->HasAnyUnitOnGrid(resultGrid) || //누군가 점유중
+				!gridManager->IsWalkableGrid(resultGrid) || //걸을 수 없는 위치?
+				!gridManager->HasPath(unitGrid, resultGrid, false) || //도착 불가능한 위치?
+				gridManager->GetPathLength(unitGrid, resultGrid) > MaxActionRange) 	//의도와 달리 먼 거리?
 			{
 				testData.GridVisualType = EGridVisualType::NO;
 			}
@@ -235,20 +229,17 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 			if (IsValid(targetUnit) && GetOwner()->Tags.Num()>0)
 			{
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
+				if (bisFriend) // 만약 아군 위치라면 노란색으로 변경함.
+				{
+					testData.GridVisualType = EGridVisualType::Warning;
+				}
 			}
-
-			//도착 불가능한 위치?
-			if (bisFriend &&!gridManager->HasPath(unitGrid, resultGrid,true) || !gridManager->HasPath(unitGrid, resultGrid))
+			
+			if (targetUnit == GetOwner())
 			{
-				testData.GridVisualType = EGridVisualType::NO;
-
+				testData.GridVisualType = EGridVisualType::Move;
 			}
 
-			//의도와 달리 먼 거리?
-			if (gridManager->GetPathLength(unitGrid, resultGrid) > MaxActionRange)
-			{
-				testData.GridVisualType = EGridVisualType::NO;
-			}
 
 			//통과하면 문제없으니 validArray에 추가
 

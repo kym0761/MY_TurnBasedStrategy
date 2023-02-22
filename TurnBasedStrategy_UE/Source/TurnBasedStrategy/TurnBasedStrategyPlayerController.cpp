@@ -9,7 +9,7 @@
 #include "Engine/World.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Grid/GridManager.h"
+#include "Manager/GridManager.h"
 
 
 #include "DrawDebugHelpers.h"// draw line

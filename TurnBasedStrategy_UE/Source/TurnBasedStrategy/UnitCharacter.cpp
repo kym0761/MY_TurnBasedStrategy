@@ -10,7 +10,7 @@
 #include "UnitAction/WaitActionComponent.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Grid/GridManager.h"
+#include "Manager/GridManager.h"
 #include "Manager/TurnManager.h"
 #include "UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"

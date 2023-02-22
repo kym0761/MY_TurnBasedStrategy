@@ -9,7 +9,7 @@
 #include "UnitCharacter.h"
 
 #include "UnitAction/UnitMoveActionComponent.h"
-#include "Grid/GridManager.h"
+#include "Manager/GridManager.h"
 #include "Grid/Grid.h"
 #include "Kismet/GameplayStatics.h"
 #include "UMG/UnitActionListWidget.h"

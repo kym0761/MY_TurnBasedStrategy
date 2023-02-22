@@ -3,7 +3,7 @@
 
 #include "UnitAttackActionComponent.h"
 #include "../UnitCharacter.h"
-#include "../Grid/GridManager.h"
+#include "../Manager/GridManager.h"
 #include"../UMG/AttackCalculationWidget.h"
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()
