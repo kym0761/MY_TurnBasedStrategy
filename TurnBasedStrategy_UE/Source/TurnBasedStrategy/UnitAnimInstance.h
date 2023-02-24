@@ -6,11 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "UnitAnimInstance.generated.h"
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackHit);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnd);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHit);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHitEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNotifyWorks);
 /**
  * 
  */
@@ -20,10 +16,14 @@ class TURNBASEDSTRATEGY_API UUnitAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 public:
 
-	FOnAttackHit OnAttackHit;
-	FOnAttackEnd OnAttackEnd;
-	FOnHit OnHit;
-	FOnHitEnd OnHitEnd;
+	UPROPERTY()
+		FOnNotifyWorks OnAttackHit;
+	UPROPERTY()
+		FOnNotifyWorks OnAttackEnd;
+	UPROPERTY()
+		FOnNotifyWorks OnHit;
+	UPROPERTY()
+		FOnNotifyWorks OnHitEnd;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AnimMontage")
 		UAnimMontage* UnitMontage;
@@ -33,15 +33,16 @@ public:
 	UFUNCTION()
 		void AnimNotify_AttackEnd();
 	UFUNCTION()
-		void AnimNotify_OnHit();
+		void AnimNotify_Hit();
 	UFUNCTION()
 		void AnimNotify_HitEnd();
 
-	void BindToOnAttackHit(FScriptDelegate ToBind);
-	void BindToOnAttackEnd(FScriptDelegate ToBind);
-	void BindToOnHit(FScriptDelegate ToBind);
-	void BindToHitEnd(FScriptDelegate ToBind);
+	void BindTo_OnAttackHit(FScriptDelegate ToBind);
+	void BindTo_OnAttackEnd(FScriptDelegate ToBind);
+	void BindTo_OnHit(FScriptDelegate ToBind);
+	void BindTo_OnHitEnd(FScriptDelegate ToBind);
 
 	void PlayUnitAttackMontage();
 	void PlayUnitHitMontage();
+	//void StopUnitMontage();
 };

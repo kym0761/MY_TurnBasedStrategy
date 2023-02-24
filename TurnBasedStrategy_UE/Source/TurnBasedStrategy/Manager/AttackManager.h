@@ -7,6 +7,7 @@
 #include "AttackManager.generated.h"
 
 class UUnitAnimInstance;
+class UUnitAttackActionComponent;
 
 UENUM(BlueprintType)
 enum class EAttackOrderType : uint8
@@ -23,10 +24,17 @@ struct FAttackOrder
 	GENERATED_BODY()
 
 public:
+
+	FAttackOrder();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-	EAttackOrderType AttackOrderType;
+		EAttackOrderType AttackOrderType;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-	int32 Damage;
+		int32 Damage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
+		AActor* Attacker;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
+		AActor* Defender;
 
 };
 
@@ -40,28 +48,21 @@ public:
 	AAttackManager();
 
 private:
-	UPROPERTY()
-		AActor* Attacker;
 
-	UPROPERTY()
-		AActor* Defender;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack", Meta = (AllowPrivateAccess = "true"))
+		TArray<FAttackOrder> OrderToPlay;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack", Meta = (AllowPrivateAccess = "true"))
+		FAttackOrder CurrentAttackOrder;
 
-	UPROPERTY()
-		AActor* CurrentAttacker;
-
-	UPROPERTY()
-		AActor* CurrentDefender;
-
-	UPROPERTY()
-	TArray<FAttackOrder> OrderToPlay;
-
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack", Meta = (AllowPrivateAccess = "true"))
 		bool bAttackerWaiting = false;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Attack", Meta = (AllowPrivateAccess = "true"))
 		bool bDefenderWaiting = false;
 
+	UPROPERTY()
+	UUnitAttackActionComponent* CurrentAttackActionComponent;
 
 protected:
 	// Called when the game starts or when spawned
@@ -71,7 +72,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SetupAttackManager(AActor* InAttacker, AActor* InDefender);
+	void SetupAttackManager(AActor* Attacker, AActor* Defender);
 
 	void StartAttack();
 	void PlayAttack();
@@ -86,7 +87,10 @@ public:
 	UFUNCTION()
 		void OnHitEnd();
 
-	TArray<FAttackOrder> CalculateAttackOrder();
+	//TArray<FAttackOrder> CalculateAttackOrder();
+
+	TArray<FAttackOrder> CalculateAttackOrder(AActor* Attacker, AActor* Defender);
+
 	static AAttackManager* GetAttackManager();
 
 
@@ -96,4 +100,7 @@ public:
 	void BindOnHitEnd(UUnitAnimInstance* AnimInst);
 
 	void TryPlayNextOrder();
+
+
+	TArray<FAttackOrder> GetAttackOrder() const;
 };

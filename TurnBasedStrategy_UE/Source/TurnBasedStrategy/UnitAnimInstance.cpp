@@ -2,14 +2,17 @@
 
 
 #include "UnitAnimInstance.h"
+#include "StatComponent.h"
 
 void UUnitAnimInstance::AnimNotify_AttackHit()
 {
-
 	if (OnAttackHit.IsBound())
 	{
 		OnAttackHit.Broadcast();
-		OnAttackHit.Clear();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnAttackHit.IsBound() false"));
 	}
 }
 
@@ -18,16 +21,22 @@ void UUnitAnimInstance::AnimNotify_AttackEnd()
 	if (OnAttackEnd.IsBound())
 	{
 		OnAttackEnd.Broadcast();
-		OnAttackEnd.Clear();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnAttackEnd.IsBound() false"));
 	}
 }
 
-void UUnitAnimInstance::AnimNotify_OnHit()
+void UUnitAnimInstance::AnimNotify_Hit()
 {
 	if (OnHit.IsBound())
 	{
 		OnHit.Broadcast();
-		OnHit.Clear();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnHit.IsBound() false"));
 	}
 }
 
@@ -36,31 +45,46 @@ void UUnitAnimInstance::AnimNotify_HitEnd()
 	if (OnHitEnd.IsBound())
 	{
 		OnHitEnd.Broadcast();
-		OnHitEnd.Clear();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnHitEnd.IsBound() false"));
 	}
 }
 
-void UUnitAnimInstance::BindToOnAttackHit(FScriptDelegate ToBind)
+void UUnitAnimInstance::BindTo_OnAttackHit(FScriptDelegate ToBind)
 {
-	OnAttackHit.Clear();
+	if (OnAttackHit.IsBound())
+	{
+		OnAttackHit.Clear();
+	}
 	OnAttackHit.Add(ToBind);
 }
 
-void UUnitAnimInstance::BindToOnAttackEnd(FScriptDelegate ToBind)
+void UUnitAnimInstance::BindTo_OnAttackEnd(FScriptDelegate ToBind)
 {
-	OnAttackEnd.Clear();
+	if (OnAttackEnd.IsBound())
+	{
+		OnAttackEnd.Clear();
+	}
 	OnAttackEnd.Add(ToBind);
 }
 
-void UUnitAnimInstance::BindToOnHit(FScriptDelegate ToBind)
+void UUnitAnimInstance::BindTo_OnHit(FScriptDelegate ToBind)
 {
-	OnHit.Clear();
+	if (OnHit.IsBound())
+	{
+		OnHit.Clear();
+	}
 	OnHit.Add(ToBind);
 }
 
-void UUnitAnimInstance::BindToHitEnd(FScriptDelegate ToBind)
+void UUnitAnimInstance::BindTo_OnHitEnd(FScriptDelegate ToBind)
 {
-	OnHitEnd.Clear();
+	if (OnHitEnd.IsBound())
+	{
+		OnHitEnd.Clear();
+	}
 	OnHitEnd.Add(ToBind);
 }
 
@@ -82,6 +106,28 @@ void UUnitAnimInstance::PlayUnitHitMontage()
 		return;
 	}
 
+	APawn* owner = TryGetPawnOwner();
+	UStatComponent* stat = nullptr;
+	if (IsValid(owner))
+	{
+		stat = owner->FindComponentByClass<UStatComponent>();
+	}
+
+	float hp = 1.0f;
+	if (IsValid(stat))
+	{
+		hp = stat->GetHP();
+	}
+
 	Montage_Play(UnitMontage);
-	Montage_JumpToSection(FName("Hit01"));
+
+	if (hp <= 0.0f)
+	{
+		Montage_JumpToSection(FName("Death01"));
+	}
+	else
+	{
+		Montage_JumpToSection(FName("Hit01"));
+	}
+
 }

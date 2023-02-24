@@ -14,6 +14,9 @@ class UUnitActionComponent;
 class UUnitAttackActionComponent;
 class UUnitInteractActionComponent;
 class UWaitActionComponent;
+class ADamageTextActor;
+//class UDamageTextWidget;
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDead);
@@ -46,6 +49,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UWaitActionComponent* WaitActionComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	TSubclassOf<ADamageTextActor> DamageTextActorBP;
+
 	FOnUnitSpawned OnUnitSpawned;
 	FOnUnitDead OnUnitDead;
 	FOnActionPlayed OnActionPlayed;
@@ -63,6 +69,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay
+	(
+		const EEndPlayReason::Type EndPlayReason
+	) override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,7 +82,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-		class AController* EventInstigator, AActor* DamageCauser);
+		class AController* EventInstigator, AActor* DamageCauser) override;
 
 	FGrid GetGrid();
 	void SetGrid(FGrid GridValue);
@@ -87,5 +98,6 @@ public:
 
 
 	bool IsThisUnitCanAction() const;
+
 
 };

@@ -15,6 +15,8 @@
 #include "UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "UMG/DamageTextActor.h"
+
 // Sets default values
 AUnitCharacter::AUnitCharacter()
 {
@@ -57,6 +59,17 @@ void AUnitCharacter::BeginPlay()
 	}
 }
 
+void AUnitCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
+	{
+		gridManager->RemoveUnitAtGrid(this,gridManager->WorldToGrid(GetActorLocation()));
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
 // Called every frame
 void AUnitCharacter::Tick(float DeltaTime)
 {
@@ -73,12 +86,31 @@ void AUnitCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 float AUnitCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (IsValid(StatComponent))
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (!IsValid(StatComponent))
 	{
-		StatComponent->DealDamage(DamageAmount);
+		return 0.0f;
 	}
 
-	return 0.0f;
+	StatComponent->DealDamage(DamageAmount);
+
+	if (IsValid(DamageTextActorBP))
+	{
+		ADamageTextActor* damageTextActor = GetWorld()->SpawnActorDeferred<ADamageTextActor>(DamageTextActorBP,GetActorTransform());
+		if (IsValid(damageTextActor))
+		{
+			damageTextActor->AppliedDamage = DamageAmount;
+			damageTextActor->FinishSpawning(GetActorTransform());
+		}
+	}
+
+	if (StatComponent->GetHP() <= 0.0f)
+	{
+		SetLifeSpan(5.0f);
+	}
+
+	return DamageAmount;
 }
 
 FGrid AUnitCharacter::GetGrid()

@@ -74,7 +74,7 @@ void UAttackCalculationWidget::OnButton_AttackClicked()
 
 
 	RemoveFromParent();
-	MarkPendingKill();
+	MarkAsGarbage();
 }
 
 void UAttackCalculationWidget::SetAttackOrders()
@@ -89,7 +89,7 @@ void UAttackCalculationWidget::SetAttackOrders()
 	if (IsValid(attackManager))
 	{
 		attackManager->SetupAttackManager(Attacker, Defender);
-		AttackOrders = attackManager->CalculateAttackOrder();
+		AttackOrders = attackManager->GetAttackOrder();
 	}
 
 	for (FAttackOrder& order : AttackOrders)
