@@ -11,5 +11,8 @@ public class TurnBasedStrategy : ModuleRules
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule", "Niagara" ,"UMG"});
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
+        //Source Code Access.
+        PrivateIncludePaths.AddRange(new string[] { "TurnbasedStrategy" });
     }
 }

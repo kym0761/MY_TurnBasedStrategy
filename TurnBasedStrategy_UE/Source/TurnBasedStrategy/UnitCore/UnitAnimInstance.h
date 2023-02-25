@@ -44,5 +44,4 @@ public:
 
 	void PlayUnitAttackMontage();
 	void PlayUnitHitMontage();
-	//void StopUnitMontage();
 };

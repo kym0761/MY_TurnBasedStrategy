@@ -2,12 +2,11 @@
 
 
 #include "AttackManager.h"
-#include "../StatComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "../UnitAnimInstance.h"
+#include "UnitCore/UnitAnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "../UnitAction/UnitAttackActionComponent.h"
-#include "../StatComponent.h"
+#include "UnitAction/UnitAttackActionComponent.h"
+#include "UnitCore/StatComponent.h"
 
 // Sets default values
 AAttackManager::AAttackManager()

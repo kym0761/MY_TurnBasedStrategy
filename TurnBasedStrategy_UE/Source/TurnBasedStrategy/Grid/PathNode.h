@@ -49,7 +49,7 @@ public:
 
 	bool operator<(const UPathNode* Other) const
 	{
-		return GetGCost() < Other->GetGCost();
+		return GetFCost() < Other->GetFCost();
 	}
 
 };

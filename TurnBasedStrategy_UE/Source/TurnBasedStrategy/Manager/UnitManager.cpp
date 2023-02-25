@@ -3,7 +3,7 @@
 
 #include "UnitManager.h"
 #include "Kismet/GameplayStatics.h"
-#include "../UnitCharacter.h"
+#include "UnitCore/UnitCharacter.h"
 // Sets default values
 AUnitManager::AUnitManager()
 {

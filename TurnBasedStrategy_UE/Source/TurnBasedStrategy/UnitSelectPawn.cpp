@@ -6,7 +6,7 @@
 #include "Kismet/KismetMathLibrary.h" //UKismetMathLibrary
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "UnitCharacter.h"
+#include "UnitCore/UnitCharacter.h"
 
 #include "UnitAction/UnitMoveActionComponent.h"
 #include "Manager/GridManager.h"

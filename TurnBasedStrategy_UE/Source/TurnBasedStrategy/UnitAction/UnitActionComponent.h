@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "../Grid/Grid.h"
+#include "Grid/Grid.h"
 #include "UnitActionComponent.generated.h"
 
 class AUnitCharacter;

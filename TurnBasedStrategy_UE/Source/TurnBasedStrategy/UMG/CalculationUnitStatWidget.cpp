@@ -2,7 +2,7 @@
 
 
 #include "CalculationUnitStatWidget.h"
-#include "../StatComponent.h"
+#include "UnitCore/StatComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 

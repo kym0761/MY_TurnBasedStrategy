@@ -3,8 +3,8 @@
 
 #include "UnitInteractActionComponent.h"
 
-#include "../UnitCharacter.h"
-#include "../Manager/GridManager.h"
+#include "UnitCore/UnitCharacter.h"
+#include "Manager/GridManager.h"
 
 
 UUnitInteractActionComponent::UUnitInteractActionComponent()

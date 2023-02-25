@@ -2,8 +2,8 @@
 
 
 #include "UnitActionListWidget.h"
-#include "../UnitCharacter.h"
-#include "../UnitAction/UnitActionComponent.h"
+#include "UnitCore/UnitCharacter.h"
+#include "UnitAction/UnitActionComponent.h"
 #include "ActionSelectButtonWidget.h"
 #include "Components/VerticalBox.h"
 

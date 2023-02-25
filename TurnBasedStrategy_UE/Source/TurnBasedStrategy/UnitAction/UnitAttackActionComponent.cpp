@@ -2,9 +2,9 @@
 
 
 #include "UnitAttackActionComponent.h"
-#include "../UnitCharacter.h"
-#include "../Manager/GridManager.h"
-#include"../UMG/AttackCalculationWidget.h"
+#include "UnitCore/UnitCharacter.h"
+#include "Manager/GridManager.h"
+#include "UMG/AttackCalculationWidget.h"
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {

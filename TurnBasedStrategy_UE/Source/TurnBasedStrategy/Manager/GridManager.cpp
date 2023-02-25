@@ -2,15 +2,15 @@
 
 
 #include "GridManager.h"
-#include "../Grid/GridObject.h"
-#include "../Grid/PathNode.h"
-#include "../Grid/InstancedGridVisualComponent.h"
-#include "../Grid/PathFindingSystem.h"
-#include "../Grid/GridSystem.h"
+#include "Grid/GridObject.h"
+#include "Grid/PathNode.h"
+#include "Grid/InstancedGridVisualComponent.h"
+#include "Grid/PathFindingSystem.h"
+#include "Grid/GridSystem.h"
 
 #include "Components/BillboardComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "../UnitCharacter.h"
+#include "UnitCore/UnitCharacter.h"
 
 // Sets default values
 AGridManager::AGridManager()

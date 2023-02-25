@@ -2,7 +2,7 @@
 
 
 #include "GridObject.h"
-#include "../UnitCharacter.h"
+#include "UnitCore/UnitCharacter.h"
 #include "GridSystem.h"
 
 UGridObject::UGridObject()

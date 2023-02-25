@@ -10,10 +10,6 @@ void UUnitAnimInstance::AnimNotify_AttackHit()
 	{
 		OnAttackHit.Broadcast();
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnAttackHit.IsBound() false"));
-	}
 }
 
 void UUnitAnimInstance::AnimNotify_AttackEnd()
@@ -21,10 +17,6 @@ void UUnitAnimInstance::AnimNotify_AttackEnd()
 	if (OnAttackEnd.IsBound())
 	{
 		OnAttackEnd.Broadcast();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnAttackEnd.IsBound() false"));
 	}
 }
 
@@ -34,10 +26,6 @@ void UUnitAnimInstance::AnimNotify_Hit()
 	{
 		OnHit.Broadcast();
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnHit.IsBound() false"));
-	}
 }
 
 void UUnitAnimInstance::AnimNotify_HitEnd()
@@ -45,10 +33,6 @@ void UUnitAnimInstance::AnimNotify_HitEnd()
 	if (OnHitEnd.IsBound())
 	{
 		OnHitEnd.Broadcast();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnHitEnd.IsBound() false"));
 	}
 }
 

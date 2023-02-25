@@ -15,7 +15,7 @@
 #include "UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "UMG/DamageTextActor.h"
+#include "../UMG/DamageTextActor.h"
 
 // Sets default values
 AUnitCharacter::AUnitCharacter()
