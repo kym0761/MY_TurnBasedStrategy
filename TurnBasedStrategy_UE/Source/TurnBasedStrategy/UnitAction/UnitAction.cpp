@@ -2,3 +2,9 @@
 
 
 #include "UnitAction.h"
+
+FActionValueToken::FActionValueToken()
+{
+	Grid = FGrid();
+	ActionValue = 0;
+}

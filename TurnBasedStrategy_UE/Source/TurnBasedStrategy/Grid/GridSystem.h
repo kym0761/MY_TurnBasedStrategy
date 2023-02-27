@@ -37,5 +37,5 @@ public:
 
 	TArray<UGridObject*> GetGridObjectArray() const;
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
-
+	TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
 };

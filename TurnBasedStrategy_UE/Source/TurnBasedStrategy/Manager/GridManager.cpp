@@ -568,5 +568,61 @@ void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const F
 	}
 }
 
+TArray<UGridObject*> AGridManager::GetAllGridObjectThatHasUnit() const
+{
+	if (!IsValid(GridSystem))
+	{
+		return TArray<UGridObject*>();
+	}
+
+	return GridSystem->GetAllGridObjectThatHasUnit();
+}
+
+int32 AGridManager::CalculatePositionValue_ToMove(AUnitCharacter* Unit, const FGrid& Grid)
+{
+	//Unit : 팀 분간 필요.
+	//Grid : Test할 위치.
+
+	if (Unit->Tags.Num() == 0)
+	{
+		//Test 불가능.
+		return 0.0f;
+	}
+
+	FName teamTag = Unit->Tags[0];
+	int32 resultDistance = TNumericLimits<int32>::Max();
+
+	TArray<UGridObject*> gridObjectArray = GetAllGridObjectThatHasUnit();
+	
+	//해당 그리드 위치에서, 적 유닛과의 거리를 계산.
+	for (UGridObject* gridObj : gridObjectArray)
+	{
+		//같은 Grid 위치는 계산에서 제외됨.
+		if (gridObj->GetGrid() == Grid)
+		{
+			continue;
+		}
+
+		auto CurrentUnit = gridObj->GetUnit();
+
+		//유닛이 없거나, 혹은 같은 팀이면 스킵.
+		if (!IsValid(CurrentUnit) || CurrentUnit->ActorHasTag(teamTag))
+		{
+			continue;
+		}
+
+		FGrid currentGrid = gridObj->GetGrid();
+
+		int32 distance = CalculateGridDistance(Grid, currentGrid);
+		if (resultDistance > distance)
+		{
+			resultDistance = distance;
+		}
+	}
+
+	return resultDistance;
+}
+
+
 
 

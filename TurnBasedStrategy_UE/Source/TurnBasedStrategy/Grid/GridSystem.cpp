@@ -3,7 +3,7 @@
 
 #include "GridSystem.h"
 #include "GridObject.h"
-
+#include "UnitCore/UnitCharacter.h"
 /*
 * 언리얼 C++ Template는 cpp에 구현이 생기지 않는다
 * 여기에 구현이 있으면 문제가 있는 것이니 참고.
@@ -57,4 +57,21 @@ UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 	}
 
 	return nullptr;
+}
+
+TArray<UGridObject*> UGridSystem::GetAllGridObjectThatHasUnit() const
+{
+	TArray<UGridObject*> gridObjArray;
+
+	for (UGridObject* gridObj : GridObjectArray)
+	{
+		AUnitCharacter* unit = gridObj->GetUnit();
+		if (IsValid(unit))
+		{
+			gridObjArray.Add(gridObj);
+		}
+	}
+
+
+	return gridObjArray;
 }

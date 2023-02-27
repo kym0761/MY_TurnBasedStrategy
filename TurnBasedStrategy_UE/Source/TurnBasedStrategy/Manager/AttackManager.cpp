@@ -224,9 +224,10 @@ TArray<FAttackOrder> AAttackManager::CalculateAttackOrder(AActor* Attacker, AAct
 	counterAttack.Attacker = Defender;
 	counterAttack.Defender = Attacker;
 
+	// 테스트 용도로 공/반/공/공 형식으로 공격함.
+	// 추후 SPD 값 혹은	보유 스킬에 따라 공격 횟수가 달라질 수 있음.
 	attackOrders.Add(attack);
 	attackOrders.Add(counterAttack);
-	attackOrders.Add(attack);
 	attackOrders.Add(attack);
 	attackOrders.Add(attack);
 

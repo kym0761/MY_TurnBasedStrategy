@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Grid/Grid.h"
+#include "UnitAction.h"
 #include "UnitActionComponent.generated.h"
 
 class AUnitCharacter;
@@ -69,4 +69,12 @@ public:
 	virtual void OnActionEndFunc();
 	UFUNCTION()
 	virtual void OnActionSelectedFunc();
+
+
+	virtual FGrid ThinkAIBestActionGrid();
+
+
+	UFUNCTION(BlueprintCallable)
+		void TestUnitAction();
+
 };

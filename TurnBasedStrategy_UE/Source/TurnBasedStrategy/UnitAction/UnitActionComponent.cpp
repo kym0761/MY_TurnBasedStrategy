@@ -139,3 +139,13 @@ void UUnitActionComponent::OnActionSelectedFunc()
 	pawn->SetPawnMode(EPawnMode::Action);
 }
 
+FGrid UUnitActionComponent::ThinkAIBestActionGrid()
+{
+	return FGrid();
+}
+
+void UUnitActionComponent::TestUnitAction()
+{
+	TakeAction(ThinkAIBestActionGrid());
+}
+
