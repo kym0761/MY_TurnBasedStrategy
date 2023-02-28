@@ -347,7 +347,7 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 	if (!IsValid(gridManager))
 	{
 		//불가.
-		return FGrid(0,0);
+		return FGrid(-1, -1);
 	}
 
 	//아마도 적 유닛.
@@ -355,7 +355,7 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 	if (!IsValid(owner_Casted))
 	{
 		//불가.
-		return FGrid(0, 0);
+		return FGrid(-1, -1);
 	}
 
 	//이동 가능한 위치 전부 확인해서 해당 위치의 Value를 계산.
@@ -371,16 +371,21 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 	if (actionValues.Num() == 0)
 	{
 		//확인할 Grid가 없음.
-		return FGrid(0, 0);
+		return FGrid(-1, -1);
 	}
 
 	Algo::Sort(actionValues, [](FActionValueToken& a, FActionValueToken& b)
 		{
-			return a.ActionValue < b.ActionValue;
+			return a.ActionValue > b.ActionValue;
 		});
 
-	//계산된 Value에 대해서, 가장 값이 낮은 (가장 상대와 가까울 수 있는) Grid를 선택.
+	//계산된 Value에 대해서, 가장 값이 높은 (가장 상대와 가까울 수 있는) Grid를 선택.
 	FActionValueToken selectedActionValueToken = actionValues[0];
 
 	return selectedActionValueToken.Grid;
+}
+
+void UUnitMoveActionComponent::TestFunction()
+{
+	TakeAction(ThinkAIBestActionGrid());
 }

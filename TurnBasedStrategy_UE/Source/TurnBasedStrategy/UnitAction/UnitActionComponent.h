@@ -73,6 +73,7 @@ public:
 
 	virtual FGrid ThinkAIBestActionGrid();
 
+	virtual void TestFunction();
 
 	UFUNCTION(BlueprintCallable)
 		void TestUnitAction();

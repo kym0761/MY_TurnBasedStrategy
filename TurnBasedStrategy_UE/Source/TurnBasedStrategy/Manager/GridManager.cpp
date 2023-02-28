@@ -620,9 +620,12 @@ int32 AGridManager::CalculatePositionValue_ToMove(AUnitCharacter* Unit, const FG
 		}
 	}
 
-	return resultDistance;
+	int32 reverseValueOffset = 10000;
+
+	//상대와 거리가 1이면, 10000-1 = 9999
+	//상대와 거리가 5면, 10000-5 = 9995
+	//즉, 상대와 거리가 가까울 수록 Value가 크다.
+	//만약, 이동거리가 매우 길고 맵이 매우 크다면 10000으로 잡은 값에 문제가 생길 수도 있지만
+	//Grid SRPG 특성상 이동거리가 40 이상이며 맵의 크기가 충분히 크다면 랙이 걸리므로 실질적으로 문제가 안될 것이다.
+	return reverseValueOffset - resultDistance;
 }
-
-
-
-

@@ -87,8 +87,6 @@ public:
 	UFUNCTION()
 		void OnHitEnd();
 
-	//TArray<FAttackOrder> CalculateAttackOrder();
-
 	TArray<FAttackOrder> CalculateAttackOrder(AActor* Attacker, AActor* Defender);
 
 	static AAttackManager* GetAttackManager();
@@ -103,4 +101,6 @@ public:
 
 
 	TArray<FAttackOrder> GetAttackOrder() const;
+
+	int32 CalculateGridValue_ToAttack(AActor* Attacker, AActor* Defender);
 };

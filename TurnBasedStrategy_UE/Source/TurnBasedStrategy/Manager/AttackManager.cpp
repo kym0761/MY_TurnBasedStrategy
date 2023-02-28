@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "UnitAction/UnitAttackActionComponent.h"
 #include "UnitCore/StatComponent.h"
+#include "UnitCore/UnitCharacter.h"
+#include "GridManager.h"
 
 // Sets default values
 AAttackManager::AAttackManager()
@@ -35,6 +37,11 @@ void AAttackManager::SetupAttackManager(AActor* Attacker, AActor* Defender)
 	//Attacker = InAttacker;
 	//Defender = InDefender;
 
+	if (!IsValid(Attacker) || !IsValid(Defender))
+	{
+		return;
+	}
+
 	OrderToPlay.Empty();
 	OrderToPlay = CalculateAttackOrder(Attacker,Defender);
 
@@ -42,10 +49,21 @@ void AAttackManager::SetupAttackManager(AActor* Attacker, AActor* Defender)
 
 void AAttackManager::StartAttack()
 {
+	if (OrderToPlay.Num() == 0)
+	{
+		FinishAttack();
+		return;
+	}
 	FAttackOrder& currentOrder = OrderToPlay[0];
 
 	AActor* currentAttacker = currentOrder.Attacker;
 	AActor* currentDefender = currentOrder.Defender;
+
+	if (!IsValid(currentAttacker) || !IsValid(currentDefender))
+	{
+		FinishAttack();
+		return;
+	}
 
 	CurrentAttackActionComponent = currentAttacker->FindComponentByClass<UUnitAttackActionComponent>();
 
@@ -346,6 +364,60 @@ void AAttackManager::TryPlayNextOrder()
 TArray<FAttackOrder> AAttackManager::GetAttackOrder() const
 {
 	return OrderToPlay;
+}
+
+int32 AAttackManager::CalculateGridValue_ToAttack(AActor* Attacker, AActor* Defender)
+{
+	//Unit : 팀 분간 필요.
+    //Grid : Test할 위치.
+
+	if (!IsValid(Attacker) || !IsValid(Defender))
+	{
+		return -1;
+	}
+
+	TArray<FAttackOrder> attackOrders = CalculateAttackOrder(Attacker, Defender);
+
+	UStatComponent* attackerStatComponent =
+		Attacker->FindComponentByClass<UStatComponent>();
+
+	UStatComponent* defenderStatComponent =
+		Defender->FindComponentByClass<UStatComponent>();
+
+	if (!IsValid(attackerStatComponent) || !IsValid(defenderStatComponent))
+	{
+		return -1;
+	}
+
+	float attackerHP = attackerStatComponent->GetHP();
+	float defenderHP = defenderStatComponent->GetHP();
+
+	for (auto attackOrder : attackOrders)
+	{
+		switch (attackOrder.AttackOrderType)
+		{
+		case EAttackOrderType::Attack:
+			attackerHP -= attackOrder.Damage;
+			break;
+		case EAttackOrderType::Defend:
+			defenderHP -= attackOrder.Damage;
+			break;
+		}
+	}
+
+	//AttackerHP가 많을수록 점수가 높음. DefenderHP가 적을수록 점수가 높음.
+
+	float valueScore = 0.0f;
+
+	float counterAttackValue = 100 * attackerHP / attackerStatComponent->GetMaxHP();
+
+	valueScore += FMath::Clamp<int32>(counterAttackValue, 0.0f, 100.0f);
+
+	float attackValue = 100* (defenderStatComponent->GetMaxHP() - defenderHP) / defenderStatComponent->GetMaxHP();
+
+	valueScore += FMath::Clamp<int32>(attackValue, 0.0f, 100.0f);
+
+	return (int32)valueScore;
 }
 
 FAttackOrder::FAttackOrder()

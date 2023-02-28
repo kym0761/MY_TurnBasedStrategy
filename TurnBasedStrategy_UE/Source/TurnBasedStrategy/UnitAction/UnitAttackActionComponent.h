@@ -40,4 +40,6 @@ public:
 	virtual void OnActionEndFunc() override;
 	virtual void OnActionSelectedFunc() override;
 
+	virtual FGrid ThinkAIBestActionGrid() override;
+	virtual void TestFunction() override;
 };

@@ -5,6 +5,7 @@
 #include "UnitCore/UnitCharacter.h"
 #include "Manager/GridManager.h"
 #include "UMG/AttackCalculationWidget.h"
+#include "Manager/AttackManager.h"
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {
@@ -233,4 +234,73 @@ void UUnitAttackActionComponent::OnActionEndFunc()
 void UUnitAttackActionComponent::OnActionSelectedFunc()
 {
 	Super::OnActionSelectedFunc();
+}
+
+FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
+{
+	TArray<FGrid> grids = GetValidActionGridArray(); //공격할 수 있는 위치 전부.
+	TArray<FActionValueToken> actionValues;
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		//불가.
+		return FGrid(-1, -1);
+	}
+
+	AAttackManager* attackManager = AAttackManager::GetAttackManager();
+	if (!IsValid(attackManager))
+	{
+		//불가.
+		return FGrid(-1, -1);
+	}
+
+	//공격 가능한 위치 전부 확인해서 해당 위치의 Value를 계산.
+	for (FGrid& grid : grids)
+	{
+		FActionValueToken actionValueToken;
+		actionValueToken.Grid = grid;
+		actionValueToken.ActionValue = attackManager->CalculateGridValue_ToAttack(GetOwner(), gridManager->GetUnitAtGrid(grid));
+
+		actionValues.Add(actionValueToken);
+	}
+
+	if (actionValues.Num() == 0)
+	{
+		//확인할 Grid가 없음.
+		return FGrid(-1, -1);
+	}
+
+	Algo::Sort(actionValues, [](FActionValueToken& a, FActionValueToken& b)
+		{
+			return a.ActionValue > b.ActionValue;
+		});
+
+	//계산된 Value에 대해서, 가장 값이 높은 (공격 가치가 제일 높은) Grid를 선택.
+	FActionValueToken selectedActionValueToken = actionValues[0];
+
+	return selectedActionValueToken.Grid;
+}
+
+void UUnitAttackActionComponent::TestFunction()
+{
+	AAttackManager* attackManager = AAttackManager::GetAttackManager();
+	if (!IsValid(attackManager))
+	{
+		//불가.
+		return;
+	}
+
+	FGrid grid = ThinkAIBestActionGrid();
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		//불가.
+		return;
+	}
+
+	attackManager->SetupAttackManager(GetOwner(),gridManager->GetUnitAtGrid(grid));
+	attackManager->StartAttack();
+
 }

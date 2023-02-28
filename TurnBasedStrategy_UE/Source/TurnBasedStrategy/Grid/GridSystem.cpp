@@ -72,6 +72,5 @@ TArray<UGridObject*> UGridSystem::GetAllGridObjectThatHasUnit() const
 		}
 	}
 
-
 	return gridObjArray;
 }

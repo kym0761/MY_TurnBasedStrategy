@@ -144,8 +144,13 @@ FGrid UUnitActionComponent::ThinkAIBestActionGrid()
 	return FGrid();
 }
 
-void UUnitActionComponent::TestUnitAction()
+void UUnitActionComponent::TestFunction()
 {
 	TakeAction(ThinkAIBestActionGrid());
+}
+
+void UUnitActionComponent::TestUnitAction()
+{
+	TestFunction();
 }
 
