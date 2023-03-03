@@ -12,10 +12,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Manager/GridManager.h"
 #include "Manager/TurnManager.h"
-#include "UnitSelectPawn.h"
+#include "UnitControl/UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "../UMG/DamageTextActor.h"
+
+#include "Engine/DamageEvents.h"
 
 // Sets default values
 AUnitCharacter::AUnitCharacter()
@@ -52,11 +54,11 @@ void AUnitCharacter::BeginPlay()
 		turnManager->OnTurnChanged.AddDynamic(this, &AUnitCharacter::OnTurnChanged);
 	}
 
-	AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn(); 
-	if (IsValid(unitSelectPawn))
-	{
-		unitSelectPawn->OnSelectedUnitChanged.AddDynamic(this, &AUnitCharacter::OnSelectedUnitChanged);
-	}
+	//AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn(); 
+	//if (IsValid(unitSelectPawn))
+	//{
+	//	unitSelectPawn->OnSelectedUnitChanged.AddDynamic(this, &AUnitCharacter::OnSelectedUnitChanged);
+	//}
 }
 
 void AUnitCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -109,6 +111,8 @@ float AUnitCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	{
 		SetLifeSpan(5.0f);
 	}
+
+	FDamageEvent d;
 
 	return DamageAmount;
 }

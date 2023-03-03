@@ -11,7 +11,7 @@ class UTextBlock;
 /**
  *
  */
-UCLASS()
+UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UDamageTextWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -2,10 +2,11 @@
 
 
 #include "UnitAttackActionComponent.h"
-#include "UnitCore/UnitCharacter.h"
 #include "Manager/GridManager.h"
 #include "UMG/AttackCalculationWidget.h"
 #include "Manager/AttackManager.h"
+#include "UnitCore/StatComponent.h"
+#include "UnitCore/UnitCharacter.h"
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {
@@ -260,7 +261,7 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 	{
 		FActionValueToken actionValueToken;
 		actionValueToken.Grid = grid;
-		actionValueToken.ActionValue = attackManager->CalculateGridValue_ToAttack(GetOwner(), gridManager->GetUnitAtGrid(grid));
+		actionValueToken.ActionValue = CalculateActionValue(grid);
 
 		actionValues.Add(actionValueToken);
 	}
@@ -280,6 +281,75 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 	FActionValueToken selectedActionValueToken = actionValues[0];
 
 	return selectedActionValueToken.Grid;
+}
+
+int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
+{
+	AActor* attacker = GetOwner();
+	if (!IsValid(attacker) || attacker->Tags.Num() == 0)
+	{
+		return -1;
+	}
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		return -1;
+	}
+
+	AAttackManager* attackManager = AAttackManager::GetAttackManager();
+	if (!IsValid(attackManager))
+	{
+		return -1;
+	}
+
+	auto defender = gridManager->GetUnitAtGrid(CandidateGrid);
+	if (!IsValid(defender))
+	{
+		return -1;
+	}
+
+	TArray<FAttackOrder> attackOrders = attackManager->CalculateAttackOrder(attacker, defender);
+
+	UStatComponent* attackerStatComponent =
+		attacker->FindComponentByClass<UStatComponent>();
+
+	UStatComponent* defenderStatComponent =
+		defender->FindComponentByClass<UStatComponent>();
+
+	if (!IsValid(attackerStatComponent) || !IsValid(defenderStatComponent))
+	{
+		return -1;
+	}
+
+	float attackerHP = attackerStatComponent->GetHP();
+	float defenderHP = defenderStatComponent->GetHP();
+
+	for (auto attackOrder : attackOrders)
+	{
+		switch (attackOrder.AttackOrderType)
+		{
+		case EAttackOrderType::Attack:
+			attackerHP -= attackOrder.Damage;
+			break;
+		case EAttackOrderType::Defend:
+			defenderHP -= attackOrder.Damage;
+			break;
+		}
+	}
+
+	//AttackerHP가 많을수록 점수가 높음. DefenderHP가 적을수록 점수가 높음.
+	float valueScore = 0.0f;
+
+	float counterAttackValue = 100 * attackerHP / attackerStatComponent->GetMaxHP();
+
+	valueScore += FMath::Clamp<int32>(counterAttackValue, 0.0f, 100.0f);
+
+	float attackValue = 100 * (defenderStatComponent->GetMaxHP() - defenderHP) / defenderStatComponent->GetMaxHP();
+
+	valueScore += FMath::Clamp<int32>(attackValue, 0.0f, 100.0f);
+
+	return (int32)valueScore;
 }
 
 void UUnitAttackActionComponent::TestFunction()

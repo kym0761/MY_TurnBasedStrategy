@@ -66,6 +66,11 @@ FGrid& FGrid::operator-=(const FGrid& b)
 	return *this;
 }
 
+int32 FGrid::Size() const
+{
+	return FMath::Abs(X) + FMath::Abs(Y);
+}
+
 TArray<FGrid> FGridVisualData::ParseToGridArray(TArray<FGridVisualData> GridVisualArray)
 {
 	TArray<FGrid> gridArray;

@@ -15,7 +15,7 @@ class UAttackOrderWidget;
 /**
  * 
  */
-UCLASS()
+UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UAttackCalculationWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -11,14 +11,14 @@ ATurnManager::ATurnManager()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TurnNumber = 1;
-	Turn = ETurnType::PlayerTurn;
+	TurnType = ETurnType::PlayerTurn;
 }
 
 // Called when the game starts or when spawned
 void ATurnManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -43,16 +43,16 @@ ATurnManager* ATurnManager::GetTurnManager()
 
 void ATurnManager::NextTurn()
 {
-	switch(Turn)
+	switch(TurnType)
 	{
 		case ETurnType::PlayerTurn:
-			Turn = ETurnType::EnemyTurn;
+			SetTurnType(ETurnType::EnemyTurn);
 			break;
 		case ETurnType::EnemyTurn:
-			Turn = ETurnType::AllyTurn;
+			SetTurnType(ETurnType::AllyTurn);
 			break;
 		case ETurnType::AllyTurn:
-			Turn = ETurnType::PlayerTurn;
+			SetTurnType(ETurnType::PlayerTurn);
 			NextTurnNumber();
 			break;
 	}
@@ -61,7 +61,38 @@ void ATurnManager::NextTurn()
 void ATurnManager::ResetTurn()
 {
 	TurnNumber = 1;
-	Turn = ETurnType::PlayerTurn;
+	TurnType = ETurnType::PlayerTurn;
+}
+
+void ATurnManager::SetTurnType(ETurnType TurnTypeInput)
+{
+	TurnType = TurnTypeInput;
+
+	switch (TurnType)
+	{
+	case ETurnType::PlayerTurn:
+		if (OnPlayerTurnStart.IsBound())
+		{
+			OnPlayerTurnStart.Broadcast();
+		}
+		break;
+	case ETurnType::EnemyTurn:
+		if (OnEnemyTurnStart.IsBound())
+		{
+			OnEnemyTurnStart.Broadcast();
+		}
+		break;
+	case ETurnType::AllyTurn:
+		if (OnAllyTurnStart.IsBound())
+		{
+			OnAllyTurnStart.Broadcast();
+		}
+		break;
+	default:
+		break;
+	}
+
+
 }
 
 void ATurnManager::NextTurnNumber()
@@ -73,5 +104,10 @@ void ATurnManager::NextTurnNumber()
 		OnTurnChanged.Broadcast();
 	}
 
+}
+
+void ATurnManager::StartGame()
+{
+	SetTurnType(ETurnType::PlayerTurn);
 }
 

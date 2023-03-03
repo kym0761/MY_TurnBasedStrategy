@@ -12,7 +12,7 @@ class UTextBlock;
 /**
  * 
  */
-UCLASS()
+UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UAttackOrderWidget : public UUserWidget
 {
 	GENERATED_BODY()

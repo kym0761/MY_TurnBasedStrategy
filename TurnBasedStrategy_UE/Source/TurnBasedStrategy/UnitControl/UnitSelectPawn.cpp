@@ -3,8 +3,6 @@
 
 #include "UnitSelectPawn.h"
 #include "GameFramework/FloatingPawnMovement.h"
-#include "Kismet/KismetMathLibrary.h" //UKismetMathLibrary
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UnitCore/UnitCharacter.h"
 
@@ -36,11 +34,14 @@ void AUnitSelectPawn::BeginPlay()
 	Super::BeginPlay();
 	
 	MainCanvasWidget = CreateWidget<UMainCanvasWidget>(GetWorld(), UMainCanvasWidgetClass);
-	MainCanvasWidget->AddToViewport();
-
-	OnSelectedActionChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedActionChangedFunc);
-	OnSelectedUnitChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedUnitChangedFunc);
-	OnBusyChanged.AddDynamic(this, &AUnitSelectPawn::OnBusyChangedFunc);
+	if (IsValid(MainCanvasWidget))
+	{
+		MainCanvasWidget->AddToViewport();
+	}
+	
+	//OnSelectedActionChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedActionChangedFunc);
+	//OnSelectedUnitChanged.AddDynamic(this, &AUnitSelectPawn::OnSelectedUnitChangedFunc);
+	//OnBusyChanged.AddDynamic(this, &AUnitSelectPawn::OnBusyChangedFunc);
 
 	//GetWorldTimerManager().SetTimer(TraceTimer, this, &AUnitSelectPawn::UnitLook, 0.12f, true);
 
@@ -418,15 +419,19 @@ void AUnitSelectPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
 
 	SelectedAction = InputUnitAction;
 
-	if (OnSelectedActionChanged.IsBound())
-	{
-		OnSelectedActionChanged.Broadcast();
-	}
+	//if (OnSelectedActionChanged.IsBound())
+	//{
+	//	OnSelectedActionChanged.Broadcast();
+	//}
 
-	if (SelectedAction->OnActionSelected.IsBound())
-	{
-		SelectedAction->OnActionSelected.Broadcast();
-	}
+	//if (SelectedAction->OnActionSelected.IsBound())
+	//{
+	//	/// <summary>
+	//	/// Don't Call 
+	//	/// </summary>
+	//	/// <param name="InputUnitAction"></param>
+	//	SelectedAction->OnActionSelected.Broadcast();
+	//}
 
 }
 
@@ -466,10 +471,10 @@ void AUnitSelectPawn::SetIsBusy(bool InputBool)
 	}
 
 	bIsBusy = InputBool;
-	if (OnBusyChanged.IsBound())
-	{
-		OnBusyChanged.Broadcast(InputBool);
-	}
+	//if (OnBusyChanged.IsBound())
+	//{
+	//	OnBusyChanged.Broadcast(InputBool);
+	//}
 }
 
 void AUnitSelectPawn::DeSelect()
@@ -477,15 +482,15 @@ void AUnitSelectPawn::DeSelect()
 	SelectedUnit = nullptr;
 	SelectedAction = nullptr;
 
-	if (OnSelectedActionChanged.IsBound())
-	{
-		OnSelectedActionChanged.Broadcast();
-	}
+	//if (OnSelectedActionChanged.IsBound())
+	//{
+	//	OnSelectedActionChanged.Broadcast();
+	//}
 
-	if (OnSelectedUnitChanged.IsBound())
-	{
-		OnSelectedUnitChanged.Broadcast();
-	}
+	//if (OnSelectedUnitChanged.IsBound())
+	//{
+	//	OnSelectedUnitChanged.Broadcast();
+	//}
 }
 
 void AUnitSelectPawn::OnSelectedActionChangedFunc()

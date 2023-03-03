@@ -102,5 +102,4 @@ public:
 
 	TArray<FAttackOrder> GetAttackOrder() const;
 
-	int32 CalculateGridValue_ToAttack(AActor* Attacker, AActor* Defender);
 };

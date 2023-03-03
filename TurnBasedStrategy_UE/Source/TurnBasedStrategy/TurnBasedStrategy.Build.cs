@@ -14,5 +14,8 @@ public class TurnBasedStrategy : ModuleRules
 
         //Source Code Access.
         PrivateIncludePaths.AddRange(new string[] { "TurnbasedStrategy" });
+
+
+        PublicDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });
     }
 }

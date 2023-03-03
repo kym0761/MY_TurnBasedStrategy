@@ -7,6 +7,7 @@
 #include "Manager/GridManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "AIController.h"
+#include "Grid/GridObject.h"
 
 UUnitMoveActionComponent::UUnitMoveActionComponent()
 {
@@ -129,11 +130,11 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 				continue;
 			}
 			
-			////지금 현재 Unit의 위치
-			if (resultGrid == unitGrid)
-			{
-				continue;
-			}
+			//////지금 현재 Unit의 위치
+			//if (resultGrid == unitGrid)
+			//{
+			//	continue;
+			//}
 
 			//누군가 점유중이면 Skip
 			if (gridManager->HasAnyUnitOnGrid(resultGrid))
@@ -350,20 +351,20 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 		return FGrid(-1, -1);
 	}
 
-	//아마도 적 유닛.
-	auto owner_Casted = Cast<AUnitCharacter>(GetOwner());
+	//이 행동을 취할 AI의 Unit.
+	AUnitCharacter* owner_Casted = Cast<AUnitCharacter>(GetOwner());
 	if (!IsValid(owner_Casted))
 	{
 		//불가.
 		return FGrid(-1, -1);
 	}
 
-	//이동 가능한 위치 전부 확인해서 해당 위치의 Value를 계산.
+	//이동 가능한 위치 전부 확인하여 해당 위치의 Value를 계산.
 	for (FGrid& grid : grids)
 	{
 		FActionValueToken actionValueToken;
 		actionValueToken.Grid = grid;
-		actionValueToken.ActionValue = gridManager->CalculatePositionValue_ToMove(owner_Casted, grid);
+		actionValueToken.ActionValue = CalculateActionValue(grid);
 
 		actionValues.Add(actionValueToken);
 	}
@@ -383,6 +384,64 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 	FActionValueToken selectedActionValueToken = actionValues[0];
 
 	return selectedActionValueToken.Grid;
+}
+
+int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
+{
+	AActor* owner = GetOwner();
+	if (!IsValid(owner) || owner->Tags.Num() == 0)
+	{
+		return -1;
+	}
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		return -1;
+	}
+
+	FName teamTag = owner->Tags[0];
+	int32 resultDistance = TNumericLimits<int32>::Max();
+	TArray<UGridObject*> gridObjectArray = gridManager->GetAllGridObjectThatHasUnit();
+
+	//유닛이 존재하는 Grid에 대해서, 현재 유닛과의 거리 계산 및 가치 계산.
+	for (UGridObject* gridObj : gridObjectArray)
+	{
+		AUnitCharacter* targetUnit = gridObj->GetUnit();
+
+		//해당 위치에 유닛이 없음.
+		if (!IsValid(targetUnit))
+		{
+			continue;
+		}
+		
+		//Target과 현재 Owner와 같으면 스킵.
+		if (targetUnit == owner)
+		{
+			continue;
+		}
+
+		// 타겟이 같은 팀이면 스킵
+		if (targetUnit->ActorHasTag(teamTag))
+		{
+			continue;
+		}
+
+		FGrid targetGrid = gridObj->GetGrid();
+
+		int32 distance = gridManager->CalculateGridDistance(CandidateGrid, targetGrid);
+
+		resultDistance = (resultDistance > distance) ? distance : resultDistance;
+	}
+
+	int32 reverseValueOffset = 10000;
+
+	//상대와 거리가 1이면, 10000-1 = 9999
+	//상대와 거리가 5면, 10000-5 = 9995
+	//즉, 상대와 거리가 가까울 수록 Value가 크다.
+	//만약, 이동거리가 매우 길고 맵이 매우 크다면 10000으로 잡은 값에 문제가 생길 수도 있지만
+	//Grid SRPG 특성상 이동거리가 40 이상이며 맵의 크기가 충분히 크다면 랙이 걸리므로 실질적으로 문제가 안될 것이다.
+	return reverseValueOffset - resultDistance;
 }
 
 void UUnitMoveActionComponent::TestFunction()

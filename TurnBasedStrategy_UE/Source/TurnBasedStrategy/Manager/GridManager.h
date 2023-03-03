@@ -111,6 +111,5 @@ public:
 	void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
 
 	TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
-	int32 CalculatePositionValue_ToMove(AUnitCharacter* Unit, const FGrid& Grid);
 
 };

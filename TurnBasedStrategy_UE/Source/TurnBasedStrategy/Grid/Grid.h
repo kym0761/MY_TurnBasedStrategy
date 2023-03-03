@@ -31,6 +31,7 @@ public:
 	FGrid& operator=(const FGrid& b);
 	FGrid& operator+=(const FGrid& b);
 	FGrid& operator-=(const FGrid& b);
+	int32 Size() const;
 };
 
 

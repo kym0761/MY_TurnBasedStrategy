@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "UnitAction/UnitAction.h"
 #include "Grid/Grid.h"
+#include "UnitControlPawn.h"
 #include "UnitSelectPawn.generated.h"
 
 class UFloatingPawnMovement;
@@ -18,16 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedUnitChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedActionChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBusyChanged, bool, bIsBusy);
 
-UENUM(BlueprintType)
-enum class EPawnMode : uint8
-{
-	Selection UMETA(DisplayName = "Selection"),
-	Action UMETA(DisplayName = "Action"),
-	Busy UMETA(DisplayName = "Busy")
-};
-
-
-UCLASS()
+UCLASS(abstract)
 class TURNBASEDSTRATEGY_API AUnitSelectPawn : public APawn
 {
 	GENERATED_BODY()

@@ -6,8 +6,16 @@
 #include "Components/TextBlock.h"
 #include "UnitAction/UnitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "UnitSelectPawn.h"
+//#include "UnitControl/UnitSelectPawn.h"
 #include "Manager/GridManager.h"
+#include "UnitControl/UnitControlPawn.h"
+
+void UActionSelectButtonWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	bIsFocusable = true;
+}
 
 void UActionSelectButtonWidget::InitActionSelectButton(UUnitActionComponent* InputAction)
 {
@@ -47,8 +55,9 @@ void UActionSelectButtonWidget::OnButtonClicked()
 	// Do Something.
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
 	pawn->SetSelectedAction(UnitAction);
+	pawn->SetControlPawnMode(EPawnMode::Action);
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (IsValid(gridManager))

@@ -4,7 +4,7 @@
 #include "UnitActionComponent.h"
 #include "UnitCore/UnitCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "UnitSelectPawn.h"
+#include "UnitControl/UnitSelectPawn.h"
 
 
 // Sets default values for this component's properties
@@ -116,32 +116,37 @@ void UUnitActionComponent::SetCanDoActionThisTurn(bool InputBool)
 
 void UUnitActionComponent::OnActionStartFunc()
 {
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	pawn->SetPawnMode(EPawnMode::Busy);
-	pawn->SetIsBusy(true);
+	//APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	//pawn->SetPawnMode(EPawnMode::Busy);
+	//pawn->SetIsBusy(true);
 }
 
 void UUnitActionComponent::OnActionEndFunc()
 {
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	pawn->SetPawnMode(EPawnMode::Selection);
-	pawn->SetIsBusy(false);
-	pawn->DeSelect();
+	//APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	//pawn->SetPawnMode(EPawnMode::Selection);
+	//pawn->SetIsBusy(false);
+	//pawn->DeSelect();
 	SetCanDoActionThisTurn(false);
 }
 
 void UUnitActionComponent::OnActionSelectedFunc()
 {
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	pawn->SetPawnMode(EPawnMode::Action);
+	//APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
+	//pawn->SetPawnMode(EPawnMode::Action);
 }
 
 FGrid UUnitActionComponent::ThinkAIBestActionGrid()
 {
 	return FGrid();
+}
+
+int32 UUnitActionComponent::CalculateActionValue(FGrid& CandidateGrid)
+{
+	return 0;
 }
 
 void UUnitActionComponent::TestFunction()
@@ -152,5 +157,14 @@ void UUnitActionComponent::TestFunction()
 void UUnitActionComponent::TestUnitAction()
 {
 	TestFunction();
+}
+
+void UUnitActionComponent::SelectThisAction()
+{
+	/*OnActionStart.AddDynamic(this, &UUnitActionComponent::OnActionStartFunc);
+	OnActionEnd.AddDynamic(this, &UUnitActionComponent::OnActionEndFunc);
+	OnActionSelected.AddDynamic(this, &UUnitActionComponent::OnActionSelectedFunc);*/
+
+	
 }
 

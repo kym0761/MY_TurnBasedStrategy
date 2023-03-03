@@ -72,10 +72,11 @@ public:
 
 
 	virtual FGrid ThinkAIBestActionGrid();
-
+	virtual int32 CalculateActionValue(FGrid& CandidateGrid);
 	virtual void TestFunction();
 
 	UFUNCTION(BlueprintCallable)
 		void TestUnitAction();
 
+	virtual void SelectThisAction();
 };

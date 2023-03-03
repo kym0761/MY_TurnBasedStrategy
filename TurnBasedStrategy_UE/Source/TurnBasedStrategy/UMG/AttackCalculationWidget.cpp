@@ -9,13 +9,17 @@
 #include "Components/TextBlock.h"
 #include "AttackOrderWidget.h"
 
-
 void UAttackCalculationWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	//Clear Example of Attack Orders.
 	VerticalBox_AttackOrder->ClearChildren();
+
+	if (IsValid(Button_Attack))
+	{
+		Button_Attack->IsFocusable = true;
+	}
 }
 
 void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, AActor* InDefender)

@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "TurnManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTurnChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnManagerDelegate);
 
 UENUM(BlueprintType)
 enum class ETurnType : uint8
@@ -29,13 +29,17 @@ private:
 	int32 TurnNumber = 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
-		ETurnType Turn;
+		ETurnType TurnType;
 
 public:	
 	// Sets default values for this actor's properties
 	ATurnManager();
 
-	FOnTurnChanged OnTurnChanged;
+	FTurnManagerDelegate OnTurnChanged;
+
+	FTurnManagerDelegate OnPlayerTurnStart;
+	FTurnManagerDelegate OnEnemyTurnStart;
+	FTurnManagerDelegate OnAllyTurnStart;
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,9 +57,10 @@ public:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 		void ResetTurn();
 
+	void SetTurnType(ETurnType TurnTypeInput);
 
 	void NextTurnNumber();
 
-
+	void StartGame();
 
 };

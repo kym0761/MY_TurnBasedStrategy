@@ -55,5 +55,6 @@ public:
 	virtual void OnActionSelectedFunc() override;
 
 	virtual FGrid ThinkAIBestActionGrid() override;
+	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
 	virtual void TestFunction() override;
 };

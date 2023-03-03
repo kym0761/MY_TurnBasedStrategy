@@ -53,6 +53,13 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 
 		//buttonWidget->OnButtonClickedCompleted.RemoveDynamic(this, &UUnitActionListWidget::OnButtonClickedCompletedFunc);
 	}
+
+
+	if (VerticalBox_ActionList->GetChildrenCount() > 0)
+	{
+		VerticalBox_ActionList->GetChildAt(0)->SetKeyboardFocus();
+	}
+
 }
 
 void UUnitActionListWidget::OnButtonClickedCompletedFunc()

@@ -14,7 +14,7 @@ class UStatComponent;
 /**
  * 
  */
-UCLASS()
+UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UCalculationUnitStatWidget : public UUserWidget
 {
 	GENERATED_BODY()

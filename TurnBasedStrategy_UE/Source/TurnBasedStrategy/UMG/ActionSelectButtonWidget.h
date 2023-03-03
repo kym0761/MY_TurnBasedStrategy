@@ -35,7 +35,7 @@ public:
 	FOnButtonClickedCompleted OnButtonClickedCompleted;
 protected:
 
-
+	virtual void NativeConstruct() override;
 
 public:
 
