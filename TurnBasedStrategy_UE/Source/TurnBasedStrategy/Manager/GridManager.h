@@ -112,4 +112,7 @@ public:
 
 	TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
 
+	//Test EnemyRangeFunction
+	UFUNCTION(BlueprintCallable)
+		void ShowEnemyRange();
 };

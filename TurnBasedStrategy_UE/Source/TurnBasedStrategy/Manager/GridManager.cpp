@@ -12,6 +12,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UnitCore/UnitCharacter.h"
 
+#include "UnitAction/UnitAttackActionComponent.h"
+
 // Sets default values
 AGridManager::AGridManager()
 {
@@ -113,7 +115,7 @@ FGrid AGridManager::WorldToGrid(const FVector& WorldPosition) const
 	grid.X = FMath::RoundToInt32((WorldPosition.X- managerLocation.X) / CellSize);
 	grid.Y = FMath::RoundToInt32((WorldPosition.Y- managerLocation.Y) / CellSize);
 
-	UE_LOG(LogTemp, Warning, TEXT("Grid Pos : %s"), *grid.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Grid Pos : %s"), *grid.ToString());
 
 	return grid;
 }
@@ -124,7 +126,7 @@ FVector AGridManager::GridToWorld(const FGrid& Grid) const
 	worldPosition.X += Grid.X * CellSize;
 	worldPosition.Y += Grid.Y * CellSize;
 
-	UE_LOG(LogTemp, Warning, TEXT("World Pos : %s"),*worldPosition.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("World Pos : %s"),*worldPosition.ToString());
 
 	return worldPosition;
 }
@@ -574,4 +576,47 @@ TArray<UGridObject*> AGridManager::GetAllGridObjectThatHasUnit() const
 	}
 
 	return GridSystem->GetAllGridObjectThatHasUnit();
+}
+
+void AGridManager::ShowEnemyRange()
+{
+	//1. Enemy Unit을 전부 찾음.
+	//2. Enemy Unit의 각각의 Attackable Grid를 검색함.
+	//3. 중복 거른 뒤에 Show.
+
+
+	auto gridObjs= GetAllGridObjectThatHasUnit();
+	
+	TArray<AUnitCharacter*> enemyArr;
+	TArray<FGrid> resultGrids;
+	for (auto gridObj : gridObjs)
+	{
+		auto unit = gridObj->GetUnit();
+		if (!IsValid(unit))
+		{
+			continue;
+		}
+
+		if (unit->ActorHasTag(TEXT("Enemy")))
+		{
+			enemyArr.Add(unit);
+		}
+	}
+
+	for (auto enemy : enemyArr)
+	{
+		auto unitAttackComp= enemy->FindComponentByClass<UUnitAttackActionComponent>();
+		if (IsValid(unitAttackComp))
+		{
+			TArray<FGrid> attackableGrids = unitAttackComp->GetEnemyAttackableGridRange();
+			for (auto grid : attackableGrids)
+			{
+				resultGrids.AddUnique(grid);
+			}
+		}
+	}
+
+	ShowFromGridArray(resultGrids, EGridVisualType::NO);
+
+
 }

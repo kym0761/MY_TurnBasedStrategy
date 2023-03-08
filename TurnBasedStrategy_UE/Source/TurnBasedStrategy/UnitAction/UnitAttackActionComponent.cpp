@@ -7,6 +7,7 @@
 #include "Manager/AttackManager.h"
 #include "UnitCore/StatComponent.h"
 #include "UnitCore/UnitCharacter.h"
+#include "UnitMoveActionComponent.h"
 
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {
@@ -373,4 +374,76 @@ void UUnitAttackActionComponent::TestFunction()
 	attackManager->SetupAttackManager(GetOwner(),gridManager->GetUnitAtGrid(grid));
 	attackManager->StartAttack();
 
+}
+
+TArray<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
+{
+	UUnitMoveActionComponent* moveActionComp = GetOwner()->FindComponentByClass<UUnitMoveActionComponent>();
+	if (!IsValid( moveActionComp))
+	{
+		return TArray<FGrid>();
+	}
+
+	TArray<FGrid> resultGrid;
+
+	TArray<FGrid> canMoveGrids = moveActionComp->GetValidActionGridArray();
+
+	for (FGrid& canMoveGrid : canMoveGrids)
+	{
+		TArray<FGrid> grids = GetAttackRangeGridArrayAtGrid(canMoveGrid);
+
+		for (FGrid& grid : grids)
+		{
+			resultGrid.AddUnique(grid);
+		}
+
+	}
+
+	return resultGrid;
+
+}
+
+TArray<FGrid> UUnitAttackActionComponent::GetAttackRangeGridArrayAtGrid(FGrid& Grid)
+{
+	TArray<FGrid> validArray;
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		return validArray;
+	}
+
+	for (int x = -MaxActionRange; x <= MaxActionRange; x++)
+	{
+		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
+		{
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += Grid;
+
+			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
+			{
+				continue;
+			}
+
+			//존재하지 않는 Grid
+			if (!gridManager->IsValidGrid(resultGrid))
+			{
+				continue;
+			}
+
+			////지금 현재 Unit의 위치
+			if (resultGrid == Grid)
+			{
+				continue;
+			}
+
+			//통과하면 문제없으니 validArray에 추가
+			validArray.Add(resultGrid);
+		}
+	}
+
+
+	return validArray;
 }
