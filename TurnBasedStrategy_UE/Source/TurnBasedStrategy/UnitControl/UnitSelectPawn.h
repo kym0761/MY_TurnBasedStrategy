@@ -19,6 +19,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedUnitChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedActionChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBusyChanged, bool, bIsBusy);
 
+/*Deprecated Use UnitControl Pawn*/
+
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API AUnitSelectPawn : public APawn
 {

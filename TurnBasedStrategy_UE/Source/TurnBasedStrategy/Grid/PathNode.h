@@ -47,15 +47,19 @@ public:
 	bool GetIsWalkable() const;
 	void SetIsWalkable(bool InVal);
 
-	bool operator<(const UPathNode* Other) const
-	{
-		return GetFCost() < Other->GetFCost();
-	}
+    FORCEINLINE bool operator<(const UPathNode& Other) const
+    {
+        return F_Cost < Other.GetFCost();
+    }
 
+    static bool PathFindingPredicated(const UPathNode& A, const UPathNode& B)
+    {
+        return A.GetFCost() < B.GetFCost();
+    }
 };
 
 
-template <typename InElementType>
+template <typename InElementType = UObject>
 struct TPriorityQueueNode {
     InElementType Element;
     float Priority;
@@ -76,33 +80,75 @@ struct TPriorityQueueNode {
     }
 };
 
-template <typename InElementType>
+//template <typename InElementType = UObject>
+//class TPriorityQueue {
+//public:
+//    TPriorityQueue()
+//    {
+//        Array.Heapify();
+//    }
+//
+//public:
+//    // Always check if IsEmpty() before Pop-ing!
+//    InElementType Pop()
+//    {
+//        TPriorityQueueNode<InElementType> Node;
+//        Array.HeapPop(Node);
+//        return Node.Element;
+//    }
+//
+//    TPriorityQueueNode<InElementType> PopNode()
+//    {
+//        TPriorityQueueNode<InElementType> Node;
+//        Array.HeapPop(Node);
+//        return Node;
+//    }
+//
+//    void Push(InElementType Element, float Priority)
+//    {
+//        Array.HeapPush(TPriorityQueueNode<InElementType>(Element, Priority));
+//    }
+//
+//    bool IsEmpty() const
+//    {
+//        return Array.Num() == 0;
+//    }
+//
+//    int32 Num() const
+//    {
+//        return Array.Num();
+//    }
+//
+//
+//private:
+//    TArray<TPriorityQueueNode<InElementType>> Array;
+//};
+
+template <typename InElementType = UObject*>
 class TPriorityQueue {
 public:
     TPriorityQueue()
     {
-        Array.Heapify();
+        //Array.Heapify();
+    }
+
+    void SetupPriorityQueue(TFunctionRef<bool(InElementType,InElementType)> Predicated)
+    {
+        Algo::Heapify(Array, Predicated);
     }
 
 public:
     // Always check if IsEmpty() before Pop-ing!
     InElementType Pop()
     {
-        TPriorityQueueNode<InElementType> Node;
-        Array.HeapPop(Node);
-        return Node.Element;
-    }
-
-    TPriorityQueueNode<InElementType> PopNode()
-    {
-        TPriorityQueueNode<InElementType> Node;
+        InElementType Node;
         Array.HeapPop(Node);
         return Node;
     }
 
-    void Push(InElementType Element, float Priority)
+    void Push(InElementType Element)
     {
-        Array.HeapPush(TPriorityQueueNode<InElementType>(Element, Priority));
+        Array.Add(Element);
     }
 
     bool IsEmpty() const
@@ -117,5 +163,5 @@ public:
 
 
 private:
-    TArray<TPriorityQueueNode<InElementType>> Array;
+    TArray<InElementType> Array;
 };

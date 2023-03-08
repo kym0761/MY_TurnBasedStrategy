@@ -44,7 +44,7 @@ void AUnitCharacter::BeginPlay()
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (IsValid(gridManager))
 	{
-		Grid= gridManager->WorldToGrid(GetActorLocation());
+		Grid = gridManager->WorldToGrid(GetActorLocation());
 		gridManager->AddUnitAtGrid(this, Grid);
 	}
 

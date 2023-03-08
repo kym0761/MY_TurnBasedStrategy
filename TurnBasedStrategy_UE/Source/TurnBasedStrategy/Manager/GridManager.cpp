@@ -108,17 +108,23 @@ void AGridManager::RemoveAllGridVisual()
 FGrid AGridManager::WorldToGrid(const FVector& WorldPosition) const
 {
 	FGrid grid;
-	grid.X = FMath::RoundToInt(WorldPosition.X / CellSize);
-	grid.Y = FMath::RoundToInt(WorldPosition.Y / CellSize);
+	FVector managerLocation = GetActorLocation();
+
+	grid.X = FMath::RoundToInt32((WorldPosition.X- managerLocation.X) / CellSize);
+	grid.Y = FMath::RoundToInt32((WorldPosition.Y- managerLocation.Y) / CellSize);
+
+	UE_LOG(LogTemp, Warning, TEXT("Grid Pos : %s"), *grid.ToString());
 
 	return grid;
 }
 
 FVector AGridManager::GridToWorld(const FGrid& Grid) const
 {
-	FVector worldPosition = FVector::ZeroVector;
-	worldPosition.X = Grid.X * CellSize;
-	worldPosition.Y = Grid.Y * CellSize;
+	FVector worldPosition = GetActorLocation();
+	worldPosition.X += Grid.X * CellSize;
+	worldPosition.Y += Grid.Y * CellSize;
+
+	UE_LOG(LogTemp, Warning, TEXT("World Pos : %s"),*worldPosition.ToString());
 
 	return worldPosition;
 }
@@ -240,10 +246,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	TArray<UPathNode*> closeList;
 
 	//Heap화 == PriorityQueue
-	Algo::Heapify(openList, [](UPathNode* A, UPathNode* B)
-		{
-			return A->GetFCost() < B->GetFCost();
-		});
+	openList.Heapify(UPathNode::PathFindingPredicated);
 
 	//시작 위치
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
@@ -373,12 +376,7 @@ UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*>& PathNodeList)
 		return nullptr;
 	}
 
-	Algo::HeapSort(PathNodeList, [](UPathNode* A, UPathNode* B)
-		{
-			return A->GetFCost() < B->GetFCost();
-		});
-
-	//HeapSort된 것의 첫번째 원소가 가장 F 값이 낮은 Node다.
+	//PathNodeList는 Heapify가 됐다. Heap의 첫번째 원소가 가장 F 값이 낮은 Node다.
 	UPathNode* lowestNode = PathNodeList[0];
 
 	return lowestNode;
