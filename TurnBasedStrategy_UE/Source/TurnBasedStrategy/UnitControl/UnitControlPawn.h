@@ -6,7 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "Grid/Grid.h"
 #include "InputActionValue.h"
+#include "Turn/Turn.h"
 #include "UnitControlPawn.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitControlDelegate);
 
 class UInputMappingContext;
 class UInputAction;
@@ -28,7 +31,13 @@ enum class EPawnMode : uint8
 	Busy UMETA(DisplayName = "Busy")
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitControlDelegate);
+UENUM(BlueprintType)
+enum class EPawnDoing : uint8
+{
+	Nothing UMETA(DisplayName = "Nothing"),
+	Moving UMETA(DisplayName = "Moving"),
+	Attacking UMETA(DisplayName = "Attacking")
+};
 
 
 UCLASS(abstract)
@@ -39,26 +48,6 @@ class TURNBASEDSTRATEGY_API AUnitControlPawn : public APawn
 public:
 	// Sets default values for this pawn's properties
 	AUnitControlPawn();
-
-	//Start Position
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG")
-		FGrid StartGrid;
-
-	//Current Position
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG")
-		FGrid PivotGrid;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG")
-	float MoveInterval = 0.25f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG")
-	float MoveAccumulate = 0.0f;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG")
-	//	EPawnMode PawnMode = EPawnMode::Selection;
-
-	UPROPERTY()
-		bool bIsBusy;
 
 	FUnitControlDelegate OnSelectedActionChanged;
 	FUnitControlDelegate OnSelectedUnitChanged;
@@ -97,16 +86,41 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component|Camera")
 		USpringArmComponent* CameraBoom;
 
-private:
+protected:
+
+	//Start Position
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
+		FGrid StartGrid;
+
+	//Current Position
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
+		FGrid PivotGrid;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
+		float MoveInterval = 0.25f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
-		EPawnMode PawnMode = EPawnMode::Selection;
+		float MoveAccumulate = 0.0f;
+
+	UPROPERTY()
+		bool bIsBusy;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		AUnitCharacter* SelectedUnit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		UUnitActionComponent* SelectedAction;
+
+	//플레이어 Pawn이 현재 어떤 모드인지 따라서 선택할 때의 행동이 달라짐
+	//Selection : Enter로 UnitSelect가능
+	//Action : 선택된 유닛과 Action에 대한 행동을 함.
+	//UI : Enter로 UI 조작
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
+		EPawnMode PawnMode = EPawnMode::Selection;
+
+	//어떤 턴에 반응할 것인지 나타냄.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+		ETurnType PawnTurnType = ETurnType::PlayerTurn;
 
 protected:
 	// Called when the game starts or when spawned
@@ -118,6 +132,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void InitGridPosition(const FGrid& Grid);
 
 	UFUNCTION()
 	void GridMove(const FInputActionValue& Val);
@@ -133,8 +149,9 @@ public:
 	void SetSelectedAction(UUnitActionComponent* InputUnitAction);
 
 	void DoSelection();
+	void DoDeselection();
 	void DoAction();
 
 	void SetControlPawnMode(EPawnMode ModeInput);
-
+	void SetBusyOrNot(bool BusyInput);
 };

@@ -29,5 +29,5 @@ public:
 	virtual void TakeAction(const FGrid& Grid) override;
 	virtual void DealWithGridBeforeAction(const FGrid& Grid) override;
 
-	virtual void OnActionSelectedFunc() override;
+	virtual void ActionSelected() override;
 };

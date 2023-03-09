@@ -53,14 +53,7 @@ void AUnitControlPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	PivotGrid = StartGrid;
-
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (IsValid(gridManager))
-	{
-		FVector worldLoc = gridManager->GridToWorld(StartGrid);
-		SetActorLocation(worldLoc);
-	}
+	InitGridPosition(StartGrid);
 
 	MainCanvasWidget = CreateWidget<UMainCanvasWidget>(GetWorld(), UMainCanvasWidgetClass);
 	if (IsValid(MainCanvasWidget))
@@ -98,6 +91,8 @@ void AUnitControlPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	//Applied EnhancedInput.
+
 	// Get the player controller
 	APlayerController* playerController = Cast<APlayerController>(GetController());
 
@@ -122,8 +117,19 @@ void AUnitControlPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	enhancedInput->BindAction(InputGridMove, ETriggerEvent::Triggered, this, FName("GridMove"));
 	enhancedInput->BindAction(InputGridMove, ETriggerEvent::Started, this, FName("GridMoveStart"));
 	enhancedInput->BindAction(InputGridMove, ETriggerEvent::Completed, this, FName("GridMoveEnd"));
-
 	enhancedInput->BindAction(ControlEnter, ETriggerEvent::Completed, this, FName("HandleControlEnter"));
+}
+
+void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
+{
+	PivotGrid = Grid;
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
+	{
+		FVector worldLoc = gridManager->GridToWorld(PivotGrid);
+		SetActorLocation(worldLoc);
+	}
 }
 
 void AUnitControlPawn::GridMove(const FInputActionValue& Val)
@@ -132,7 +138,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 
 	UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
 
-	if(moveVal.Size()>0.0f)
+	if (moveVal.Size() > 0.0f)
 	{
 		if (!GetWorld())
 		{
@@ -156,7 +162,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 				move.X = -1;
 			}
 
-			
+
 		}
 
 		if (moveVal.Y != 0.0f)
@@ -178,7 +184,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 			PivotGrid += move;
 			MoveAccumulate = 0.0f;
 		}
-		
+
 	}
 	
 
@@ -286,11 +292,7 @@ void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
 		OnSelectedActionChanged.Broadcast();
 	}
 
-	//is Right?
-	if (SelectedAction->OnActionSelected.IsBound())
-	{
-		SelectedAction->OnActionSelected.Broadcast();
-	}
+	SelectedAction->ActionSelected();
 }
 
 void AUnitControlPawn::DoSelection()
@@ -333,6 +335,12 @@ void AUnitControlPawn::DoSelection()
 	}
 }
 
+void AUnitControlPawn::DoDeselection()
+{
+	SelectedUnit = nullptr;
+	SelectedAction = nullptr;
+}
+
 void AUnitControlPawn::DoAction()
 {
 	if (!IsValid(SelectedUnit))
@@ -366,5 +374,10 @@ void AUnitControlPawn::DoAction()
 void AUnitControlPawn::SetControlPawnMode(EPawnMode ModeInput)
 {
 	PawnMode = ModeInput;
+}
+
+void AUnitControlPawn::SetBusyOrNot(bool BusyInput)
+{
+	bIsBusy = BusyInput;
 }
 

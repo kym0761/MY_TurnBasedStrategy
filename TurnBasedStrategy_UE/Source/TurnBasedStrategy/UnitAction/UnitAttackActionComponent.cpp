@@ -203,24 +203,16 @@ void UUnitAttackActionComponent::TakeAction(const FGrid& Grid)
 	//	UE_LOG(LogTemp, Warning, TEXT("You Selected which is Not Valid Grid. ---> Grid Pos : %s"), *Grid.ToString());
 	//}
 
-	if (OnActionEnd.IsBound())
-	{
-		OnActionEnd.Broadcast();
-	}
-
-	
+	ActionEnd();	
 }
 
-void UUnitAttackActionComponent::OnActionStartFunc()
+void UUnitAttackActionComponent::ActionStart()
 {
-	Super::OnActionStartFunc();
+	Super::ActionStart();
 }
 
-void UUnitAttackActionComponent::OnActionEndFunc()
+void UUnitAttackActionComponent::ActionEnd()
 {
-	Super::OnActionEndFunc();
-
-
 	AGridManager* gridManager = AGridManager::GetGridManager();
 
 	if (!IsValid(gridManager))
@@ -231,11 +223,12 @@ void UUnitAttackActionComponent::OnActionEndFunc()
 
 	gridManager->RemoveAllGridVisual();
 
+	Super::ActionEnd();
 }
 
-void UUnitAttackActionComponent::OnActionSelectedFunc()
+void UUnitAttackActionComponent::ActionSelected()
 {
-	Super::OnActionSelectedFunc();
+	Super::ActionSelected();
 }
 
 FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()

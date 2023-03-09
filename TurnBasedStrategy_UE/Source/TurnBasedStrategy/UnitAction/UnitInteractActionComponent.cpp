@@ -120,23 +120,18 @@ void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 		UE_LOG(LogTemp, Warning, TEXT("InterAct At : %s"), *Grid.ToString());
 	}
 
-	if (OnActionEnd.IsBound())
-	{
-		OnActionEnd.Broadcast();
-	}
 
+	ActionEnd();
 
 }
 
-void UUnitInteractActionComponent::OnActionStartFunc()
+void UUnitInteractActionComponent::ActionStart()
 {
-	Super::OnActionStartFunc();
+	Super::ActionStart();
 }
 
-void UUnitInteractActionComponent::OnActionEndFunc()
+void UUnitInteractActionComponent::ActionEnd()
 {
-	Super::OnActionEndFunc();
-
 	AGridManager* gridManager = AGridManager::GetGridManager();
 
 	if (!IsValid(gridManager))
@@ -147,10 +142,11 @@ void UUnitInteractActionComponent::OnActionEndFunc()
 
 	gridManager->RemoveAllGridVisual();
 
+	Super::ActionEnd();
 }
 
-void UUnitInteractActionComponent::OnActionSelectedFunc()
+void UUnitInteractActionComponent::ActionSelected()
 {
-	Super::OnActionSelectedFunc();
+	Super::ActionSelected();
 
 }

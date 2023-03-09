@@ -31,8 +31,8 @@ public:
 	virtual void TakeAction(const FGrid& Grid) override;
 
 
-	virtual void OnActionStartFunc() override;
-	virtual void OnActionEndFunc() override;
-	virtual void OnActionSelectedFunc() override;
+	virtual void ActionStart() override;
+	virtual void ActionEnd() override;
+	virtual void ActionSelected() override;
 
 };

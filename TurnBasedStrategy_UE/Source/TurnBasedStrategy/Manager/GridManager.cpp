@@ -40,6 +40,10 @@ AGridManager::AGridManager()
 
 	GridVisual_Warning = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_Warning"));
 	GridVisual_Warning->SetupAttachment(GetRootComponent());
+
+	GridVisual_DANGER = CreateDefaultSubobject<UInstancedGridVisualComponent>(TEXT("GridVisual_DANGER"));
+	GridVisual_DANGER->SetupAttachment(GetRootComponent());
+
 }
 
 // Called when the game starts or when spawned
@@ -194,6 +198,9 @@ void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisual
 		break;
 	case EGridVisualType::Warning:
 		toDraw = GridVisual_Warning;
+		break;
+	case EGridVisualType::DANGER:
+		toDraw = GridVisual_DANGER;
 		break;
 	default:
 		break;
@@ -452,6 +459,25 @@ TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue)
 
 }
 
+TArray<AUnitCharacter*> AGridManager::GetAllUnitInGridSystem() const
+{
+	TArray<UGridObject*> gridObjs = GetAllGridObjectThatHasUnit();
+
+	TArray<AUnitCharacter*> unitArray;
+
+	for (auto gridObj : gridObjs)
+	{
+		auto unit = gridObj->GetUnit();
+		if (!IsValid(unit))
+		{
+			continue;
+		}
+		unitArray.Add(unit);
+	}
+
+	return unitArray;
+}
+
 AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue) const
 {
 	TArray<AUnitCharacter*> gridArray = GetUnitArrayAtGrid(GridValue);
@@ -584,14 +610,14 @@ void AGridManager::ShowEnemyRange()
 	//2. Enemy Unit의 각각의 Attackable Grid를 검색함.
 	//3. 중복 거른 뒤에 Show.
 
-
-	auto gridObjs= GetAllGridObjectThatHasUnit();
+	GridVisual_DANGER->ClearInstances();
 	
+	TArray<AUnitCharacter*> unitArr = GetAllUnitInGridSystem();
 	TArray<AUnitCharacter*> enemyArr;
 	TArray<FGrid> resultGrids;
-	for (auto gridObj : gridObjs)
+
+	for (auto unit : unitArr)
 	{
-		auto unit = gridObj->GetUnit();
 		if (!IsValid(unit))
 		{
 			continue;
@@ -616,7 +642,12 @@ void AGridManager::ShowEnemyRange()
 		}
 	}
 
-	ShowFromGridArray(resultGrids, EGridVisualType::NO);
+	ShowFromGridArray(resultGrids, EGridVisualType::DANGER);
 
 
+}
+
+void AGridManager::ClearEnemyRange()
+{
+	GridVisual_DANGER->ClearInstances();
 }

@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "UnitAction/UnitAction.h"
 #include "Grid/Grid.h"
-#include "UnitControlPawn.h"
+#include "UnitControlPawn.h" //EPAwnMode
 #include "UnitSelectPawn.generated.h"
 
 class UFloatingPawnMovement;

@@ -13,5 +13,9 @@ UCLASS()
 class TURNBASEDSTRATEGY_API UUnitInventoryActionComponent : public UUnitActionComponent
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	UUnitInventoryActionComponent();
+
 };

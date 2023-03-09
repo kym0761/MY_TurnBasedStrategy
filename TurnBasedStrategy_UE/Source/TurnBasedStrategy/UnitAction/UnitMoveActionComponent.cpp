@@ -87,10 +87,7 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 				//Stop은 이후에 Rotation 이 바뀔 때의 문제를 해결하기 위해서 꼭 필요함.
 				aiController->StopMovement();
 
-				if (OnActionEnd.IsBound())
-				{
-					OnActionEnd.Broadcast();
-				}
+				ActionEnd();
 				UE_LOG(LogTemp, Warning, TEXT("Stopped."));
 				return;
 			}
@@ -299,12 +296,7 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	Destination = dest;
 	Path = pathArray;
 
-	if (OnActionStart.IsBound())
-	{
-		OnActionStart.Broadcast();
-	}
-
-
+	ActionStart();
 }
 
 void UUnitMoveActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
@@ -312,16 +304,16 @@ void UUnitMoveActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 	TakeAction(Grid);
 }
 
-void UUnitMoveActionComponent::OnActionStartFunc()
+void UUnitMoveActionComponent::ActionStart()
 {
-	Super::OnActionStartFunc();
+	Super::ActionStart();
 
 	bMoveActivate = true;
 }
 
-void UUnitMoveActionComponent::OnActionEndFunc()
+void UUnitMoveActionComponent::ActionEnd()
 {
-	Super::OnActionEndFunc();
+	Super::ActionEnd();
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 
@@ -334,9 +326,9 @@ void UUnitMoveActionComponent::OnActionEndFunc()
 
 }
 
-void UUnitMoveActionComponent::OnActionSelectedFunc()
+void UUnitMoveActionComponent::ActionSelected()
 {
-	Super::OnActionSelectedFunc();
+	Super::ActionSelected();
 }
 
 FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()

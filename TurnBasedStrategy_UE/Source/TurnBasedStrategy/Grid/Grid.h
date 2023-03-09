@@ -43,8 +43,8 @@ enum class EGridVisualType : uint8
 	OK UMETA(DisplayName = "OK"), //아군에게?
 	NO UMETA(DisplayName = "NO"), // 적에게?
 	NO_Soft UMETA(DisplayName = "No_Soft"), //공격 가능한 칸
-	Warning UMETA(DisplayName = "Warning") // 범위 공격의 범위?
-
+	Warning UMETA(DisplayName = "Warning"), // 범위 공격의 범위?
+	DANGER UMETA(DisplayName = "DANGER") // 위험 지역?
 };
 
 

@@ -60,6 +60,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_Warning;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+		UInstancedGridVisualComponent* GridVisual_DANGER;
+
 #pragma endregion
 public:	
 	// Sets default values for this actor's properties
@@ -96,6 +100,7 @@ public:
 	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
 
 	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
+	TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
 	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
 	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
@@ -113,6 +118,11 @@ public:
 	TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
 
 	//Test EnemyRangeFunction
+	//BP_GridManager에서 R버튼 Bind된 상태로
+	//추후에 변경할 예정.
 	UFUNCTION(BlueprintCallable)
 		void ShowEnemyRange();
+
+	UFUNCTION(BlueprintCallable)
+		void ClearEnemyRange();
 };

@@ -44,10 +44,7 @@ void UWaitActionComponent::TakeAction(const FGrid& Grid)
 	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
 	//pawn->DeSelect();
 
-	if (OnActionEnd.IsBound())
-	{
-		OnActionEnd.Broadcast();
-	}
+	ActionEnd();
 
 }
 
@@ -56,7 +53,7 @@ void UWaitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 	TakeAction(Grid);
 }
 
-void UWaitActionComponent::OnActionSelectedFunc()
+void UWaitActionComponent::ActionSelected()
 {
 	TakeAction(FGrid());
 }

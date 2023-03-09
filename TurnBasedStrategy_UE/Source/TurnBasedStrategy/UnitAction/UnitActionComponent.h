@@ -22,10 +22,6 @@ public:
 	// Sets default values for this component's properties
 	UUnitActionComponent();
 
-	FOnActionStart OnActionStart;
-	FOnActionEnd OnActionEnd;
-	FOnActionSelected OnActionSelected;
-
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
@@ -39,6 +35,16 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	FString ActionName;
+
+private:
+
+	//외부의 기능을 동적으로 Call하기 위함. 아마 쓸때마다 비우게 될 가능성이 높음.
+	//이는 ActionStart()에서 Broadcast되므로, 다른 곳에서 직접 Call하려고 하지말 것.
+	//아래 3개도 마찬가지...
+	//현재는 추후 실수를 방지하기 위해 private으로 설정했지만, 나중에 public으로 바꿀 가능성도 있음.
+	FOnActionStart OnActionStart;
+	FOnActionEnd OnActionEnd;
+	FOnActionSelected OnActionSelected;
 
 protected:
 	// Called when the game starts
@@ -63,12 +69,13 @@ public:
 	void SetCanDoActionThisTurn(bool InputBool);
 	bool IsCurrentlyAvailableAction() const;
 
-	UFUNCTION()
-	virtual void OnActionStartFunc();
-	UFUNCTION()
-	virtual void OnActionEndFunc();
-	UFUNCTION()
-	virtual void OnActionSelectedFunc();
+
+	//Action 시작할 때 무조건 Call해야함. Super:: 필요함.
+	virtual void ActionStart();
+	//Action이 끝날 때 무조건 Call해야함. Super:: 필요함.
+	virtual void ActionEnd();
+	//Action이 선택됐을 때 무조건 Call해야함. Super:: 필요함. - ?? 이거 아마 외부에서 불리게 될 듯.
+	virtual void ActionSelected();
 
 
 	virtual FGrid ThinkAIBestActionGrid();
@@ -79,4 +86,9 @@ public:
 		void TestUnitAction();
 
 	virtual void SelectThisAction();
+
+	void BindToOnActionStart(FScriptDelegate ToBind);
+	void BindToOnActionEnd(FScriptDelegate ToBind);
+	void BindToOnActionSelected(FScriptDelegate ToBind);
+
 };

@@ -3,3 +3,6 @@
 
 #include "UnitInventoryActionComponent.h"
 
+UUnitInventoryActionComponent::UUnitInventoryActionComponent()
+{
+}
