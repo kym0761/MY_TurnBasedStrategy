@@ -181,7 +181,7 @@ void AGridManager::ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType
 	ShowFromGridArray(gridList, GridVisualType);
 }
 
-void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType)
+void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType, const float Height)
 {
 	UInstancedGridVisualComponent* toDraw = nullptr;
 
@@ -213,37 +213,54 @@ void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisual
 
 }
 
-void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray)
+void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray, const float Height)
 {
+	TArray<FGrid> moveArr;
+	TArray<FGrid> noArr;
+	TArray<FGrid> okArr;
+	TArray<FGrid> warningArr;
+
+
 	for (const FGridVisualData& visualData : GridVisualDataArray)
 	{
-		UInstancedGridVisualComponent* toDraw = nullptr;
-
 		switch (visualData.GridVisualType)
 		{
 		case EGridVisualType::Move:
-			toDraw = GridVisual_Move;
+			moveArr.Add(visualData.Grid);
 			break;
 		case EGridVisualType::NO:
-			toDraw = GridVisual_NO;
+			noArr.Add(visualData.Grid);
 			break;
 		case EGridVisualType::OK:
-			toDraw = GridVisual_OK;
+			okArr.Add(visualData.Grid);
 			break;
 		case EGridVisualType::Warning:
-			toDraw = GridVisual_Warning;
+			warningArr.Add(visualData.Grid);
 			break;
 		default:
 			break;
 		}
-
-		if (IsValid(toDraw))
-		{
-			toDraw->DrawGridVisualsWithGridVisualData(visualData);
-		}
 	}
 
+	if (IsValid(GridVisual_Move))
+	{
+		GridVisual_Move->DrawGridVisualswithGridArray(moveArr);
+	}
 
+	if (IsValid(GridVisual_NO))
+	{
+		GridVisual_NO->DrawGridVisualswithGridArray(noArr);
+	}
+
+	if (IsValid(GridVisual_OK))
+	{
+		GridVisual_OK->DrawGridVisualswithGridArray(okArr);
+	}
+
+	if (IsValid(GridVisual_Warning))
+	{
+		GridVisual_Warning->DrawGridVisualswithGridArray(warningArr);
+	}
 }
 
 TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit)
@@ -642,7 +659,7 @@ void AGridManager::ShowEnemyRange()
 		}
 	}
 
-	ShowFromGridArray(resultGrids, EGridVisualType::DANGER);
+	ShowFromGridArray(resultGrids, EGridVisualType::DANGER, 0.001f);
 
 
 }

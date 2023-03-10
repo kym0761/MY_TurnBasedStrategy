@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(abstract)
 class TURNBASEDSTRATEGY_API AEnemyUnitControlPawn : public AUnitControlPawn
 {
 	GENERATED_BODY()

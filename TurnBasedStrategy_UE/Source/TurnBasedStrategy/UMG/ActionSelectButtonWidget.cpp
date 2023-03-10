@@ -55,9 +55,15 @@ void UActionSelectButtonWidget::OnButtonClicked()
 	// Do Something.
 
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
-	pawn->SetSelectedAction(UnitAction);
-	pawn->SetControlPawnMode(EPawnMode::Action);
+	if (IsValid(playerController))
+	{
+		AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
+
+		if (IsValid(pawn))
+		{
+			pawn->SetSelectedAction(UnitAction);
+		}
+	}
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (IsValid(gridManager))

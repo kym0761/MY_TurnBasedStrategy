@@ -5,4 +5,7 @@
 
 UUnitInventoryActionComponent::UUnitInventoryActionComponent()
 {
+	MaxActionRange = 0;
+
+	ActionName = FString("Inventory");
 }

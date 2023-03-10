@@ -60,6 +60,8 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
+	//!! Widget을 생성하는 것보다, Main Canvas에 넣고 쓰게 만들 예정.
+
 	AttackCalculationWidget = CreateWidget<UAttackCalculationWidget>(GetWorld(), AttackCalculationWidgetClass);
 	if (IsValid(AttackCalculationWidget))
 	{
@@ -88,13 +90,13 @@ TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 	{
 		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
 		{
-			FGrid resultGrid = FGrid(x, y);
-			resultGrid += unitGrid;
-
 			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
 			{
 				continue;
 			}
+
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += unitGrid;
 
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))
@@ -412,22 +414,16 @@ TArray<FGrid> UUnitAttackActionComponent::GetAttackRangeGridArrayAtGrid(FGrid& G
 	{
 		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
 		{
-			FGrid resultGrid = FGrid(x, y);
-			resultGrid += Grid;
-
 			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
 			{
 				continue;
 			}
 
+			FGrid resultGrid = FGrid(x, y);
+			resultGrid += Grid;
+
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))
-			{
-				continue;
-			}
-
-			////지금 현재 Unit의 위치
-			if (resultGrid == Grid)
 			{
 				continue;
 			}
@@ -437,6 +433,7 @@ TArray<FGrid> UUnitAttackActionComponent::GetAttackRangeGridArrayAtGrid(FGrid& G
 		}
 	}
 
+	validArray.AddUnique(Unit->GetGrid());
 
 	return validArray;
 }

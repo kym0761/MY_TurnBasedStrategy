@@ -9,7 +9,7 @@ UWaitActionComponent::UWaitActionComponent()
 {
 	ActionName = TEXT("Wait");
 
-	MaxActionRange = -1;
+	MaxActionRange = 0;
 }
 
 void UWaitActionComponent::BeginPlay()
@@ -40,10 +40,6 @@ void UWaitActionComponent::TakeAction(const FGrid& Grid)
 		unitAction_Cast->SetCanDoActionThisTurn(false);
 	}
 
-	//APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	//pawn->DeSelect();
-
 	ActionEnd();
 
 }
@@ -55,5 +51,10 @@ void UWaitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 
 void UWaitActionComponent::ActionSelected()
 {
-	TakeAction(FGrid());
+	Super::ActionSelected();
+
+	//WaitAction은 버튼이 선택되면 거기서 끝이 남.
+	//그러므로 다른 Action과 다르게 Select되자마자 바로 발동해야함. FGrid()는 사실상 필요없음.
+	DealWithGridBeforeAction(FGrid());
 }
+

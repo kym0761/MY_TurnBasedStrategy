@@ -20,7 +20,6 @@ public:
 
 public:
 
-	void DrawGridVisualswithGridArray(const TArray<FGrid>& GridArray);
-	void DrawGridVisualsWithGridVisualData(const FGridVisualData& GridVisualData);
+	void DrawGridVisualswithGridArray(const TArray<FGrid>& GridArray, const float Height = 0.01f);
 	void RemoveGridVisuals();
 };

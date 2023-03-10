@@ -50,11 +50,14 @@ public:
 
 	virtual void DealWithGridBeforeAction(const FGrid& Grid) override;
 
+	virtual FGrid ThinkAIBestActionGrid() override;
+	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
+	virtual void TestFunction() override;
+
+protected:
+	
 	virtual void ActionStart() override;
 	virtual void ActionEnd() override;
 	virtual void ActionSelected() override;
 
-	virtual FGrid ThinkAIBestActionGrid() override;
-	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
-	virtual void TestFunction() override;
 };

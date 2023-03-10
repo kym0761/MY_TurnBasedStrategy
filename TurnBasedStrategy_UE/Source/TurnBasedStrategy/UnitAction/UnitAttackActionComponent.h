@@ -36,10 +36,6 @@ public:
 	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
 	virtual void TakeAction(const FGrid& Grid) override;
 
-	virtual void ActionStart() override;
-	virtual void ActionEnd() override;
-	virtual void ActionSelected() override;
-
 	virtual FGrid ThinkAIBestActionGrid() override;
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
 	virtual void TestFunction() override;
@@ -48,5 +44,10 @@ public:
 	TArray<FGrid> GetEnemyAttackableGridRange();
 	//적이 해당 위치에 있다 가정하고 공격할 수 있는 위치인지 확인.
 	TArray<FGrid> GetAttackRangeGridArrayAtGrid(FGrid& Grid);
+
+protected:
+	virtual void ActionStart() override;
+	virtual void ActionEnd() override;
+	virtual void ActionSelected() override;
 
 };

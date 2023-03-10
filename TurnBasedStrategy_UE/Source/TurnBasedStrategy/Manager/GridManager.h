@@ -90,8 +90,8 @@ public:
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
 
 	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
-	void ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType);
-	void ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray);
+	void ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType, const float Height = 0.01f);
+	void ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray, const float Height = 0.01f);
 
 	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
 	int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;

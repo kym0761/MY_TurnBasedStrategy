@@ -117,6 +117,11 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 	{
 		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
 		{
+			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
+			{
+				continue;
+			}
+
 			FGrid resultGrid = FGrid(x, y);
 			resultGrid += unitGrid;
 

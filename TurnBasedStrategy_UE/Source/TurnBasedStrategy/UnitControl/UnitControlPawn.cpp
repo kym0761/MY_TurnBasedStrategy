@@ -134,6 +134,11 @@ void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
 
 void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 {
+	if (PawnMode == EPawnMode::UI || PawnMode == EPawnMode::Busy)
+	{
+		return;
+	}
+
 	const FVector2D moveVal = Val.Get<FVector2D>();
 
 	UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
@@ -282,17 +287,17 @@ void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
 {
 	if (SelectedAction == InputUnitAction)
 	{
+		UE_LOG(LogTemp, Warning, TEXT(" InputAction is Equal with Currently Selected Action. -- AUnitControlPawn::SetSelectedAction()"));
 		return;
 	}
 
 	SelectedAction = InputUnitAction;
+	SelectedAction->SelectThisAction();
 
 	if (OnSelectedActionChanged.IsBound())
 	{
 		OnSelectedActionChanged.Broadcast();
 	}
-
-	SelectedAction->ActionSelected();
 }
 
 void AUnitControlPawn::DoSelection()
@@ -303,7 +308,7 @@ void AUnitControlPawn::DoSelection()
 	{
 		if (!IsValid(SelectedUnit))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("true.. Selected Unit Not Valid"));
+			UE_LOG(LogTemp, Warning, TEXT("Selected Unit Not Valid"));
 			return;
 		}
 

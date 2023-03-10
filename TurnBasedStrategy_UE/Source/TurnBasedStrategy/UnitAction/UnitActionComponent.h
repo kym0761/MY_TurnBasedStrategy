@@ -57,6 +57,7 @@ public:
 
 	FString GetActionName() const;
 
+	//UI를 띄워야할 Action을 위해서 TakeAction 이전에 발동해야함.
 	virtual void DealWithGridBeforeAction(const FGrid& Grid);
 
 	virtual void TakeAction(const FGrid& Grid);
@@ -68,14 +69,6 @@ public:
 	bool IsCanDoActionThisTurn() const;
 	void SetCanDoActionThisTurn(bool InputBool);
 	bool IsCurrentlyAvailableAction() const;
-
-
-	//Action 시작할 때 무조건 Call해야함. Super:: 필요함.
-	virtual void ActionStart();
-	//Action이 끝날 때 무조건 Call해야함. Super:: 필요함.
-	virtual void ActionEnd();
-	//Action이 선택됐을 때 무조건 Call해야함. Super:: 필요함. - ?? 이거 아마 외부에서 불리게 될 듯.
-	virtual void ActionSelected();
 
 
 	virtual FGrid ThinkAIBestActionGrid();
@@ -90,5 +83,14 @@ public:
 	void BindToOnActionStart(FScriptDelegate ToBind);
 	void BindToOnActionEnd(FScriptDelegate ToBind);
 	void BindToOnActionSelected(FScriptDelegate ToBind);
+
+protected:
+
+	//Action 시작할 때 무조건 Call해야함. Super:: 필요함.
+	virtual void ActionStart();
+	//Action이 끝날 때 무조건 Call해야함. Super:: 필요함.
+	virtual void ActionEnd();
+	//Action이 선택됐을 때 무조건 Call해야함. Super:: 필요함. - ?? 이거 아마 외부에서 불리게 될 듯.
+	virtual void ActionSelected();
 
 };

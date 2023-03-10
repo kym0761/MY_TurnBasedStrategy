@@ -125,6 +125,11 @@ void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 
 }
 
+void UUnitInteractActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
+{
+	TakeAction(Grid);
+}
+
 void UUnitInteractActionComponent::ActionStart()
 {
 	Super::ActionStart();

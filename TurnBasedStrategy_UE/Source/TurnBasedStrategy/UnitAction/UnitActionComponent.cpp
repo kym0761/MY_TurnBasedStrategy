@@ -66,12 +66,6 @@ bool UUnitActionComponent::IsValidActionGrid(const FGrid& Grid) const
 
 TArray<FGridVisualData> UUnitActionComponent::GetValidActionGridVisualDataArray() const
 {
-	//FGridVisualData data;
-	//data.Grid = Unit->GetGrid();
-	//data.GridVisualType = EGridVisualType::OK;
-	//TArray<FGridVisualData> temp;
-	//temp.Add(data);
-
 	return TArray<FGridVisualData>();
 }
 
@@ -110,10 +104,16 @@ void UUnitActionComponent::SetCanDoActionThisTurn(bool InputBool)
 void UUnitActionComponent::ActionStart()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-	AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
-	pawn->SetControlPawnMode(EPawnMode::Busy);
-	pawn->SetBusyOrNot(true);
+	if (IsValid(playerController))
+	{
+		AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
+	
+		if (IsValid(pawn))
+		{
+			pawn->SetControlPawnMode(EPawnMode::Busy);
+			pawn->SetBusyOrNot(true);
+		}
+	}
 
 	if (OnActionStart.IsBound())
 	{
@@ -124,16 +124,21 @@ void UUnitActionComponent::ActionStart()
 void UUnitActionComponent::ActionEnd()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	
+	if (IsValid(playerController))
+	{
+		AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
 
-	AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
-	pawn->SetControlPawnMode(EPawnMode::Selection);
-	pawn->SetBusyOrNot(false);
-	pawn->DoDeselection();
-	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	//pawn->SetPawnMode(EPawnMode::Selection);
-	//pawn->SetIsBusy(false);
-	//pawn->DeSelect();
-	SetCanDoActionThisTurn(false);
+		if (IsValid(pawn))
+		{
+			pawn->SetControlPawnMode(EPawnMode::Selection);
+			pawn->SetBusyOrNot(false);
+			pawn->DoDeselection();
+			SetCanDoActionThisTurn(false);
+
+			//UE_LOG(LogTemp, Warning, TEXT("UUnitActionComponent::ActionEnd(), Setting Pawn."));
+		}
+	}
 
 	if (OnActionEnd.IsBound())
 	{
@@ -145,11 +150,15 @@ void UUnitActionComponent::ActionSelected()
 {
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	
-	AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
-	pawn->SetControlPawnMode(EPawnMode::Action);
+	if (IsValid(playerController))
+	{
+		AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
 
-	//AUnitSelectPawn* pawn = Cast<AUnitSelectPawn>(playerController->GetPawn());
-	//pawn->SetPawnMode(EPawnMode::Action);
+		if (IsValid(pawn))
+		{
+			pawn->SetControlPawnMode(EPawnMode::Action);
+		}
+	}
 
 	if (OnActionSelected.IsBound())
 	{
@@ -179,25 +188,20 @@ void UUnitActionComponent::TestUnitAction()
 
 void UUnitActionComponent::SelectThisAction()
 {
-	/*OnActionStart.AddDynamic(this, &UUnitActionComponent::OnActionStartFunc);
-	OnActionEnd.AddDynamic(this, &UUnitActionComponent::OnActionEndFunc);
-	OnActionSelected.AddDynamic(this, &UUnitActionComponent::OnActionSelectedFunc);*/
-
-	
+	ActionSelected();
 }
 
 void UUnitActionComponent::BindToOnActionStart(FScriptDelegate ToBind)
 {
-	OnActionStart.Add(ToBind);
+	OnActionStart.AddUnique(ToBind);
 }
 
 void UUnitActionComponent::BindToOnActionEnd(FScriptDelegate ToBind)
 {
-	OnActionEnd.Add(ToBind);
+	OnActionEnd.AddUnique(ToBind);
 }
 
 void UUnitActionComponent::BindToOnActionSelected(FScriptDelegate ToBind)
 {
-	OnActionSelected.Add(ToBind);
+	OnActionSelected.AddUnique(ToBind);
 }
-
