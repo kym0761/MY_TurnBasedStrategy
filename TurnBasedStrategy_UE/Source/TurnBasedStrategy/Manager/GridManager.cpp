@@ -72,7 +72,7 @@ void AGridManager::Tick(float DeltaTime)
 
 bool AGridManager::IsValidGrid(const FGrid& Grid) const
 {
-	return Grid.X >= 0 && Grid.Y >= 0 && Grid.X < X_Length&& Grid.Y < Y_Length;
+	return (Grid.X >= 0) && (Grid.Y >= 0) && (Grid.X < X_Length) && (Grid.Y < Y_Length);
 }
 
 void AGridManager::CreateGridSystem()
@@ -144,16 +144,12 @@ UGridObject* AGridManager::GetValidGridObject(const FGrid& Grid) const
 		return nullptr;
 	}
 
-	if (gridObj->GetGrid() == Grid)
-	{
-		return gridObj;
-	}
-
-	return nullptr;
+	return gridObj;
 }
 
 void AGridManager::ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType)
 {
+	//Grid 한 지점에서 Range만큼 Show해줌.
 
 	TArray<FGrid> gridList;
 
@@ -208,7 +204,7 @@ void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisual
 
 	if (IsValid(toDraw))
 	{
-		toDraw->DrawGridVisualswithGridArray(GridArray);
+		toDraw->DrawGridVisualswithGridArray(GridArray,Height);
 	}
 
 }
@@ -478,13 +474,13 @@ TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue)
 
 TArray<AUnitCharacter*> AGridManager::GetAllUnitInGridSystem() const
 {
-	TArray<UGridObject*> gridObjs = GetAllGridObjectThatHasUnit();
+	TMap<FGrid,UGridObject*> gridObjs = GetAllGridObjectsThatHasUnit();
 
 	TArray<AUnitCharacter*> unitArray;
 
 	for (auto gridObj : gridObjs)
 	{
-		auto unit = gridObj->GetUnit();
+		auto unit = gridObj.Value->GetUnit();
 		if (!IsValid(unit))
 		{
 			continue;
@@ -549,15 +545,18 @@ void AGridManager::InitAllPathFindingNodes()
 {
 	//PathFindingGridSystem의 Grid 값을 전부 초기화.
 
-	TArray<UPathNode*> pathNodes = PathFindingSystem->GetPathNodeArray();
+	TMap<FGrid,UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
 
-	for (UPathNode* pathNode : pathNodes)
+
+	for (TPair<FGrid,UPathNode*> pathNodePair : pathNodes)
 	{
-		if (!IsValid(pathNode))
+		if (!IsValid(pathNodePair.Value))
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
 			continue;
 		}
+
+		UPathNode* pathNode = pathNodePair.Value;
 
 		pathNode->SetGCost(TNumericLimits<int32>::Max());
 		pathNode->SetHCost(0);
@@ -602,7 +601,7 @@ void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const F
 	RemoveUnitAtGrid(Unit, From);
 	AddUnitAtGrid(Unit, to);
 
-	//It is right?
+	//Unit이 자신의 현재 위치를 보유하고 있음.
 	Unit->SetGrid(to);
 
 	if (OnAnyUnitMoved.IsBound())
@@ -611,14 +610,24 @@ void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const F
 	}
 }
 
-TArray<UGridObject*> AGridManager::GetAllGridObjectThatHasUnit() const
+//TArray<UGridObject*> AGridManager::GetAllGridObjectThatHasUnit() const
+//{
+//	if (!IsValid(GridSystem))
+//	{
+//		return TArray<UGridObject*>();
+//	}
+//
+//	return GridSystem->GetAllGridObjectThatHasUnit();
+//}
+
+TMap<FGrid, UGridObject*> AGridManager::GetAllGridObjectsThatHasUnit() const
 {
 	if (!IsValid(GridSystem))
 	{
-		return TArray<UGridObject*>();
+		return TMap<FGrid, UGridObject*>();
 	}
 
-	return GridSystem->GetAllGridObjectThatHasUnit();
+	return GridSystem->GetAllGridObjectsThatHasUnit();
 }
 
 void AGridManager::ShowEnemyRange()

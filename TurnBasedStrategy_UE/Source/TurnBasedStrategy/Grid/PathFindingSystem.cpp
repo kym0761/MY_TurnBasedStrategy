@@ -25,32 +25,50 @@ void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFun
 			//GridManager Âü°í.
 
 			UPathNode* pathNode = CreateObjectFunction(this, grid);
-			PathNodeArray.Add(pathNode);
+			//PathNodeArray.Add(pathNode);
+			PathNodeMap.Add(grid,pathNode);
 		}
 	}
 }
 
-TArray<UPathNode*> UPathFindingSystem::GetPathNodeArray() const
+//TArray<UPathNode*> UPathFindingSystem::GetPathNodeArray() const
+//{
+//	return PathNodeArray;
+//}
+
+TMap<FGrid, UPathNode*> UPathFindingSystem::GetPathNodeMap() const
 {
-	return PathNodeArray;
+	return PathNodeMap;
 }
+
+//UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
+//{
+//	int32 x = Grid.X;
+//	int32 y = Grid.Y;
+//
+//	int32 index = X_Length * x + y;
+//
+//	if (PathNodeArray.IsValidIndex(index))
+//	{
+//		UPathNode* pathNode = PathNodeArray[index];
+//
+//		if (IsValid(pathNode) && pathNode->GetGrid() == Grid)
+//		{
+//			return pathNode;
+//		}
+//	}
+//
+//	return nullptr;
+//}
 
 UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
 {
-	int32 x = Grid.X;
-	int32 y = Grid.Y;
+	UPathNode* pathNode = PathNodeMap[Grid];
 
-	int32 index = X_Length * x + y;
-
-	if (PathNodeArray.IsValidIndex(index))
+	if (!IsValid(pathNode))
 	{
-		UPathNode* pathNode = PathNodeArray[index];
-
-		if (IsValid(pathNode) && pathNode->GetGrid() == Grid)
-		{
-			return pathNode;
-		}
+		return nullptr;
 	}
 
-	return nullptr;
+	return pathNode;
 }

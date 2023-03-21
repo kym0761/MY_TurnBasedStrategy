@@ -33,10 +33,10 @@ class TURNBASEDSTRATEGY_API AGridManager : public AActor
 #pragma region PrivateData
 private:
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 	UGridSystem* GridSystem;
 	
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 	UPathFindingSystem* PathFindingSystem;
 
 	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
@@ -65,6 +65,7 @@ private:
 		UInstancedGridVisualComponent* GridVisual_DANGER;
 
 #pragma endregion
+
 public:	
 	// Sets default values for this actor's properties
 	AGridManager();
@@ -115,10 +116,11 @@ public:
 	void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
 	void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
 
-	TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
-
+	//TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
+	TMap<FGrid,UGridObject*> GetAllGridObjectsThatHasUnit() const;
+	
 	//Test EnemyRangeFunction
-	//BP_GridManager에서 R버튼 Bind된 상태로
+	//BP_GridManager에서 R버튼 Bind된 상태로 동작함.
 	//추후에 변경할 예정.
 	UFUNCTION(BlueprintCallable)
 		void ShowEnemyRange();

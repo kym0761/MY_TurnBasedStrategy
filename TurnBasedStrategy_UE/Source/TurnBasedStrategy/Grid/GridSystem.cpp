@@ -29,48 +29,81 @@ void UGridSystem::SetGridSystem(int _X_Length, int _Y_Length, TFunctionRef<UGrid
 			//GridManager Âü°í.
 
 			UGridObject* gridobj = CreateObjectFunction(this, grid);
-			GridObjectArray.Add(gridobj);
+			//GridObjectMap.Add(gridobj);
+			GridObjectMap.Add(grid,gridobj);
 		}
 	}
 }
 
-TArray<UGridObject*> UGridSystem::GetGridObjectArray() const
+//TArray<UGridObject*> UGridSystem::GetGridObjectArray() const
+//{
+//	return GridObjectArray;
+//}
+
+TMap<FGrid, UGridObject*> UGridSystem::GetGridObjectMap() const
 {
-	return GridObjectArray;
+	return GridObjectMap;
 }
+
+//UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
+//{
+//	int32 x = Grid.X;
+//	int32 y = Grid.Y;
+//
+//	int32 index = X_Length * x + y;
+//
+//	if (GridObjectArray.IsValidIndex(index))
+//	{
+//		UGridObject* gridObj = GridObjectArray[index];
+//
+//		if (IsValid(gridObj) && gridObj->GetGrid() == Grid)
+//		{
+//			return gridObj;
+//		}
+//	}
+//
+//	return nullptr;
+//}
 
 UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 {
-	int32 x = Grid.X;
-	int32 y = Grid.Y;
-
-	int32 index = X_Length * x + y;
-
-	if (GridObjectArray.IsValidIndex(index))
+	UGridObject* gridObj = GridObjectMap[Grid];
+	if (IsValid(gridObj))
 	{
-		UGridObject* gridObj = GridObjectArray[index];
-
-		if (IsValid(gridObj) && gridObj->GetGrid() == Grid)
-		{
-			return gridObj;
-		}
+		return gridObj;
 	}
 
 	return nullptr;
 }
 
-TArray<UGridObject*> UGridSystem::GetAllGridObjectThatHasUnit() const
-{
-	TArray<UGridObject*> gridObjArray;
+//TArray<UGridObject*> UGridSystem::GetAllGridObjectThatHasUnit() const
+//{
+//	TArray<UGridObject*> gridObjArray;
+//
+//	for (UGridObject* gridObj : GridObjectArray)
+//	{
+//		AUnitCharacter* unit = gridObj->GetUnit();
+//		if (IsValid(unit))
+//		{
+//			gridObjArray.Add(gridObj);
+//		}
+//	}
+//
+//	return gridObjArray;
+//}
 
-	for (UGridObject* gridObj : GridObjectArray)
+TMap<FGrid, UGridObject*> UGridSystem::GetAllGridObjectsThatHasUnit() const
+{
+	TMap<FGrid, UGridObject*> resultMap;
+	
+	for (TPair<FGrid,UGridObject*> gridPair : GridObjectMap)
 	{
-		AUnitCharacter* unit = gridObj->GetUnit();
+		AUnitCharacter* unit = gridPair.Value->GetUnit();
 		if (IsValid(unit))
 		{
-			gridObjArray.Add(gridObj);
+			resultMap.Add(gridPair);
 		}
 	}
 
-	return gridObjArray;
+	return resultMap;
 }

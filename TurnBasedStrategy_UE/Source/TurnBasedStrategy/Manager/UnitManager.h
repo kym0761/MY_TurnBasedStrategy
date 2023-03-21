@@ -8,8 +8,7 @@
 
 class AUnitCharacter;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnyUnitSpawned);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnyUnitDead);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitManagerDelegate);
 
 UCLASS()
 class TURNBASEDSTRATEGY_API AUnitManager : public AActor
@@ -25,8 +24,8 @@ public:
 	// Sets default values for this actor's properties
 	AUnitManager();
 
-	FOnAnyUnitSpawned OnAnyUnitSpawned;
-	FOnAnyUnitDead OnAnyUnitDead;
+	FUnitManagerDelegate OnAnyUnitSpawned;
+	FUnitManagerDelegate OnAnyUnitDead;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

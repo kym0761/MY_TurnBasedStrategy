@@ -329,7 +329,6 @@ void AUnitControlPawn::DoSelection()
 
 		UnitActionsWidget = CreateWidget<UUnitActionListWidget>(GetWorld(), UnitActionListWidgetClass);
 		MainCanvasWidget->MainCanvas->AddChild(UnitActionsWidget);
-		UnitActionsWidget->InitUnitActionsWidget(SelectedUnit);
 
 		UCanvasPanelSlot* canvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(UnitActionsWidget);
 		if (IsValid(canvasSlot))
@@ -337,6 +336,8 @@ void AUnitControlPawn::DoSelection()
 			canvasSlot->SetPosition(screenPos);
 			canvasSlot->SetSize(FVector2D(300, 500));
 		}
+
+		UnitActionsWidget->InitUnitActionsWidget(SelectedUnit);
 	}
 }
 

@@ -10,11 +10,16 @@
 #include "Manager/GridManager.h"
 #include "UnitControl/UnitControlPawn.h"
 
+UActionSelectButtonWidget::UActionSelectButtonWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	bIsFocusable = true;
+}
+
 void UActionSelectButtonWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	bIsFocusable = true;
 }
 
 void UActionSelectButtonWidget::InitActionSelectButton(UUnitActionComponent* InputAction)

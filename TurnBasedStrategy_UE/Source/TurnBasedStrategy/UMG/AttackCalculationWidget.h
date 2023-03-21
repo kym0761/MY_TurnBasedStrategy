@@ -22,6 +22,8 @@ class TURNBASEDSTRATEGY_API UAttackCalculationWidget : public UUserWidget
 	
 public:
 
+	UAttackCalculationWidget(const FObjectInitializer& ObjectInitializer);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
 	UVerticalBox* VerticalBox_AttackOrder;
 

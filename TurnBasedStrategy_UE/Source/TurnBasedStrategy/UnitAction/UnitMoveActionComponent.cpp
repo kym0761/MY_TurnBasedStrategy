@@ -399,12 +399,12 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 
 	FName teamTag = owner->Tags[0];
 	int32 resultDistance = TNumericLimits<int32>::Max();
-	TArray<UGridObject*> gridObjectArray = gridManager->GetAllGridObjectThatHasUnit();
+	TMap<FGrid,UGridObject*> gridObjMap= gridManager->GetAllGridObjectsThatHasUnit();
 
 	//유닛이 존재하는 Grid에 대해서, 현재 유닛과의 거리 계산 및 가치 계산.
-	for (UGridObject* gridObj : gridObjectArray)
+	for (auto gridPair : gridObjMap)
 	{
-		AUnitCharacter* targetUnit = gridObj->GetUnit();
+		AUnitCharacter* targetUnit = gridPair.Value->GetUnit();
 
 		//해당 위치에 유닛이 없음.
 		if (!IsValid(targetUnit))
@@ -424,10 +424,8 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 			continue;
 		}
 
-		FGrid targetGrid = gridObj->GetGrid();
-
+		FGrid targetGrid = gridPair.Key;
 		int32 distance = gridManager->CalculateGridDistance(CandidateGrid, targetGrid);
-
 		resultDistance = (resultDistance > distance) ? distance : resultDistance;
 	}
 

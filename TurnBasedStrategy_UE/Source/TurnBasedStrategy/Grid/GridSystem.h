@@ -24,8 +24,11 @@ private:
 	int32 X_Length;
 	int32 Y_Length;
 
-	UPROPERTY()
-		TArray<UGridObject*> GridObjectArray;
+	//UPROPERTY()
+	//	TArray<UGridObject*> GridObjectArray;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category ="Grid", Meta = (AllowPrivateAccess = true))
+		TMap<FGrid,UGridObject*> GridObjectMap;
 
 public:
 	UGridSystem();
@@ -35,7 +38,10 @@ public:
 	void SetGridSystem(int _X_Length, int _Y_Length,
 		TFunctionRef<UGridObject* (UGridSystem*, FGrid)> CreateObjectFunction);
 
-	TArray<UGridObject*> GetGridObjectArray() const;
+	//TArray<UGridObject*> GetGridObjectArray() const;
+	TMap<FGrid,UGridObject*> GetGridObjectMap() const;
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
-	TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
+	//TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
+	TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
+
 };

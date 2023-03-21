@@ -20,8 +20,8 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 
 	for (UActorComponent* unitAction : unitActions)
 	{
-		UUnitActionComponent* unitAction_Cast=
-		Cast<UUnitActionComponent>(unitAction);
+		UUnitActionComponent* unitAction_Cast =
+			Cast<UUnitActionComponent>(unitAction);
 
 		if (!IsValid(unitAction_Cast))
 		{
@@ -40,8 +40,9 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 			continue;
 		}
 
-		UActionSelectButtonWidget* buttonWidget = CreateWidget<UActionSelectButtonWidget>(GetWorld(), ChooseActionButtonWidgetClass);
-		
+		UActionSelectButtonWidget* buttonWidget =
+			CreateWidget<UActionSelectButtonWidget>(GetWorld(), ChooseActionButtonWidgetClass);
+
 		if (!IsValid(buttonWidget))
 		{
 			continue;
@@ -57,7 +58,7 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 
 	if (VerticalBox_ActionList->GetChildrenCount() > 0)
 	{
-		VerticalBox_ActionList->GetChildAt(0)->SetKeyboardFocus();
+		VerticalBox_ActionList->GetChildAt(0)->SetFocus();
 	}
 
 }

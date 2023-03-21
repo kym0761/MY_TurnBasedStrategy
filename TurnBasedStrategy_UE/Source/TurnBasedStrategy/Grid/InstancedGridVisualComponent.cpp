@@ -24,6 +24,8 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 		return;
 	}
 
+	TSet<FGrid> gridSet; // this Set is to Search HighSpeed for SetCustomDataValue() Logics. 
+
 	for (const FGrid& grid : GridArray)
 	{
 		if (!gridManager->IsValidGrid(grid))
@@ -40,9 +42,10 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 		visualTransform.SetScale3D(GetComponentScale());
 		
 		VisualTransformArray.Add(visualTransform);
+		gridSet.Add(grid);
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualswithGridArray"),*GetName());
+	//draw all
 	AddInstances(VisualTransformArray, false, true);
 
 	for (int32 i = 0; i < GridArray.Num(); i++)
@@ -54,10 +57,11 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 		FGrid leftGrid = currentGrid + FGrid(-1, 0);
 		FGrid rightGrid = currentGrid + FGrid(1, 0);
 
-		float upValue = GridArray.Contains(upGrid) ? 0.0f : 1.0f;
-		float downValue = GridArray.Contains(downGrid) ? 0.0f : 1.0f;
-		float leftValue = GridArray.Contains(leftGrid) ? 0.0f : 1.0f;
-		float rightValue = GridArray.Contains(rightGrid) ? 0.0f : 1.0f;
+		//Use TSet for HighSpeed Search.
+		float upValue = gridSet.Contains(upGrid) ? 0.0f : 1.0f;
+		float downValue = gridSet.Contains(downGrid) ? 0.0f : 1.0f;
+		float leftValue = gridSet.Contains(leftGrid) ? 0.0f : 1.0f;
+		float rightValue = gridSet.Contains(rightGrid) ? 0.0f : 1.0f;
 
 		if (upValue > 0.0f)
 		{
@@ -83,48 +87,6 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridArray(const TArray<FG
 
 	
 }
-
-//void UInstancedGridVisualComponent::DrawGridVisualsWithGridVisualData(const FGridVisualData& GridVisualData, const float Height)
-//{
-//	AGridManager* gridManager = Cast<AGridManager>(GetOwner());
-//	if (!IsValid(gridManager))
-//	{
-//		//gridManager Not Valid.
-//		return;
-//	}
-//
-//	FVector worldPos = gridManager->GridToWorld(GridVisualData.Grid);
-//	worldPos.Z += Height;
-//
-//	FTransform visualTransform;
-//	visualTransform.SetLocation(worldPos);
-//	visualTransform.SetRotation(FQuat::Identity);
-//	visualTransform.SetScale3D(GetComponentScale());
-//
-//	//UE_LOG(LogTemp, Warning, TEXT("%s draw calling in DrawGridVisualsWithGridVisualData"), *GetName());
-//
-//	int32 i = AddInstance(visualTransform,true);
-//
-//
-//	//FGrid currentGrid = GridVisualData.Grid;
-//	//FGrid upGrid = currentGrid + FGrid(0, 1);
-//	//FGrid downGrid = currentGrid + FGrid(0, -1);
-//	//FGrid leftGrid = currentGrid + FGrid(-1, 0);
-//	//FGrid rightGrid = currentGrid + FGrid(1, 0);
-//
-//	//float upValue = GridArray.Contains(upGrid) ? 0.0f : 1.0f;
-//	//int32 downValue = GridArray.Contains(downGrid) ? 0.0f : 1.0f;
-//	//int32 leftValue = GridArray.Contains(leftGrid) ? 0.0f : 1.0f;
-//	//int32 rightValue = GridArray.Contains(rightGrid) ? 0.0f : 1.0f;
-//
-//	//SetCustomDataValue(i, 0, upValue);
-//	//SetCustomDataValue(i, 1, downValue);
-//	//SetCustomDataValue(i, 2, leftValue);
-//	//SetCustomDataValue(i, 3, rightValue);
-//	//
-//
-//
-//}
 
 void UInstancedGridVisualComponent::RemoveGridVisuals()
 {

@@ -109,5 +109,6 @@ void ATurnManager::NextTurnNumber()
 void ATurnManager::StartGame()
 {
 	SetTurnType(ETurnType::PlayerTurn);
+	TurnNumber = 1;
 }
 

@@ -9,6 +9,15 @@
 #include "Components/TextBlock.h"
 #include "AttackOrderWidget.h"
 
+UAttackCalculationWidget::UAttackCalculationWidget(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	if (IsValid(Button_Attack))
+	{
+		Button_Attack->IsFocusable = true;
+	}
+}
+
 void UAttackCalculationWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -18,7 +27,7 @@ void UAttackCalculationWidget::NativeConstruct()
 
 	if (IsValid(Button_Attack))
 	{
-		Button_Attack->IsFocusable = true;
+		Button_Attack->SetFocus();
 	}
 }
 
