@@ -7,6 +7,10 @@
 #include "Turn/Turn.h"
 #include "TurnManager.generated.h"
 
+
+class AUnitCharacter;
+class AEnemyUnitControlPawn;
+class AUnitControlPawn;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnManagerDelegate);
 
 
@@ -23,18 +27,32 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
 		ETurnType TurnType;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
+		TArray<AUnitCharacter*> PlayerUnitArr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
+		TArray<AUnitCharacter*> EnemyUnitArr;
+
+	UPROPERTY()
+	AEnemyUnitControlPawn* EnemyUnitControlPawnRef;
+
+	UPROPERTY()
+		AUnitControlPawn* PlayerUnitControlPawnRef;
+
 public:	
 	// Sets default values for this actor's properties
 	ATurnManager();
 
-	FTurnManagerDelegate OnTurnChanged;
+	//FTurnManagerDelegate OnTurnChanged;
 	FTurnManagerDelegate OnPlayerTurnStart;
 	FTurnManagerDelegate OnEnemyTurnStart;
 	FTurnManagerDelegate OnAllyTurnStart;
+	FTurnManagerDelegate OnUnitFinishedAction;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame
@@ -42,16 +60,23 @@ public:
 
 	static ATurnManager* GetTurnManager();
 
+	//Temp.. For Call in test UI 
+	UFUNCTION(BlueprintCallable)
+		void InitTurnManager();
+
 	//temp...to Act Turn Correctly
 	UFUNCTION(BlueprintCallable, CallInEditor)
 		void NextTurn();
 	UFUNCTION(BlueprintCallable, CallInEditor)
 		void ResetTurn();
+	UFUNCTION()
+		void CheckCurrentTurnValidation();
 
 	void SetTurnType(ETurnType TurnTypeInput);
 
 	void NextTurnNumber();
-
 	void StartGame();
 
+	void AddUnitForTurnManager(AUnitCharacter* UnitToAdd);
+	void RemoveUnitFromTurnManager(AUnitCharacter* UnitToRemove);
 };

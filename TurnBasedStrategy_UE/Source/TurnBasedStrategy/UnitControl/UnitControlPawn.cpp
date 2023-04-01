@@ -61,6 +61,7 @@ void AUnitControlPawn::BeginPlay()
 		MainCanvasWidget->AddToViewport();
 	}
 
+	//FindAllPlayerUnits();
 }
 
 // Called every frame
@@ -141,7 +142,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 
 	const FVector2D moveVal = Val.Get<FVector2D>();
 
-	UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
+	//UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
 
 	if (moveVal.Size() > 0.0f)
 	{
@@ -385,5 +386,66 @@ void AUnitControlPawn::SetControlPawnMode(EPawnMode ModeInput)
 void AUnitControlPawn::SetBusyOrNot(bool BusyInput)
 {
 	bIsBusy = BusyInput;
+}
+
+void AUnitControlPawn::OnUnitActionCompleted()
+{
+	SetControlPawnMode(EPawnMode::Selection);
+	SetBusyOrNot(false);
+	DoDeselection();
+	UE_LOG(LogTemp, Warning, TEXT("AUnitControlPawn::OnUnitActionCompleted()"));
+}
+
+void AUnitControlPawn::FindAllPlayerUnits()
+{
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		return;
+	}
+
+	auto unitArr = gridManager->GetAllUnitInGridSystem();
+	TArray<AUnitCharacter*> playerArr;
+
+	for (auto unit : unitArr)
+	{
+		if (!IsValid(unit))
+		{
+			continue;
+		}
+
+		if (unit->ActorHasTag(TEXT("MyUnit")))
+		{
+			playerArr.Add(unit);
+		}
+	}
+
+	for (auto unit : playerArr)
+	{
+		if (!IsValid(unit))
+		{
+			continue;
+		}
+
+		TArray<UActorComponent*> unitActions;
+		unit->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
+
+		for (UActorComponent* unitAction : unitActions)
+		{
+			UUnitActionComponent* unitAction_Cast =
+				Cast<UUnitActionComponent>(unitAction);
+
+			if (!IsValid(unitAction_Cast))
+			{
+				continue;
+			}
+
+			unitAction_Cast->OnActionCompleteForControlPawn.Clear();
+			unitAction_Cast->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+			UE_LOG(LogTemp, Warning, TEXT("AUnitControlPawn::FindAllPlayerUnits() Bind OK"));
+		}
+	}
 }
 

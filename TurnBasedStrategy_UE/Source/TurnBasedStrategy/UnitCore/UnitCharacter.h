@@ -54,16 +54,13 @@ public:
 
 	FOnUnitSpawned OnUnitSpawned;
 	FOnUnitDead OnUnitDead;
-	FOnActionPlayed OnActionPlayed;
+	FOnActionPlayed OnFinishAllAction;
 
 private:
 
 	//현재 Grid 위치 값
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	FGrid Grid;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-	int32 ActionPoints = 1;
 
 protected:
 	// Called when the game starts or when spawned
@@ -88,10 +85,12 @@ public:
 	UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
 
 	UFUNCTION()
-	void OnTurnChanged();
+	void StartUnitTurn();
 
 	UFUNCTION()
 		void OnSelectedUnitChanged();
+
+	void FinishUnitAllAction();
 
 
 	bool IsThisUnitCanAction() const;

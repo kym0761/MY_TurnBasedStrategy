@@ -103,6 +103,7 @@ public:
 	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
 	TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
 	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
+	//FGrid GetGridOfUnit(AUnitCharacter* Unit) const;
 	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
 	bool IsWalkableGrid(const FGrid& GridValue) const;

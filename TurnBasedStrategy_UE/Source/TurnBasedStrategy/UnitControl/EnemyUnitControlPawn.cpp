@@ -18,13 +18,21 @@ void AEnemyUnitControlPawn::BeginPlay()
 
 	//!! EnemyUnitControlPawn은 사실 어디에 있든 별 상관 없을지도 모른다.
 	InitGridPosition(FGrid(0,0));
-
 }
 
 void AEnemyUnitControlPawn::Tick(float DeltaTime)
 {
 	Super::Super::Tick(DeltaTime);
 
+}
+
+void AEnemyUnitControlPawn::TriggerToPlay()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AEnemyUnitControlPawn::TriggerToPlay()"));
+
+	FindEnemyAllUnits();
+
+	MoveProcedure();
 }
 
 void AEnemyUnitControlPawn::FindEnemyAllUnits()
@@ -54,6 +62,27 @@ void AEnemyUnitControlPawn::FindEnemyAllUnits()
 
 	EnemyUnits.Empty();
 	EnemyUnits = enemyArr;
+
+	for (auto unit : EnemyUnits)
+	{
+		TArray<UActorComponent*> unitActions;
+		unit->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
+
+		for (UActorComponent* unitAction : unitActions)
+		{
+			UUnitActionComponent* unitAction_Cast =
+				Cast<UUnitActionComponent>(unitAction);
+
+			if (!IsValid(unitAction_Cast))
+			{
+				continue;
+			}
+
+			unitAction_Cast->OnActionCompleteForControlPawn.Clear();
+			unitAction_Cast->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+		}
+	}
+
 }
 
 void AEnemyUnitControlPawn::MoveProcedure()
@@ -85,10 +114,10 @@ void AEnemyUnitControlPawn::MoveProcedure()
 	
 	//실질적 Unit Move : Function Name 바꿀 필요있을 듯.
 	unitMoveComp->TestFunction();
-
+	EnemyUnits.RemoveAt(0);
 }
 
-void AEnemyUnitControlPawn::OnUnitMoveFinished()
+void AEnemyUnitControlPawn::OnUnitActionCompleted()
 {
 	//만약, Unit 하나가 움직이는 것이 끝났다면
 	//다음 유닛을 움직일 수 있을 것임.

@@ -123,26 +123,20 @@ void UUnitActionComponent::ActionStart()
 
 void UUnitActionComponent::ActionEnd()
 {
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	
-	if (IsValid(playerController))
-	{
-		AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
 
-		if (IsValid(pawn))
-		{
-			pawn->SetControlPawnMode(EPawnMode::Selection);
-			pawn->SetBusyOrNot(false);
-			pawn->DoDeselection();
-			SetCanDoActionThisTurn(false);
-
-			//UE_LOG(LogTemp, Warning, TEXT("UUnitActionComponent::ActionEnd(), Setting Pawn."));
-		}
-	}
+	UE_LOG(LogTemp,Warning,TEXT("UUnitActionComponent::ActionEnd() 1"));
+	SetCanDoActionThisTurn(false);
 
 	if (OnActionEnd.IsBound())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("UUnitActionComponent::ActionEnd() 2"));
 		OnActionEnd.Broadcast();
+	}
+
+	if (OnActionCompleteForControlPawn.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UUnitActionComponent::ActionEnd() 3"));
+		OnActionCompleteForControlPawn.Broadcast();
 	}
 }
 

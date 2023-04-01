@@ -18,19 +18,24 @@ public:
 	
 	AEnemyUnitControlPawn();
 
+private:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
+	TArray<AUnitCharacter*> EnemyUnits;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	TArray<AUnitCharacter*> EnemyUnits;
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void TriggerToPlay();
+
 	void FindEnemyAllUnits();
 
 	void MoveProcedure();
 
-	void OnUnitMoveFinished();
+	virtual void OnUnitActionCompleted() override;
 };

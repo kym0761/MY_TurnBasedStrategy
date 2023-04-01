@@ -58,3 +58,32 @@ public:
     }
 };
 
+template <class InObject>
+class TPriorityQueue
+{
+private:
+	TArray<InObject> Arr;
+
+public:
+
+	//사용 예시 : TPriorityQueue<UPathNode*> pq(UPathNode::PathFindingPredicated);
+
+	template <class PREDICATE_CLASS>
+	TPriorityQueue(const PREDICATE_CLASS& Predicate) : Arr(TArray<InObject>())
+	{
+		Arr.Heapify(Predicate);
+	}
+
+	InObject Pop()
+	{
+		InObject outObj;
+		Arr.HeapPop(outObj);
+		return outObj;
+	}
+
+	void Push(InObject ObjVal)
+	{
+		Arr.HeapPush(ObjVal);
+	}
+
+};

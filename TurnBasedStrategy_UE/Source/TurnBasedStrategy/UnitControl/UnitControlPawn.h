@@ -154,4 +154,10 @@ public:
 
 	void SetControlPawnMode(EPawnMode ModeInput);
 	void SetBusyOrNot(bool BusyInput);
+
+	UFUNCTION()
+		virtual void OnUnitActionCompleted();
+
+	void FindAllPlayerUnits();
+
 };

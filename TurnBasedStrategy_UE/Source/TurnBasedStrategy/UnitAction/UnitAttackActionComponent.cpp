@@ -226,6 +226,12 @@ void UUnitAttackActionComponent::ActionEnd()
 	gridManager->RemoveAllGridVisual();
 
 	Super::ActionEnd();
+
+	auto owner = Cast<AUnitCharacter>(GetOwner());
+	if (IsValid(owner))
+	{
+		owner->FinishUnitAllAction();
+	}
 }
 
 void UUnitAttackActionComponent::ActionSelected()

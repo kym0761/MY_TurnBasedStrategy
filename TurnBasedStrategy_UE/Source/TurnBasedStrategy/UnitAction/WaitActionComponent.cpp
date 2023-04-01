@@ -4,7 +4,7 @@
 #include "WaitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UnitControl/UnitSelectPawn.h"
-
+#include "UnitCore/UnitCharacter.h"
 UWaitActionComponent::UWaitActionComponent()
 {
 	ActionName = TEXT("Wait");
@@ -24,23 +24,16 @@ void UWaitActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UWaitActionComponent::TakeAction(const FGrid& Grid)
 {
-	TArray<UActorComponent*> unitActions;
-	GetOwner()->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
 
-	for (UActorComponent* unitAction : unitActions)
-	{
-		UUnitActionComponent* unitAction_Cast =
-			Cast<UUnitActionComponent>(unitAction);
-
-		if (!IsValid(unitAction_Cast))
-		{
-			continue;
-		}
-
-		unitAction_Cast->SetCanDoActionThisTurn(false);
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Wait OK"));
 
 	ActionEnd();
+
+	auto owner = Cast<AUnitCharacter>(GetOwner());
+	if (IsValid(owner))
+	{
+		owner->FinishUnitAllAction();
+	}
 
 }
 

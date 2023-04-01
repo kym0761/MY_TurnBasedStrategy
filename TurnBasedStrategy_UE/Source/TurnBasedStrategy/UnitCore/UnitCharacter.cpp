@@ -48,12 +48,6 @@ void AUnitCharacter::BeginPlay()
 		gridManager->AddUnitAtGrid(this, Grid);
 	}
 
-	ATurnManager* turnManager = ATurnManager::GetTurnManager();
-	if (IsValid(turnManager))
-	{
-		turnManager->OnTurnChanged.AddDynamic(this, &AUnitCharacter::OnTurnChanged);
-	}
-
 	//AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn(); 
 	//if (IsValid(unitSelectPawn))
 	//{
@@ -67,6 +61,12 @@ void AUnitCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (IsValid(gridManager))
 	{
 		gridManager->RemoveUnitAtGrid(this,gridManager->WorldToGrid(GetActorLocation()));
+	}
+
+	ATurnManager* turnManager = ATurnManager::GetTurnManager();
+	if (IsValid(turnManager))
+	{
+		turnManager->RemoveUnitFromTurnManager(this);
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -145,10 +145,12 @@ UUnitActionComponent* AUnitCharacter::GetUnitActionComponent(EUnitActionType Uni
 	}
 }
 
-void AUnitCharacter::OnTurnChanged()
+void AUnitCharacter::StartUnitTurn()
 {
 	//Function when TurnChanged.
-	UE_LOG(LogTemp, Warning, TEXT("OnTurnChanged -> %s"), *GetActorLabel());
+	UE_LOG(LogTemp, Warning, TEXT("StartUnitTurn -> %s"), *GetActorLabel());
+
+
 }
 
 bool AUnitCharacter::HasActionComponent(EUnitActionType UnitActionType)
@@ -179,6 +181,31 @@ void AUnitCharacter::OnSelectedUnitChanged()
 			UE_LOG(LogTemp, Warning, TEXT("OnSelectedUnitChanged -> %s"), *GetActorLabel());
 		}
 	}
+}
+
+void AUnitCharacter::FinishUnitAllAction()
+{
+	TArray<UActorComponent*> unitActions;
+	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
+
+	for (UActorComponent* unitAction : unitActions)
+	{
+		UUnitActionComponent* unitAction_Cast =
+			Cast<UUnitActionComponent>(unitAction);
+
+		if (!IsValid(unitAction_Cast))
+		{
+			continue;
+		}
+
+		unitAction_Cast->SetCanDoActionThisTurn(false);
+	}
+
+	if (OnFinishAllAction.IsBound())
+	{
+		OnFinishAllAction.Broadcast();
+	}
+
 }
 
 bool AUnitCharacter::IsThisUnitCanAction() const

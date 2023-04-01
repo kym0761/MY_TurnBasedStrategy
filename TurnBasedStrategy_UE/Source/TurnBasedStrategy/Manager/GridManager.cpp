@@ -263,9 +263,10 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 {
 	//!주의! return 하기 전에 PathLength를 변경시켜야함.
 
-	//openList = 이동 가능할 위치 / closeList = 이동 불가능함이 확정된 위치.
+	//openList = 이동 가능할 위치. PriorityQueue처럼 사용할 것으로 TArray 
+	//closeSet = 이동 불가능함이 확정된 위치. 사용한 것인지만 판독하기 위해 TSet
 	TArray<UPathNode*> openList;
-	TArray<UPathNode*> closeList;
+	TSet<UPathNode*> closeSet;
 
 	//Heap화 == PriorityQueue
 	openList.Heapify(UPathNode::PathFindingPredicated);
@@ -321,15 +322,15 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 		}
 
 		openList.Remove(currentNode);
-		closeList.Add(currentNode);
+		closeSet.Add(currentNode);
 
 		//UE_LOG(LogTemp, Warning, TEXT("Node Position : %d, %d"), currentNode->GetGrid().X, currentNode->GetGrid().Y);
 
 		TArray<UPathNode*> nearNodeArray = GetNearNodeArray(currentNode);
 		for (UPathNode* nearNode : nearNodeArray)
 		{
-			//close List 안에 있는 노드는 무시.
-			if (closeList.Contains(nearNode))
+			//close Set 안에 있는 노드는 무시.
+			if (closeSet.Contains(nearNode))
 			{
 				continue;
 			}
@@ -337,7 +338,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 			//걸을 수 없는 위치 무시.
 			if (nearNode->GetIsWalkable() == false)
 			{
-				closeList.Add(nearNode);
+				closeSet.Add(nearNode);
 				continue;
 			}
 
@@ -357,7 +358,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 					}
 					else
 					{
-						closeList.Add(nearNode);
+						closeSet.Add(nearNode);
 						continue;
 					}
 				}
@@ -502,6 +503,13 @@ AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue) const
 
 	return gridArray[0];
 }
+
+//FGrid AGridManager::GetGridOfUnit(AUnitCharacter* Unit) const
+//{
+//	GridSystem->getgrid
+//
+//	return ;
+//}
 
 bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue) const
 {

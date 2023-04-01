@@ -385,6 +385,8 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 
 int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
+
+	//owner가 적절하지 않으면 밸류계산 불가능.
 	AActor* owner = GetOwner();
 	if (!IsValid(owner) || owner->Tags.Num() == 0)
 	{
@@ -397,9 +399,24 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -1;
 	}
 
+	//이동할 위치에 누군가가 있음? 그러면 이동하지 말아야함.
+	if (gridManager->HasAnyUnitOnGrid(CandidateGrid))
+	{
+		return -10000;
+	}
+
 	FName teamTag = owner->Tags[0];
-	int32 resultDistance = TNumericLimits<int32>::Max();
-	TMap<FGrid,UGridObject*> gridObjMap= gridManager->GetAllGridObjectsThatHasUnit();
+	int32 distanceToTarget = TNumericLimits<int32>::Max();
+	TMap<FGrid, UGridObject*> gridObjMap = gridManager->GetAllGridObjectsThatHasUnit();
+
+	int32 distanceToMove = 0;
+	auto owner_cast = Cast<AUnitCharacter>(owner);
+	FGrid ownerGrid;
+	if (IsValid(owner_cast))
+	{
+		ownerGrid = owner_cast->GetGrid();
+	}
+
 
 	//유닛이 존재하는 Grid에 대해서, 현재 유닛과의 거리 계산 및 가치 계산.
 	for (auto gridPair : gridObjMap)
@@ -426,7 +443,8 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 
 		FGrid targetGrid = gridPair.Key;
 		int32 distance = gridManager->CalculateGridDistance(CandidateGrid, targetGrid);
-		resultDistance = (resultDistance > distance) ? distance : resultDistance;
+		distanceToMove = gridManager->CalculateGridDistance(ownerGrid, CandidateGrid);
+		distanceToTarget = (distanceToTarget > distance) ? distance : distanceToTarget;
 	}
 
 	int32 reverseValueOffset = 10000;
@@ -435,8 +453,8 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	//상대와 거리가 5면, 10000-5 = 9995
 	//즉, 상대와 거리가 가까울 수록 Value가 크다.
 	//만약, 이동거리가 매우 길고 맵이 매우 크다면 10000으로 잡은 값에 문제가 생길 수도 있지만
-	//Grid SRPG 특성상 이동거리가 40 이상이며 맵의 크기가 충분히 크다면 랙이 걸리므로 실질적으로 문제가 안될 것이다.
-	return reverseValueOffset - resultDistance;
+	//Grid SRPG 특성상 이동거리가 40 이상 움직이려하거나 맵의 크기가 충분히 크다면 랙이 걸리므로 실질적으로 문제가 안될 것이다.
+	return reverseValueOffset - distanceToTarget - distanceToMove;
 }
 
 void UUnitMoveActionComponent::TestFunction()

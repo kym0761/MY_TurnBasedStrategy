@@ -9,9 +9,7 @@
 
 class AUnitCharacter;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionStart);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionEnd);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionSelected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitActionDelegate);
 
 UCLASS(abstract ,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TURNBASEDSTRATEGY_API UUnitActionComponent : public UActorComponent
@@ -22,6 +20,7 @@ public:
 	// Sets default values for this component's properties
 	UUnitActionComponent();
 
+	FUnitActionDelegate OnActionCompleteForControlPawn;
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
@@ -42,10 +41,9 @@ private:
 	//이는 ActionStart()에서 Broadcast되므로, 다른 곳에서 직접 Call하려고 하지말 것.
 	//아래 3개도 마찬가지...
 	//현재는 추후 실수를 방지하기 위해 private으로 설정했지만, 나중에 public으로 바꿀 가능성도 있음.
-	FOnActionStart OnActionStart;
-	FOnActionEnd OnActionEnd;
-	FOnActionSelected OnActionSelected;
-
+	FUnitActionDelegate OnActionStart;
+	FUnitActionDelegate OnActionEnd;
+	FUnitActionDelegate OnActionSelected;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
