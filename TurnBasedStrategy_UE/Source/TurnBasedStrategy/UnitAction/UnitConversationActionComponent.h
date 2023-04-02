@@ -14,4 +14,8 @@ class TURNBASEDSTRATEGY_API UUnitConversationActionComponent : public UUnitActio
 {
 	GENERATED_BODY()
 	
+public:
+
+	UUnitConversationActionComponent();
+
 };

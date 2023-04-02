@@ -52,7 +52,6 @@ enum class EGridVisualType : uint8
 	DANGER UMETA(DisplayName = "DANGER") // 위험 지역?
 };
 
-
 USTRUCT(BlueprintType)
 struct FGridVisualData
 {
@@ -64,4 +63,11 @@ public:
 		EGridVisualType GridVisualType;
 
 	static TArray<FGrid> ParseToGridArray(TArray<FGridVisualData> GridVisualArray);
+	bool operator==(const FGridVisualData& Other) const;
 };
+
+//To Use in TSet Or TMap. You Need To Make operator==, GetTypeHash(). 
+uint32 GetTypeHash(const FGridVisualData& GridVisualData)
+{
+	return FCrc::MemCrc32(&GridVisualData, sizeof(FGridVisualData));
+}

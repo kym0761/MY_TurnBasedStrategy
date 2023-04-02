@@ -3,3 +3,6 @@
 
 #include "UnitConversationActionComponent.h"
 
+UUnitConversationActionComponent::UUnitConversationActionComponent()
+{
+}

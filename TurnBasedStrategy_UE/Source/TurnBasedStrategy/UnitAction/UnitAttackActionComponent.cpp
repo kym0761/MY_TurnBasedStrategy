@@ -40,7 +40,7 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
-	TArray<FGrid> validAttackRange = GetValidActionGridArray();
+	TSet<FGrid> validAttackRange = GetValidActionGridSet();
 	if (!validAttackRange.Contains(Grid))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Can't Attack."));
@@ -72,9 +72,10 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 
 }
 
-TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
+TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 {
-	TArray<FGrid> validArray;
+	//TArray<FGrid> validArray;
+	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
 
@@ -83,7 +84,7 @@ TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validArray;
+		return validSet;
 	}
 
 	for (int x = -MaxActionRange; x <= MaxActionRange; x++)
@@ -117,19 +118,21 @@ TArray<FGrid> UUnitAttackActionComponent::GetValidActionGridArray() const
 				continue;
 			}
 
-			//통과하면 문제없으니 validArray에 추가
-			validArray.Add(resultGrid);
+			//통과하면 문제없으니 validSet에 추가
+			validSet.Add(resultGrid);
 		}
 	}
 
 
 
-	return validArray;
+	return validSet;
 }
 
-TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataArray() const
+TSet<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataSet() const
 {
-	TArray<FGridVisualData> validVisualDataArray;
+	//TArray<FGridVisualData> validVisualDataArray;
+	
+	TSet<FGridVisualData> validVisualDataSet;
 	FGrid unitGrid = Unit->GetGrid();
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
@@ -137,7 +140,7 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validVisualDataArray;
+		return validVisualDataSet;
 	}
 
 
@@ -176,14 +179,13 @@ TArray<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualData
 				continue;
 			}
 
-			//통과하면 문제없으니 validArray에 추가
-
-			validVisualDataArray.Add(resultData);
+			//통과하면 문제없으니 validSet에 추가
+			validVisualDataSet.Add(resultData);
 		}
 	}
 
 
-	return validVisualDataArray;
+	return validVisualDataSet;
 
 
 
@@ -241,7 +243,7 @@ void UUnitAttackActionComponent::ActionSelected()
 
 FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 {
-	TArray<FGrid> grids = GetValidActionGridArray(); //공격할 수 있는 위치 전부.
+	TSet<FGrid> grids = GetValidActionGridSet(); //공격할 수 있는 위치 전부.
 	TArray<FActionValueToken> actionValues;
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
@@ -377,25 +379,25 @@ void UUnitAttackActionComponent::TestFunction()
 
 }
 
-TArray<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
+TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 {
 	UUnitMoveActionComponent* moveActionComp = GetOwner()->FindComponentByClass<UUnitMoveActionComponent>();
 	if (!IsValid( moveActionComp))
 	{
-		return TArray<FGrid>();
+		return TSet<FGrid>();
 	}
 
-	TArray<FGrid> resultGrid;
+	TSet<FGrid> resultGrid;
 
-	TArray<FGrid> canMoveGrids = moveActionComp->GetValidActionGridArray();
+	TSet<FGrid> canMoveGrids = moveActionComp->GetValidActionGridSet();
 
 	for (FGrid& canMoveGrid : canMoveGrids)
 	{
-		TArray<FGrid> grids = GetAttackRangeGridArrayAtGrid(canMoveGrid);
+		TSet<FGrid> grids = GetAttackRangeGridSetAtGrid(canMoveGrid);
 
 		for (FGrid& grid : grids)
 		{
-			resultGrid.AddUnique(grid);
+			resultGrid.Add(grid);
 		}
 
 	}
@@ -404,16 +406,16 @@ TArray<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 
 }
 
-TArray<FGrid> UUnitAttackActionComponent::GetAttackRangeGridArrayAtGrid(FGrid& Grid)
+TSet<FGrid> UUnitAttackActionComponent::GetAttackRangeGridSetAtGrid(FGrid& Grid)
 {
-	TArray<FGrid> validArray;
+	TSet<FGrid> validSet;
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validArray;
+		return validSet;
 	}
 
 	for (int x = -MaxActionRange; x <= MaxActionRange; x++)
@@ -435,11 +437,10 @@ TArray<FGrid> UUnitAttackActionComponent::GetAttackRangeGridArrayAtGrid(FGrid& G
 			}
 
 			//통과하면 문제없으니 validArray에 추가
-			validArray.Add(resultGrid);
+			validSet.Add(resultGrid);
 		}
 	}
 
-	validArray.AddUnique(Unit->GetGrid());
 
-	return validArray;
+	return validSet;
 }

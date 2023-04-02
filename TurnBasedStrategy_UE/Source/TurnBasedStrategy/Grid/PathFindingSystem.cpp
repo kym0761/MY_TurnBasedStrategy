@@ -31,44 +31,20 @@ void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFun
 	}
 }
 
-//TArray<UPathNode*> UPathFindingSystem::GetPathNodeArray() const
-//{
-//	return PathNodeArray;
-//}
-
 TMap<FGrid, UPathNode*> UPathFindingSystem::GetPathNodeMap() const
 {
 	return PathNodeMap;
 }
 
-//UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
-//{
-//	int32 x = Grid.X;
-//	int32 y = Grid.Y;
-//
-//	int32 index = X_Length * x + y;
-//
-//	if (PathNodeArray.IsValidIndex(index))
-//	{
-//		UPathNode* pathNode = PathNodeArray[index];
-//
-//		if (IsValid(pathNode) && pathNode->GetGrid() == Grid)
-//		{
-//			return pathNode;
-//		}
-//	}
-//
-//	return nullptr;
-//}
-
 UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
 {
-	UPathNode* pathNode = PathNodeMap[Grid];
-
-	if (!IsValid(pathNode))
+	if (PathNodeMap.Contains(Grid))
 	{
-		return nullptr;
+		if (IsValid(PathNodeMap[Grid]))
+		{
+			return PathNodeMap[Grid];
+		}
 	}
 
-	return pathNode;
+	return nullptr;
 }

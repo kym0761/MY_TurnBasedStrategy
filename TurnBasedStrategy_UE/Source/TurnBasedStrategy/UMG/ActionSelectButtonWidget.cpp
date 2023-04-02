@@ -56,9 +56,6 @@ void UActionSelectButtonWidget::OnButtonClicked()
 		return;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Button Clicked! --> %s"), *UnitAction->GetActionName());
-	// Do Something.
-
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (IsValid(playerController))
 	{
@@ -74,13 +71,12 @@ void UActionSelectButtonWidget::OnButtonClicked()
 	if (IsValid(gridManager))
 	{
 		gridManager->RemoveAllGridVisual();
-		gridManager->ShowFromGridVisualDataArray(UnitAction->GetValidActionGridVisualDataArray());
+		gridManager->ShowFromGridVisualDataSet(UnitAction->GetValidActionGridVisualDataSet());
 	}
 
 	if (OnButtonClickedCompleted.IsBound())
 	{
 		OnButtonClickedCompleted.Broadcast();
 	}
-
 
 }

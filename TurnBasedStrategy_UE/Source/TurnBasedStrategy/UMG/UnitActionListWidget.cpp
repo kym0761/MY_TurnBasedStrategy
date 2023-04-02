@@ -51,8 +51,6 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 		VerticalBox_ActionList->AddChild(buttonWidget);
 		buttonWidget->InitActionSelectButton(unitAction_Cast);
 		buttonWidget->OnButtonClickedCompleted.AddDynamic(this, &UUnitActionListWidget::OnButtonClickedCompletedFunc);
-
-		//buttonWidget->OnButtonClickedCompleted.RemoveDynamic(this, &UUnitActionListWidget::OnButtonClickedCompletedFunc);
 	}
 
 

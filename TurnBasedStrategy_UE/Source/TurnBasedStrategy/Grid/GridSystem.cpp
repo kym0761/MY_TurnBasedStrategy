@@ -30,67 +30,29 @@ void UGridSystem::SetGridSystem(int _X_Length, int _Y_Length, TFunctionRef<UGrid
 
 			UGridObject* gridobj = CreateObjectFunction(this, grid);
 			//GridObjectMap.Add(gridobj);
-			GridObjectMap.Add(grid,gridobj);
+			GridObjectMap.Add(grid, gridobj);
 		}
 	}
 }
-
-//TArray<UGridObject*> UGridSystem::GetGridObjectArray() const
-//{
-//	return GridObjectArray;
-//}
 
 TMap<FGrid, UGridObject*> UGridSystem::GetGridObjectMap() const
 {
 	return GridObjectMap;
 }
 
-//UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
-//{
-//	int32 x = Grid.X;
-//	int32 y = Grid.Y;
-//
-//	int32 index = X_Length * x + y;
-//
-//	if (GridObjectArray.IsValidIndex(index))
-//	{
-//		UGridObject* gridObj = GridObjectArray[index];
-//
-//		if (IsValid(gridObj) && gridObj->GetGrid() == Grid)
-//		{
-//			return gridObj;
-//		}
-//	}
-//
-//	return nullptr;
-//}
-
 UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 {
-	UGridObject* gridObj = GridObjectMap[Grid];
-	if (IsValid(gridObj))
+	if (GridObjectMap.Contains(Grid))
 	{
-		return gridObj;
+		if (IsValid(GridObjectMap[Grid]))
+		{
+			return GridObjectMap[Grid];
+		}
 	}
 
 	return nullptr;
 }
 
-//TArray<UGridObject*> UGridSystem::GetAllGridObjectThatHasUnit() const
-//{
-//	TArray<UGridObject*> gridObjArray;
-//
-//	for (UGridObject* gridObj : GridObjectArray)
-//	{
-//		AUnitCharacter* unit = gridObj->GetUnit();
-//		if (IsValid(unit))
-//		{
-//			gridObjArray.Add(gridObj);
-//		}
-//	}
-//
-//	return gridObjArray;
-//}
 
 TMap<FGrid, UGridObject*> UGridSystem::GetAllGridObjectsThatHasUnit() const
 {

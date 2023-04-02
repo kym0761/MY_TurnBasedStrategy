@@ -32,8 +32,8 @@ public:
 
 	virtual void DealWithGridBeforeAction(const FGrid& Grid) override;
 
-	virtual TArray<FGrid> GetValidActionGridArray() const override;
-	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
+	virtual TSet<FGrid> GetValidActionGridSet() const override;
+	virtual TSet<FGridVisualData> GetValidActionGridVisualDataSet() const override;
 	virtual void TakeAction(const FGrid& Grid) override;
 
 	virtual FGrid ThinkAIBestActionGrid() override;
@@ -41,9 +41,9 @@ public:
 	virtual void TestFunction() override;
 
 	//적 공격 가능 범위를 표현
-	TArray<FGrid> GetEnemyAttackableGridRange();
+	TSet<FGrid> GetEnemyAttackableGridRange();
 	//적이 해당 위치에 있다 가정하고 공격할 수 있는 위치인지 확인.
-	TArray<FGrid> GetAttackRangeGridArrayAtGrid(FGrid& Grid);
+	TSet<FGrid> GetAttackRangeGridSetAtGrid(FGrid& Grid);
 
 protected:
 	virtual void ActionStart() override;

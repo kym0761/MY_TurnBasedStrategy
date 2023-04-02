@@ -7,7 +7,7 @@
 #include "EnemyUnitControlPawn.generated.h"
 
 /**
- * 
+ * Enemy를 움직이게 할 AI ControlPawn.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API AEnemyUnitControlPawn : public AUnitControlPawn

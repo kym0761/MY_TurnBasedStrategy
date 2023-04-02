@@ -24,9 +24,9 @@ void UUnitInteractActionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-TArray<FGrid> UUnitInteractActionComponent::GetValidActionGridArray() const
+TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 {
-	TArray<FGrid> validArray;
+	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
 	AGridManager* gridManager = AGridManager::GetGridManager();
@@ -35,7 +35,7 @@ TArray<FGrid> UUnitInteractActionComponent::GetValidActionGridArray() const
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validArray;
+		return validSet;
 	}
 
 	TArray<int32> dx{ 1,-1,0,0 };
@@ -59,16 +59,16 @@ TArray<FGrid> UUnitInteractActionComponent::GetValidActionGridArray() const
 			continue;
 		}
 
-		//통과하면 문제없으니 validArray에 추가
-		validArray.Add(resultGrid);
+		//통과하면 문제없으니 validSet에 추가
+		validSet.Add(resultGrid);
 	}
 
-	return validArray;
+	return validSet;
 }
 
-TArray<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDataArray() const
+TSet<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDataSet() const
 {
-	TArray<FGridVisualData> validVisualDataArray;
+	TSet<FGridVisualData> validVisualDataSet;
 	FGrid unitGrid = Unit->GetGrid();
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
@@ -76,7 +76,7 @@ TArray<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDa
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validVisualDataArray;
+		return validVisualDataSet;
 	}
 
 	TArray<int32> dx{ 1,-1,0,0 };
@@ -103,17 +103,17 @@ TArray<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDa
 		resultVisualData.Grid = resultGrid;
 		resultVisualData.GridVisualType = EGridVisualType::Warning;
 
-		//통과하면 문제없으니 validArray에 추가
-		validVisualDataArray.Add(resultVisualData);
+		//통과하면 문제없으니 validSet에 추가
+		validVisualDataSet.Add(resultVisualData);
 	}
 
 
-	return validVisualDataArray;
+	return validVisualDataSet;
 }
 
 void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 {
-	TArray<FGrid> tempArr = GetValidActionGridArray();
+	TSet<FGrid> tempArr = GetValidActionGridSet();
 
 	if (tempArr.Contains(Grid))
 	{

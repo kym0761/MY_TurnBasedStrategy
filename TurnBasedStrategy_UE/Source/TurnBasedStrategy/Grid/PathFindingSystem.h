@@ -22,9 +22,6 @@ private:
 	int32 X_Length;
 	int32 Y_Length;
 
-	//UPROPERTY()
-	//	TArray<UPathNode*> PathNodeArray;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PathFinding", Meta = (AllowPrivateAccess = true))
 		TMap<FGrid,UPathNode*> PathNodeMap;
 public:
@@ -35,9 +32,6 @@ public:
 	//Call Order in GridManager : NewObject<>(); -> SetPathFindingSystem();
 	void SetPathFindingSystem(int _X_Length, int _Y_Length,
 		TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction);
-
-	//TArray<UPathNode*> GetPathNodeArray() const;
-	//UPathNode* GetValidPathNode(const FGrid& Grid) const;
 
 	TMap<FGrid,UPathNode*> GetPathNodeMap() const;
 	UPathNode* GetValidPathNode(const FGrid& Grid) const;

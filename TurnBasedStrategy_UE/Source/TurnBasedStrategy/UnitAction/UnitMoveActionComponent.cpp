@@ -98,9 +98,9 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 }
 
-TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
+TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 {
-	TArray<FGrid> validArray;
+	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
 
@@ -109,7 +109,7 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validArray;
+		return validSet;
 	}
 
 
@@ -169,19 +169,19 @@ TArray<FGrid> UUnitMoveActionComponent::GetValidActionGridArray() const
 				continue;
 			}
 
-			//통과하면 문제없으니 validArray에 추가
+			//통과하면 문제없으니 validSet에 추가
 
-			validArray.Add(resultGrid);
+			validSet.Add(resultGrid);
 		}
 	}
 
 
-	return validArray;
+	return validSet;
 }
 
-TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataArray() const
+TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet() const
 {
-	TArray<FGridVisualData> validVisualDataArray;
+	TSet<FGridVisualData> validVisualDataSet;
 	FGrid unitGrid = Unit->GetGrid();
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
@@ -189,7 +189,7 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 	if (!IsValid(gridManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validVisualDataArray;
+		return validVisualDataSet;
 	}
 
 
@@ -244,14 +244,14 @@ TArray<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataAr
 			}
 
 
-			//통과하면 문제없으니 validArray에 추가
+			//통과하면 문제없으니 validSet에 추가
 
-			validVisualDataArray.Add(testData);
+			validVisualDataSet.Add(testData);
 		}
 	}
 
 
-	return validVisualDataArray;
+	return validVisualDataSet;
 }
 
 void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
@@ -338,7 +338,7 @@ void UUnitMoveActionComponent::ActionSelected()
 
 FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 {
-	TArray<FGrid> grids = GetValidActionGridArray(); //이동할 수 있는 위치 전부.
+	TSet<FGrid> grids = GetValidActionGridSet(); //이동할 수 있는 위치 전부.
 	TArray<FActionValueToken> actionValues;
 
 	AGridManager* gridManager = AGridManager::GetGridManager();

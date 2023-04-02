@@ -23,7 +23,7 @@ void UCalculationUnitStatWidget::UpdateUnitStatWidget()
 		return;
 	}
 
-	//temporal..
+	//현재 명중률 , 크리티컬 확률 등의 공식을 생각하지 않아서 UI에서 보여줄 임시 숫자를 사용함.
 	
 	float hp = CurrentStatComponent->GetHP();
 	float maxhp = CurrentStatComponent->GetMaxHP();

@@ -60,8 +60,9 @@ public:
 
 	virtual void TakeAction(const FGrid& Grid);
 	virtual bool IsValidActionGrid(const FGrid& Grid) const;
-	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const;
-	virtual TArray<FGrid> GetValidActionGridArray() const;
+	virtual TSet<FGridVisualData> GetValidActionGridVisualDataSet() const;
+	virtual TSet<FGrid> GetValidActionGridSet() const;
+
 	AUnitCharacter* GetUnit() const;
 
 	bool IsCanDoActionThisTurn() const;

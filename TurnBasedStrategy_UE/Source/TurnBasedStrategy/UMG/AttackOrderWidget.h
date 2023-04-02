@@ -22,7 +22,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
 		UTextBlock* TextBlock_Damage;
 
-
 public:
 
 	void InitAttackOrderWidget(FAttackOrder& Order);

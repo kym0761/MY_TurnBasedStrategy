@@ -61,17 +61,17 @@ void UUnitActionComponent::TakeAction(const FGrid& Grid)
 
 bool UUnitActionComponent::IsValidActionGrid(const FGrid& Grid) const
 {
-	return GetValidActionGridArray().Contains(Grid);
+	return GetValidActionGridSet().Contains(Grid);
 }
 
-TArray<FGridVisualData> UUnitActionComponent::GetValidActionGridVisualDataArray() const
+TSet<FGridVisualData> UUnitActionComponent::GetValidActionGridVisualDataSet() const
 {
-	return TArray<FGridVisualData>();
+	return TSet<FGridVisualData>();
 }
 
-TArray<FGrid> UUnitActionComponent::GetValidActionGridArray() const
+TSet<FGrid> UUnitActionComponent::GetValidActionGridSet() const
 {
-	return TArray<FGrid>();
+	return TSet<FGrid>();
 }
 
 AUnitCharacter* UUnitActionComponent::GetUnit() const
@@ -92,7 +92,7 @@ bool UUnitActionComponent::IsCurrentlyAvailableAction() const
 	}
 
 
-	return GetValidActionGridArray().Num() != 0;
+	return GetValidActionGridSet().Num() != 0;
 
 }
 

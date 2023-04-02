@@ -26,8 +26,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual TArray<FGrid> GetValidActionGridArray() const override;
-	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
+	virtual TSet<FGrid> GetValidActionGridSet() const override;
+	virtual TSet<FGridVisualData> GetValidActionGridVisualDataSet() const override;
 	virtual void TakeAction(const FGrid& Grid) override;
 	virtual void DealWithGridBeforeAction(const FGrid& Grid) override;
 protected:

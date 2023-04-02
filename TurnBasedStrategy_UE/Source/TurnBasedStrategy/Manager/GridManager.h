@@ -91,8 +91,8 @@ public:
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
 
 	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
-	void ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType, const float Height = 0.01f);
-	void ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray, const float Height = 0.01f);
+	void ShowFromGridSet(const TSet<FGrid>& GridSet, EGridVisualType GridVisualType, const float Height = 0.01f);
+	void ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVisualDataSet, const float Height = 0.01f);
 
 	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
 	int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
@@ -103,7 +103,6 @@ public:
 	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
 	TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
 	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
-	//FGrid GetGridOfUnit(AUnitCharacter* Unit) const;
 	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
 	bool IsWalkableGrid(const FGrid& GridValue) const;
@@ -117,7 +116,6 @@ public:
 	void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
 	void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
 
-	//TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
 	TMap<FGrid,UGridObject*> GetAllGridObjectsThatHasUnit() const;
 	
 	//Test EnemyRangeFunction

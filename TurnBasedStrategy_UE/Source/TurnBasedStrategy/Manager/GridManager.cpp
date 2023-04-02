@@ -151,7 +151,7 @@ void AGridManager::ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType
 {
 	//Grid 한 지점에서 Range만큼 Show해줌.
 
-	TArray<FGrid> gridList;
+	TSet<FGrid> gridSet;
 
 	for (int32 x = -Range; x <= Range; x++)
 	{
@@ -170,14 +170,14 @@ void AGridManager::ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType
 				continue;
 			}
 
-			gridList.Add(temp);
+			gridSet.Add(temp);
 		}
 	}
 
-	ShowFromGridArray(gridList, GridVisualType);
+	ShowFromGridSet(gridSet, GridVisualType);
 }
 
-void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisualType GridVisualType, const float Height)
+void AGridManager::ShowFromGridSet(const TSet<FGrid>& GridSet, EGridVisualType GridVisualType, const float Height)
 {
 	UInstancedGridVisualComponent* toDraw = nullptr;
 
@@ -204,20 +204,19 @@ void AGridManager::ShowFromGridArray(const TArray<FGrid>& GridArray, EGridVisual
 
 	if (IsValid(toDraw))
 	{
-		toDraw->DrawGridVisualswithGridArray(GridArray,Height);
+		toDraw->DrawGridVisualswithGridSet(GridSet,Height);
 	}
 
 }
 
-void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& GridVisualDataArray, const float Height)
+void AGridManager::ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVisualDataSet, const float Height)
 {
-	TArray<FGrid> moveArr;
-	TArray<FGrid> noArr;
-	TArray<FGrid> okArr;
-	TArray<FGrid> warningArr;
+	TSet<FGrid> moveArr;
+	TSet<FGrid> noArr;
+	TSet<FGrid> okArr;
+	TSet<FGrid> warningArr;
 
-
-	for (const FGridVisualData& visualData : GridVisualDataArray)
+	for (const FGridVisualData& visualData : GridVisualDataSet)
 	{
 		switch (visualData.GridVisualType)
 		{
@@ -240,22 +239,22 @@ void AGridManager::ShowFromGridVisualDataArray(const TArray<FGridVisualData>& Gr
 
 	if (IsValid(GridVisual_Move))
 	{
-		GridVisual_Move->DrawGridVisualswithGridArray(moveArr);
+		GridVisual_Move->DrawGridVisualswithGridSet(moveArr);
 	}
 
 	if (IsValid(GridVisual_NO))
 	{
-		GridVisual_NO->DrawGridVisualswithGridArray(noArr);
+		GridVisual_NO->DrawGridVisualswithGridSet(noArr);
 	}
 
 	if (IsValid(GridVisual_OK))
 	{
-		GridVisual_OK->DrawGridVisualswithGridArray(okArr);
+		GridVisual_OK->DrawGridVisualswithGridSet(okArr);
 	}
 
 	if (IsValid(GridVisual_Warning))
 	{
-		GridVisual_Warning->DrawGridVisualswithGridArray(warningArr);
+		GridVisual_Warning->DrawGridVisualswithGridSet(warningArr);
 	}
 }
 
@@ -381,7 +380,6 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 		}
 	}
 
-
 	//openList.Num() > 0인 조건이 끝날 때까지 올바른 경로를 못찾았다면 실패.
 	PathLength = -1;
 	return TArray<FGrid>();
@@ -504,13 +502,6 @@ AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue) const
 	return gridArray[0];
 }
 
-//FGrid AGridManager::GetGridOfUnit(AUnitCharacter* Unit) const
-//{
-//	GridSystem->getgrid
-//
-//	return ;
-//}
-
 bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue) const
 {
 
@@ -551,7 +542,8 @@ int32 AGridManager::GetPathLength(const FGrid& Start, const FGrid& End)
 
 void AGridManager::InitAllPathFindingNodes()
 {
-	//PathFindingGridSystem의 Grid 값을 전부 초기화.
+	//PathFindingGridSystem의 Grid 값을 PathFinding에 이용할 수 있도록 전부 초기화.
+	//G = 무한대(int32 최대값) , H = 0 , F = G+H 
 
 	TMap<FGrid,UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
 
@@ -618,16 +610,6 @@ void AGridManager::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const F
 	}
 }
 
-//TArray<UGridObject*> AGridManager::GetAllGridObjectThatHasUnit() const
-//{
-//	if (!IsValid(GridSystem))
-//	{
-//		return TArray<UGridObject*>();
-//	}
-//
-//	return GridSystem->GetAllGridObjectThatHasUnit();
-//}
-
 TMap<FGrid, UGridObject*> AGridManager::GetAllGridObjectsThatHasUnit() const
 {
 	if (!IsValid(GridSystem))
@@ -648,7 +630,7 @@ void AGridManager::ShowEnemyRange()
 	
 	TArray<AUnitCharacter*> unitArr = GetAllUnitInGridSystem();
 	TArray<AUnitCharacter*> enemyArr;
-	TArray<FGrid> resultGrids;
+	TSet<FGrid> resultGrids;
 
 	for (auto unit : unitArr)
 	{
@@ -668,15 +650,16 @@ void AGridManager::ShowEnemyRange()
 		auto unitAttackComp= enemy->FindComponentByClass<UUnitAttackActionComponent>();
 		if (IsValid(unitAttackComp))
 		{
-			TArray<FGrid> attackableGrids = unitAttackComp->GetEnemyAttackableGridRange();
+			TSet<FGrid> attackableGrids = unitAttackComp->GetEnemyAttackableGridRange();
 			for (auto grid : attackableGrids)
 			{
-				resultGrids.AddUnique(grid);
+				//resultGrids.AddUnique(grid);
+				resultGrids.Add(grid);
 			}
 		}
 	}
 
-	ShowFromGridArray(resultGrids, EGridVisualType::DANGER, 0.001f);
+	ShowFromGridSet(resultGrids, EGridVisualType::DANGER, 0.001f);
 
 
 }

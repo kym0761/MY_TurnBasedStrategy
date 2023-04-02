@@ -22,7 +22,7 @@ class TURNBASEDSTRATEGY_API ATurnManager : public AActor
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
-	int32 TurnNumber = 1;
+		int32 TurnNumber = 1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
 		ETurnType TurnType;
@@ -34,7 +34,7 @@ private:
 		TArray<AUnitCharacter*> EnemyUnitArr;
 
 	UPROPERTY()
-	AEnemyUnitControlPawn* EnemyUnitControlPawnRef;
+		AEnemyUnitControlPawn* EnemyUnitControlPawnRef;
 
 	UPROPERTY()
 		AUnitControlPawn* PlayerUnitControlPawnRef;
@@ -43,11 +43,10 @@ public:
 	// Sets default values for this actor's properties
 	ATurnManager();
 
-	//FTurnManagerDelegate OnTurnChanged;
+	/*턴 시작했을 때 각 진영의 유닛들에게 Callback.*/
 	FTurnManagerDelegate OnPlayerTurnStart;
 	FTurnManagerDelegate OnEnemyTurnStart;
-	FTurnManagerDelegate OnAllyTurnStart;
-	FTurnManagerDelegate OnUnitFinishedAction;
+	FTurnManagerDelegate OnAllyTurnStart; //!! 아직 Ally를 안만듬.
 
 protected:
 	// Called when the game starts or when spawned

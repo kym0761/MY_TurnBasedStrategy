@@ -82,3 +82,8 @@ TArray<FGrid> FGridVisualData::ParseToGridArray(TArray<FGridVisualData> GridVisu
 
 	return gridArray;
 }
+
+bool FGridVisualData::operator==(const FGridVisualData& Other) const
+{
+	return (Grid == Other.Grid) && (GridVisualType == Other.GridVisualType);
+}

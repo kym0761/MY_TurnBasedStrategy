@@ -44,8 +44,8 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 
-	virtual TArray<FGrid> GetValidActionGridArray() const override;
-	virtual TArray<FGridVisualData> GetValidActionGridVisualDataArray() const override;
+	virtual TSet<FGrid> GetValidActionGridSet() const override;
+	virtual TSet<FGridVisualData> GetValidActionGridVisualDataSet() const override;
 	virtual void TakeAction(const FGrid& Grid) override;
 
 	virtual void DealWithGridBeforeAction(const FGrid& Grid) override;

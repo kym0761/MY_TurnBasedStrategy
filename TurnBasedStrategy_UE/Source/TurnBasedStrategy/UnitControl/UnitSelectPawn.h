@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "UnitAction/UnitAction.h"
 #include "Grid/Grid.h"
-#include "UnitControlPawn.h" //EPAwnMode
+#include "UnitControlPawn.h"
 #include "UnitSelectPawn.generated.h"
 
 class UFloatingPawnMovement;
@@ -19,7 +19,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedUnitChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectedActionChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBusyChanged, bool, bIsBusy);
 
-/*Deprecated Use UnitControl Pawn*/
+/*이 Pawn은 wasd로 3D 공간을 이동하고 마우스 클릭으로 유닛을 선택하는 테스트 Pawn
+현재 사용하지 않는다. UnitControlPawn으로 완전히 대체할 예정.
+*/
 
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API AUnitSelectPawn : public APawn

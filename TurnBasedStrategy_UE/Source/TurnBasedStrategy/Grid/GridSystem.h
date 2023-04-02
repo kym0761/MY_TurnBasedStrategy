@@ -38,10 +38,8 @@ public:
 	void SetGridSystem(int _X_Length, int _Y_Length,
 		TFunctionRef<UGridObject* (UGridSystem*, FGrid)> CreateObjectFunction);
 
-	//TArray<UGridObject*> GetGridObjectArray() const;
 	TMap<FGrid,UGridObject*> GetGridObjectMap() const;
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
-	//TArray<UGridObject*> GetAllGridObjectThatHasUnit() const;
 	TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
 
 };

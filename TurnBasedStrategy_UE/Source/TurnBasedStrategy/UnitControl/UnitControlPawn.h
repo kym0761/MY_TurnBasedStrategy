@@ -22,6 +22,10 @@ class UUnitActionListWidget;
 class UMainCanvasWidget;
 class AUnitCharacter;
 
+/*
+* Player가 사용할 UnitControlPawn.
+*/
+
 UENUM(BlueprintType)
 enum class EPawnMode : uint8
 {

@@ -183,7 +183,7 @@ void AUnitSelectPawn::OnTracedGridChanged()
 
 	if (IsValid(SelectedAction))
 	{
-		auto gridArray = SelectedAction->GetValidActionGridArray();
+		auto gridArray = SelectedAction->GetValidActionGridSet();
 		if (gridArray.Contains(CurrentTracedGrid))
 		{
 			FVector unitLoc = SelectedAction->GetOwner()->GetActorLocation();

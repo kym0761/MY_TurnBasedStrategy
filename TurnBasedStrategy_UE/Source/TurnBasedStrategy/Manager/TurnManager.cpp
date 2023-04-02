@@ -27,6 +27,9 @@ void ATurnManager::BeginPlay()
 
 void ATurnManager::InitTurnManager()
 {
+	// 모든 유닛을 찾고, 유닛이 Player의 유닛인지, 아니면 Enemy인지 확인해서 분류함.
+	// 마지막엔 UnitControlPawn에게도 해당 유닛이 각각 본인들의 것이라는 것을 알려줌.
+
 	TArray<AActor*> unitArr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitCharacter::StaticClass(), unitArr);
 
