@@ -9,8 +9,9 @@
 class UCanvasPanel;
 
 /**
- * 
+ * 현재 역할 : HUD
  */
+
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UMainCanvasWidget : public UUserWidget
 {

@@ -60,8 +60,7 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
-	//!! Widget을 생성하는 것보다, Main Canvas에 넣고 쓰게 만들 예정.
-
+	//TODO : Widget을 생성하는 것보다, Main Canvas에 넣고 Show / Hide 하는게 더 나아보임. 추후 수정해야함
 	AttackCalculationWidget = CreateWidget<UAttackCalculationWidget>(GetWorld(), AttackCalculationWidgetClass);
 	if (IsValid(AttackCalculationWidget))
 	{
@@ -74,7 +73,8 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 
 TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 {
-	//TArray<FGrid> validArray;
+	//공격 범위에 닿는 Grid 위치를 전부 찾아 return한다.
+
 	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
@@ -123,89 +123,31 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 		}
 	}
 
-
-
 	return validSet;
 }
 
 TSet<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataSet() const
 {
-	//TArray<FGridVisualData> validVisualDataArray;
-	
+	//위 Function의 Visual Data 버전
+
+	auto grids = GetValidActionGridSet();
 	TSet<FGridVisualData> validVisualDataSet;
-	FGrid unitGrid = Unit->GetGrid();
 
-	AGridManager* gridManager = AGridManager::GetGridManager();
-
-	if (!IsValid(gridManager))
+	for (auto grid : grids)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validVisualDataSet;
+		FGridVisualData resultData;
+		resultData.Grid = grid;
+		resultData.GridVisualType = EGridVisualType::NO;
+
+		validVisualDataSet.Add(resultData);
 	}
-
-
-	for (int x = -MaxActionRange; x <= MaxActionRange; x++)
-	{
-		for (int y = -MaxActionRange; y <= MaxActionRange; y++)
-		{
-			if (FMath::Abs(x) + FMath::Abs(y) > MaxActionRange)
-			{
-				continue;
-			}
-
-			FGrid resultGrid = FGrid(x, y);
-			resultGrid += unitGrid;
-
-			//존재하지 않는 Grid
-			if (!gridManager->IsValidGrid(resultGrid))
-			{
-				continue;
-			}
-
-			FGridVisualData resultData;
-			resultData.Grid = resultGrid;
-			resultData.GridVisualType = EGridVisualType::NO;
-
-			////지금 현재 Unit의 위치
-			if (resultGrid == unitGrid)
-			{
-				continue;
-			}
-
-			//상대가 같은 팀 tag가 붙어있으면 스킵.
-			AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
-			{
-				continue;
-			}
-
-			//통과하면 문제없으니 validSet에 추가
-			validVisualDataSet.Add(resultData);
-		}
-	}
-
 
 	return validVisualDataSet;
-
-
-
 }
 
 void UUnitAttackActionComponent::TakeAction(const FGrid& Grid)
 {
-	//TArray<FGrid> tempArr = GetValidActionGridArray();
-	//
-
-	////TODO : 데미지 주는 Animation을 Play & 데미지 처리
-
-	//if (tempArr.Contains(Grid))
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Attack At : %s"), *Grid.ToString());
-	//}
-	//else
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("You Selected which is Not Valid Grid. ---> Grid Pos : %s"), *Grid.ToString());
-	//}
+	//Attack Action의 TakeAction은 AttackManager에서 최종호출됨.
 
 	ActionEnd();	
 }
@@ -229,6 +171,7 @@ void UUnitAttackActionComponent::ActionEnd()
 
 	Super::ActionEnd();
 
+	//공격을 마친 유닛은 이후 다른 행동 불가.
 	auto owner = Cast<AUnitCharacter>(GetOwner());
 	if (IsValid(owner))
 	{
@@ -243,6 +186,9 @@ void UUnitAttackActionComponent::ActionSelected()
 
 FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 {
+	//공격 범위 내에서 가능한 공격 중 제일 가치가 높은 행동을 선택함.
+	//예시) 공격 결과로 적의 피를 가장 많이 낮출 수 있을 때 해당 Action을 선택함.
+
 	TSet<FGrid> grids = GetValidActionGridSet(); //공격할 수 있는 위치 전부.
 	TArray<FActionValueToken> actionValues;
 
@@ -289,11 +235,8 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 
 int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
-	AActor* attacker = GetOwner();
-	if (!IsValid(attacker) || attacker->Tags.Num() == 0)
-	{
-		return -1;
-	}
+	//AttackOrder를 받아 결과를 분석함.
+	//결과로 내 피가 가장 높을 수록, 상대 피가 가장 적을 수록 가치가 높음
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
@@ -303,6 +246,12 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 
 	AAttackManager* attackManager = AAttackManager::GetAttackManager();
 	if (!IsValid(attackManager))
+	{
+		return -1;
+	}
+
+	AActor* attacker = GetOwner();
+	if (!IsValid(attacker) || attacker->Tags.Num() == 0)
 	{
 		return -1;
 	}
@@ -346,11 +295,9 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	float valueScore = 0.0f;
 
 	float counterAttackValue = 100 * attackerHP / attackerStatComponent->GetMaxHP();
-
 	valueScore += FMath::Clamp<int32>(counterAttackValue, 0.0f, 100.0f);
 
 	float attackValue = 100 * (defenderStatComponent->GetMaxHP() - defenderHP) / defenderStatComponent->GetMaxHP();
-
 	valueScore += FMath::Clamp<int32>(attackValue, 0.0f, 100.0f);
 
 	return (int32)valueScore;
@@ -376,11 +323,12 @@ void UUnitAttackActionComponent::TestFunction()
 
 	attackManager->SetupAttackManager(GetOwner(),gridManager->GetUnitAtGrid(grid));
 	attackManager->StartAttack();
-
 }
 
 TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 {
+	//적 유닛의 이동거리 + 공격 범위 전부 합산하여 위험 지역을 계산할 때 사용함.
+
 	UUnitMoveActionComponent* moveActionComp = GetOwner()->FindComponentByClass<UUnitMoveActionComponent>();
 	if (!IsValid( moveActionComp))
 	{
@@ -393,6 +341,7 @@ TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 
 	for (FGrid& canMoveGrid : canMoveGrids)
 	{
+		//이 위치에서 공격 가능한 Grid 위치를 검색
 		TSet<FGrid> grids = GetAttackRangeGridSetAtGrid(canMoveGrid);
 
 		for (FGrid& grid : grids)
@@ -403,11 +352,12 @@ TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 	}
 
 	return resultGrid;
-
 }
 
 TSet<FGrid> UUnitAttackActionComponent::GetAttackRangeGridSetAtGrid(FGrid& Grid)
 {
+	//Grid 위치에서 Attack Range 만큼 공격 가능한 Grid를 도출.
+
 	TSet<FGrid> validSet;
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
@@ -436,11 +386,10 @@ TSet<FGrid> UUnitAttackActionComponent::GetAttackRangeGridSetAtGrid(FGrid& Grid)
 				continue;
 			}
 
-			//통과하면 문제없으니 validArray에 추가
+			//통과하면 문제없으니 validSet에 추가
 			validSet.Add(resultGrid);
 		}
 	}
-
 
 	return validSet;
 }

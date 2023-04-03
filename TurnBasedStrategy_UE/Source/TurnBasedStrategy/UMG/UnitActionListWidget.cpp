@@ -9,6 +9,10 @@
 
 void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharacter)
 {
+	//1. 유닛의 Action을 전부 검색
+	//2. 가능한 Action을 확인
+	//3. 가능한 Action에 대한 버튼 생성.
+
 	if (!IsValid(SelectedCharacter))
 	{
 		return;
@@ -48,12 +52,13 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 			continue;
 		}
 
+		//버튼 추가
 		VerticalBox_ActionList->AddChild(buttonWidget);
 		buttonWidget->InitActionSelectButton(unitAction_Cast);
 		buttonWidget->OnButtonClickedCompleted.AddDynamic(this, &UUnitActionListWidget::OnButtonClickedCompletedFunc);
 	}
 
-
+	//첫번째 버튼에 Focus
 	if (VerticalBox_ActionList->GetChildrenCount() > 0)
 	{
 		VerticalBox_ActionList->GetChildAt(0)->SetFocus();

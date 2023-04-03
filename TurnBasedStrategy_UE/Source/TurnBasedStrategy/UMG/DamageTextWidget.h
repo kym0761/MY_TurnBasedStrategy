@@ -9,7 +9,7 @@
 class UTextBlock;
 
 /**
- *
+ * DamageTextActor¿¡¼­ »ç¿ëµÊ.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UDamageTextWidget : public UUserWidget

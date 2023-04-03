@@ -6,7 +6,15 @@
 #include "Components/ActorComponent.h"
 #include "StatComponent.generated.h"
 
-
+/*
+* STR : 물리 공격력
+* INT : 마법 공격력
+* SPD : 스피드
+* SKL : 기술
+* LUK : 행운
+* DEF : 물리 방어력
+* RES : 마법 방어력
+*/
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TURNBASEDSTRATEGY_API UStatComponent : public UActorComponent
 {

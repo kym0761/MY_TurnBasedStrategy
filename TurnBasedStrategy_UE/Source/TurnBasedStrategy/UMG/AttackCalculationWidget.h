@@ -12,9 +12,11 @@ class UButton;
 class UCalculationUnitStatWidget;
 class UTextBlock;
 class UAttackOrderWidget;
+
 /**
- * 
+ * Attack Action의 결과를 알려주고 Attack을 최종적으로 실행할 UI
  */
+
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UAttackCalculationWidget : public UUserWidget
 {

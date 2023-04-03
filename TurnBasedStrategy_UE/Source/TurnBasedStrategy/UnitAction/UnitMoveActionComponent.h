@@ -6,9 +6,6 @@
 #include "UnitActionComponent.h"
 #include "UnitMoveActionComponent.generated.h"
 
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartMoving);
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndMoving);
-
 /**
  * 
  */
@@ -20,11 +17,9 @@ class TURNBASEDSTRATEGY_API UUnitMoveActionComponent : public UUnitActionCompone
 public:
 		UUnitMoveActionComponent();
 
-		//FOnStartMoving OnStartMoving;
-		//FOnEndMoving OnEndMoving;
-
 private:
 
+		//tick에서 필요한 정보들
 		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		FGrid Destination;
 		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))

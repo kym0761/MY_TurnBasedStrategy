@@ -34,9 +34,6 @@ void AAttackManager::Tick(float DeltaTime)
 
 void AAttackManager::SetupAttackManager(AActor* Attacker, AActor* Defender)
 {
-	//Attacker = InAttacker;
-	//Defender = InDefender;
-
 	if (!IsValid(Attacker) || !IsValid(Defender))
 	{
 		return;

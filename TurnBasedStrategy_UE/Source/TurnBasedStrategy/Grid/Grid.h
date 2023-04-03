@@ -56,13 +56,16 @@ USTRUCT(BlueprintType)
 struct FGridVisualData
 {
 	GENERATED_BODY()
+
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
 		FGrid Grid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
 		EGridVisualType GridVisualType;
 
 	static TArray<FGrid> ParseToGridArray(TArray<FGridVisualData> GridVisualArray);
+	static TSet<FGrid> ParseToGridSet(TSet<FGridVisualData> GridVisualSet);
 	bool operator==(const FGridVisualData& Other) const;
 };
 

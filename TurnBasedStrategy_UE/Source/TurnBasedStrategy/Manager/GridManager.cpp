@@ -63,6 +63,34 @@ void AGridManager::BeginPlay()
 //
 //}
 
+void AGridManager::CreateGridSystem()
+{
+	GridSystem = NewObject<UGridSystem>();
+
+	GridSystem->SetGridSystem(
+		X_Length,
+		Y_Length,
+		[](UGridSystem* gs, FGrid grid) {
+			UGridObject* gridObj = NewObject<UGridObject>();
+	gridObj->SetGrid(grid);
+	gridObj->SetGridSystem(gs);
+	return gridObj;
+		});
+
+	PathFindingSystem = NewObject<UPathFindingSystem>();
+
+	PathFindingSystem->SetPathFindingSystem(
+		X_Length,
+		Y_Length,
+		[](UPathFindingSystem* pfs, FGrid grid)
+		{
+			UPathNode* pathNode = NewObject<UPathNode>();
+	pathNode->SetGrid(grid);
+	return pathNode;
+		}
+	);
+}
+
 // Called every frame
 void AGridManager::Tick(float DeltaTime)
 {
@@ -73,34 +101,6 @@ void AGridManager::Tick(float DeltaTime)
 bool AGridManager::IsValidGrid(const FGrid& Grid) const
 {
 	return (Grid.X >= 0) && (Grid.Y >= 0) && (Grid.X < X_Length) && (Grid.Y < Y_Length);
-}
-
-void AGridManager::CreateGridSystem()
-{
-	GridSystem = NewObject<UGridSystem>();
-
-	GridSystem->SetGridSystem(
-		X_Length, 
-		Y_Length,
-		[](UGridSystem* gs, FGrid grid) {
-		UGridObject* gridObj = NewObject<UGridObject>();
-		gridObj->SetGrid(grid);
-		gridObj->SetGridSystem(gs);
-		return gridObj;
-		});
-
-	PathFindingSystem = NewObject<UPathFindingSystem>();
-
-	PathFindingSystem->SetPathFindingSystem(
-		X_Length, 
-		Y_Length,
-		[](UPathFindingSystem* pfs, FGrid grid)
-		{
-			UPathNode* pathNode = NewObject<UPathNode>();
-			pathNode->SetGrid(grid);
-			return pathNode;
-		}
-	);
 }
 
 void AGridManager::RemoveAllGridVisual()
@@ -261,9 +261,13 @@ void AGridManager::ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVi
 TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit)
 {
 	//!주의! return 하기 전에 PathLength를 변경시켜야함.
+	
+	//PathLength의 존재 이유는, 장애물이나 다른 기타 이유로 빙 돌아서 가야할 때
+	//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
+	//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 해당 위치를 갈 수 있음.
 
 	//openList = 이동 가능할 위치. PriorityQueue처럼 사용할 것으로 TArray 
-	//closeSet = 이동 불가능함이 확정된 위치. 사용한 것인지만 판독하기 위해 TSet
+	//closeSet = 이동 불가능함이 확정된 위치. 사용한 것인지만 판독하기 위한 TSet
 	TArray<UPathNode*> openList;
 	TSet<UPathNode*> closeSet;
 
@@ -357,12 +361,17 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 					}
 					else
 					{
+						//아군이 아니라면 통과가 불가능함.
 						closeSet.Add(nearNode);
 						continue;
 					}
 				}
 			}
 
+
+			//F = G + H;
+			//G : 현재까지의 Cost
+			//H : 앞으로 예상되는 Cost
 			int tempGCost = currentNode->GetGCost() + CalculateGridDistance(currentNode->GetGrid(), nearNode->GetGrid());
 
 			if (tempGCost < nearNode->GetGCost())
@@ -397,7 +406,7 @@ UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*>& PathNodeList)
 		return nullptr;
 	}
 
-	//PathNodeList는 Heapify가 됐다. Heap의 첫번째 원소가 가장 F 값이 낮은 Node다.
+	//PathNodeList는 FindPath에서 Heapify가 됐다. Heap의 첫번째 원소가 가장 F 값이 낮은 Node다.
 	UPathNode* lowestNode = PathNodeList[0];
 
 	return lowestNode;
@@ -410,6 +419,9 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode) const
 		return TArray<FGrid>();
 	}
 
+	//Path를 얻는 법
+	//PathFinding을 한 후, 목표 지점 노드부터 Parent를 계속 올라가면서 Grid 값을 얻어낸다.
+	//그 Grid 결과를 뒤집으면 Start -> End 까지의 Path다.
 	TArray<FGrid> gridArray;
 
 	gridArray.Add(EndNode->GetGrid());
@@ -428,6 +440,10 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode) const
 
 TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode) const
 {
+	//PathFinding에서 사용할 현재 위치의 상하좌우 Node를 찾는 Function
+	//만약, 존재하지 않는 노드라면 NearNode로 추가하지 않음.
+	//TODO : 장애물 처리를 아직 하지 않았음.
+
 	TArray<UPathNode*> nearNodeList;
 
 	FGrid grid = CurrentNode->GetGrid();
@@ -457,8 +473,45 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode) const
 	return nearNodeList;
 }
 
+bool AGridManager::HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit)
+{
+	//FindPath의 결과 중 PathLength가 -1이면 위치까지의 경로가 존재하지 않음.
+
+	int32 pathLength = 0;
+	FindPath(Start, End, pathLength, bCanIgnoreUnit);
+
+	return pathLength != -1;
+}
+
+void AGridManager::InitAllPathFindingNodes()
+{
+	//PathFindingGridSystem의 Grid 값을 PathFinding에 이용할 수 있도록 전부 초기화.
+	//G = 무한대(int32 최대값) , H = 0 , F = G + H = 무한대
+
+	TMap<FGrid, UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
+
+	for (TPair<FGrid, UPathNode*> pathNodePair : pathNodes)
+	{
+		if (!IsValid(pathNodePair.Value))
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
+			continue;
+		}
+
+		UPathNode* pathNode = pathNodePair.Value;
+
+		pathNode->SetGCost(TNumericLimits<int32>::Max());
+		pathNode->SetHCost(0);
+		pathNode->CalculateFCost();
+		pathNode->SetParentNode(nullptr);
+	}
+}
+
+
 TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue) const
 {
+	//Grid 위에 있는 Unit을 얻음.
+	//이 Function은 Unit이 여러개일 때를 가정함.
 
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
 	if (!IsValid(gridObject))
@@ -473,6 +526,8 @@ TArray<AUnitCharacter*> AGridManager::GetUnitArrayAtGrid(const FGrid& GridValue)
 
 TArray<AUnitCharacter*> AGridManager::GetAllUnitInGridSystem() const
 {
+	//현재 Grid 위에 존재하는 모든 Unit Character를 얻어냄.
+
 	TMap<FGrid,UGridObject*> gridObjs = GetAllGridObjectsThatHasUnit();
 
 	TArray<AUnitCharacter*> unitArray;
@@ -492,6 +547,9 @@ TArray<AUnitCharacter*> AGridManager::GetAllUnitInGridSystem() const
 
 AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue) const
 {
+	//Grid 위에 있는 Unit을 얻음.
+	//이 Function은 Unit이 하나일 때를 가정함.
+
 	TArray<AUnitCharacter*> gridArray = GetUnitArrayAtGrid(GridValue);
 
 	if (gridArray.Num() == 0)
@@ -504,6 +562,7 @@ AUnitCharacter* AGridManager::GetUnitAtGrid(const FGrid& GridValue) const
 
 bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue) const
 {
+	//Grid 위에 Unit이 존재하는지 확인.
 
 	UGridObject* gridObj = GridSystem->GetValidGridObject(GridValue);
 	if (IsValid(gridObj))
@@ -514,16 +573,11 @@ bool AGridManager::HasAnyUnitOnGrid(const FGrid& GridValue) const
 	return false;
 }
 
-bool AGridManager::HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit)
-{
-	int32 pathLength = 0;
-	FindPath(Start, End, pathLength, bCanIgnoreUnit);
-
-	return pathLength != -1;
-}
-
 bool AGridManager::IsWalkableGrid(const FGrid& GridValue) const
 {
+	//장애물, 높은 벽, 용암? 등의 유닛이 올라갈 수 없는 위치인지 확인함
+	//TODO : 공중 유닛의 경우를 생각해야함.
+
 	UPathNode* pathNode = PathFindingSystem->GetValidPathNode(GridValue);
 	if (IsValid(pathNode))
 	{
@@ -538,44 +592,6 @@ int32 AGridManager::GetPathLength(const FGrid& Start, const FGrid& End)
 	int32 pathLength = 0;
 	FindPath(Start,End, pathLength);
 	return pathLength;
-}
-
-void AGridManager::InitAllPathFindingNodes()
-{
-	//PathFindingGridSystem의 Grid 값을 PathFinding에 이용할 수 있도록 전부 초기화.
-	//G = 무한대(int32 최대값) , H = 0 , F = G+H 
-
-	TMap<FGrid,UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
-
-
-	for (TPair<FGrid,UPathNode*> pathNodePair : pathNodes)
-	{
-		if (!IsValid(pathNodePair.Value))
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
-			continue;
-		}
-
-		UPathNode* pathNode = pathNodePair.Value;
-
-		pathNode->SetGCost(TNumericLimits<int32>::Max());
-		pathNode->SetHCost(0);
-		pathNode->CalculateFCost();
-		pathNode->SetParentNode(nullptr);
-	}
-}
-
-AGridManager* AGridManager::GetGridManager()
-{
-	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))
-	{
-		return nullptr;
-	}
-
-	UWorld* world = GEngine->GameViewport->GetWorld();
-	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(world, AGridManager::StaticClass()));
-
-	return gridManager;
 }
 
 void AGridManager::AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
@@ -620,11 +636,24 @@ TMap<FGrid, UGridObject*> AGridManager::GetAllGridObjectsThatHasUnit() const
 	return GridSystem->GetAllGridObjectsThatHasUnit();
 }
 
+AGridManager* AGridManager::GetGridManager()
+{
+	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))
+	{
+		return nullptr;
+	}
+
+	UWorld* world = GEngine->GameViewport->GetWorld();
+	AGridManager* gridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(world, AGridManager::StaticClass()));
+
+	return gridManager;
+}
+
 void AGridManager::ShowEnemyRange()
 {
 	//1. Enemy Unit을 전부 찾음.
 	//2. Enemy Unit의 각각의 Attackable Grid를 검색함.
-	//3. 중복 거른 뒤에 Show.
+	//3. TSet은 중복을 허용하지 않으므로 중복을 다 걸러낸 상태로 이후에 Show.
 
 	GridVisual_DANGER->ClearInstances();
 	
@@ -653,14 +682,12 @@ void AGridManager::ShowEnemyRange()
 			TSet<FGrid> attackableGrids = unitAttackComp->GetEnemyAttackableGridRange();
 			for (auto grid : attackableGrids)
 			{
-				//resultGrids.AddUnique(grid);
 				resultGrids.Add(grid);
 			}
 		}
 	}
 
 	ShowFromGridSet(resultGrids, EGridVisualType::DANGER, 0.001f);
-
 
 }
 

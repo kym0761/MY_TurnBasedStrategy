@@ -11,7 +11,8 @@ class UStaticMeshComponent;
 class USceneComponent;
 
 /*
-* Deprecated? 
+* Deprecated
+* 사유 : GridVisual Actor를 Grid 갯수만큼 배치하는 것보다 InstancedMesh를 사용해 비쥬얼을 보여주는 것이 더 Cost가 저렴함.
 */
 
 UCLASS(abstract)

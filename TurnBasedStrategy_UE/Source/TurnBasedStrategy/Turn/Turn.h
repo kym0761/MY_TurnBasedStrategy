@@ -16,3 +16,12 @@ enum class ETurnType : uint8
 	AllyTurn UMETA(DisplayName = "AllyTurn")
 
 };
+
+
+UENUM(meta = (Bitflags))
+enum class EBitmaskExample : uint8
+{
+	A,
+	B,
+	C
+};

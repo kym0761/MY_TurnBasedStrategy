@@ -29,6 +29,7 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	//유닛 이동이 활성화되면 PathArray에 맞춰 유닛을 이동시킴.
 	if (bMoveActivate)
 	{
 		AGridManager* gridManager = AGridManager::GetGridManager();
@@ -100,6 +101,8 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 {
+	//이동할 수 있는 범위
+
 	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
@@ -131,12 +134,6 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 			{
 				continue;
 			}
-			
-			//////지금 현재 Unit의 위치
-			//if (resultGrid == unitGrid)
-			//{
-			//	continue;
-			//}
 
 			//누군가 점유중이면 Skip
 			if (gridManager->HasAnyUnitOnGrid(resultGrid))
@@ -144,7 +141,7 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 				continue;
 			}
 
-			//걸을 수 있는 위치?
+			//걸을 수 없는 위치?
 			if (!gridManager->IsWalkableGrid(resultGrid))
 			{
 				continue;
@@ -170,17 +167,17 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 			}
 
 			//통과하면 문제없으니 validSet에 추가
-
 			validSet.Add(resultGrid);
 		}
 	}
-
 
 	return validSet;
 }
 
 TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet() const
 {
+	//이동할 수 있는 위치와 Range 상으로는 가능하지만 실제로는 이동 불가능한 위치들을 전부 도출함.
+
 	TSet<FGridVisualData> validVisualDataSet;
 	FGrid unitGrid = Unit->GetGrid();
 
@@ -238,18 +235,15 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 				}
 			}
 			
-			if (targetUnit == GetOwner())
+			if (targetUnit == GetOwner()) //현재 유닛 위치는 이동가능한 걸로 판정함.
 			{
 				testData.GridVisualType = EGridVisualType::Move;
 			}
 
-
 			//통과하면 문제없으니 validSet에 추가
-
 			validVisualDataSet.Add(testData);
 		}
 	}
-
 
 	return validVisualDataSet;
 }
@@ -284,8 +278,7 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	}
 
 
-	//~~ Move Debug.
-
+	//~~ Move Debuging Sphere.
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
 		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
@@ -318,8 +311,6 @@ void UUnitMoveActionComponent::ActionStart()
 
 void UUnitMoveActionComponent::ActionEnd()
 {
-	Super::ActionEnd();
-
 	AGridManager* gridManager = AGridManager::GetGridManager();
 
 	//Update Grid Data
@@ -328,7 +319,9 @@ void UUnitMoveActionComponent::ActionEnd()
 
 	bMoveActivate = false;
 
-
+	//Super::ActionEnd()에 AI가 다음행동을 하라는 명령을 실행할텐데,
+	//GridManager의 값 변경이 반영된 이후에 Call되야함.
+	Super::ActionEnd();
 }
 
 void UUnitMoveActionComponent::ActionSelected()
@@ -338,6 +331,8 @@ void UUnitMoveActionComponent::ActionSelected()
 
 FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 {
+	//어느 위치가 이동하기 가장 적절한지 계산함.
+
 	TSet<FGrid> grids = GetValidActionGridSet(); //이동할 수 있는 위치 전부.
 	TArray<FActionValueToken> actionValues;
 
@@ -399,7 +394,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -1;
 	}
 
-	//이동할 위치에 누군가가 있음? 그러면 이동하지 말아야함.
+	//이동할 위치에 누군가가 있다면 해당 위치로 이동하지 말아야함.
 	if (gridManager->HasAnyUnitOnGrid(CandidateGrid))
 	{
 		return -10000;
@@ -409,7 +404,6 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	int32 distanceToTarget = TNumericLimits<int32>::Max();
 	TMap<FGrid, UGridObject*> gridObjMap = gridManager->GetAllGridObjectsThatHasUnit();
 
-	int32 distanceToMove = 0;
 	auto owner_cast = Cast<AUnitCharacter>(owner);
 	FGrid ownerGrid;
 	if (IsValid(owner_cast))
@@ -423,7 +417,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	{
 		AUnitCharacter* targetUnit = gridPair.Value->GetUnit();
 
-		//해당 위치에 유닛이 없음.
+		//Unit이 Invalid하면 스킵.
 		if (!IsValid(targetUnit))
 		{
 			continue;
@@ -441,9 +435,11 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 			continue;
 		}
 
+		//distanceToTarget : Target 유닛과의 거리
+		//target과의 거리가 가까울수록 선택함
+		//이동하는데 필요한 거리가 가까울수록 선택함.
 		FGrid targetGrid = gridPair.Key;
 		int32 distance = gridManager->CalculateGridDistance(CandidateGrid, targetGrid);
-		distanceToMove = gridManager->CalculateGridDistance(ownerGrid, CandidateGrid);
 		distanceToTarget = (distanceToTarget > distance) ? distance : distanceToTarget;
 	}
 
@@ -454,7 +450,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	//즉, 상대와 거리가 가까울 수록 Value가 크다.
 	//만약, 이동거리가 매우 길고 맵이 매우 크다면 10000으로 잡은 값에 문제가 생길 수도 있지만
 	//Grid SRPG 특성상 이동거리가 40 이상 움직이려하거나 맵의 크기가 충분히 크다면 랙이 걸리므로 실질적으로 문제가 안될 것이다.
-	return reverseValueOffset - distanceToTarget - distanceToMove;
+	return reverseValueOffset - distanceToTarget;
 }
 
 void UUnitMoveActionComponent::TestFunction()

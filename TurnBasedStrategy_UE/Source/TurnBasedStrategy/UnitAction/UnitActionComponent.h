@@ -26,12 +26,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	AUnitCharacter* Unit;
 
+	//최대 Action 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	int32 MaxActionRange;
 
+	//유닛이 이번턴에 행동 가능한지?
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	bool bCanDoActionThisTurn;
 
+	//Action의 이름. 생성자에서 ActionName을 세팅하면 UI에서 보임.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	FString ActionName;
 
@@ -52,7 +55,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
 	FString GetActionName() const;
 
 	//UI를 띄워야할 Action을 위해서 TakeAction 이전에 발동해야함.
@@ -69,7 +71,7 @@ public:
 	void SetCanDoActionThisTurn(bool InputBool);
 	bool IsCurrentlyAvailableAction() const;
 
-
+	/*AI 행동*/
 	virtual FGrid ThinkAIBestActionGrid();
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid);
 	virtual void TestFunction();

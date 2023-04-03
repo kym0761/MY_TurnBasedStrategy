@@ -12,7 +12,8 @@ class UTextBlock;
 class UStatComponent;
 
 /**
- * 
+ * Unit Stat을 보여주는 Widget.
+ * AttackCalculationWidget 안에 들어감.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UCalculationUnitStatWidget : public UUserWidget

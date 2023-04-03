@@ -10,7 +10,9 @@ class UWidgetComponent;
 class UDamageTextWidget;
 
 
-
+/**
+ * 유닛이 받은 피해를 출력하는 Actor
+ */
 UCLASS()
 class TURNBASEDSTRATEGY_API ADamageTextActor : public AActor
 {

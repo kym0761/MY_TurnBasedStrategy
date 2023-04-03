@@ -13,7 +13,8 @@ class UUnitActionComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonClickedCompleted);
 
 /**
- * 
+ * 유닛이 가능한 행동에 대한 버튼
+ * UnitActionListWidget에 들어감.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UActionSelectButtonWidget : public UUserWidget

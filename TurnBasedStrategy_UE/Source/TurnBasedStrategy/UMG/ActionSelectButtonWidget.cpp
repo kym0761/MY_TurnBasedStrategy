@@ -24,6 +24,8 @@ void UActionSelectButtonWidget::NativeConstruct()
 
 void UActionSelectButtonWidget::InitActionSelectButton(UUnitActionComponent* InputAction)
 {
+	//눌렀을 때 활성화될 Action을 등록
+
 	if (IsValid(InputAction))
 	{
 		UnitAction = InputAction;
@@ -51,6 +53,10 @@ void UActionSelectButtonWidget::InitButton()
 
 void UActionSelectButtonWidget::OnButtonClicked()
 {
+	//원하는 Action에 대한 버튼을 눌렀을 시에
+	//ControlPawn에 UnitAction을 선택하고 Action 가능한 Grid들을 보여주게 될 것.
+
+
 	if (!IsValid(UnitAction))
 	{
 		return;
@@ -64,6 +70,10 @@ void UActionSelectButtonWidget::OnButtonClicked()
 		if (IsValid(pawn))
 		{
 			pawn->SetSelectedAction(UnitAction);
+		}
+		else
+		{
+			return;
 		}
 	}
 

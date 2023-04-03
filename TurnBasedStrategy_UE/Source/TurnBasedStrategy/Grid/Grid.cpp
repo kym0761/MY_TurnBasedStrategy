@@ -75,12 +75,24 @@ TArray<FGrid> FGridVisualData::ParseToGridArray(TArray<FGridVisualData> GridVisu
 {
 	TArray<FGrid> gridArray;
 
-	for (FGridVisualData visualData : GridVisualArray)
+	for (FGridVisualData& visualData : GridVisualArray)
 	{
 		gridArray.Add(visualData.Grid);
 	}
 
 	return gridArray;
+}
+
+TSet<FGrid> FGridVisualData::ParseToGridSet(TSet<FGridVisualData> GridVisualSet)
+{
+	TSet<FGrid> gridSet;
+
+	for (FGridVisualData& visualData : GridVisualSet)
+	{
+		gridSet.Add(visualData.Grid);
+	}
+
+	return gridSet;
 }
 
 bool FGridVisualData::operator==(const FGridVisualData& Other) const

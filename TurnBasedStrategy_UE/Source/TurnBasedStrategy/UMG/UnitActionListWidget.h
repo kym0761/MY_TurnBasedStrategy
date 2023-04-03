@@ -9,9 +9,11 @@
 class UVerticalBox;
 class AUnitCharacter;
 class UActionSelectButtonWidget;
+
 /**
- * 
+ * 유닛의 가능한 Action 목록. 버튼을 누르면 실행됨.
  */
+
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UUnitActionListWidget : public UUserWidget
 {

@@ -179,6 +179,7 @@ void AUnitCharacter::OnSelectedUnitChanged()
 void AUnitCharacter::FinishUnitAllAction()
 {
 	//유닛의 모든 액션을 이번턴에 비활성화하여 행동을 마친 것으로 함.
+	//이는 공격을 끝마친 후, 혹은 Wait 하면 동작할 것.
 
 	TArray<UActorComponent*> unitActions;
 	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
@@ -205,7 +206,7 @@ void AUnitCharacter::FinishUnitAllAction()
 
 bool AUnitCharacter::IsThisUnitCanAction() const
 {
-	//유닛은 액션이 가능한가? == 각 액션을 검색하고 이 액션이 현재 턴에 사용 가능한지 다 확인하면 된다.
+	//유닛은 액션이 가능한가? == 각 액션을 검색하고 액션 중에 현재 턴에 사용 가능한 것이 있는지 다 확인하면 된다.
 
 	TArray<UActorComponent*> unitActions;
 	GetComponents(UUnitActionComponent::StaticClass(), unitActions);

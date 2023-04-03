@@ -54,7 +54,7 @@ void UUnitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 
 void UUnitActionComponent::TakeAction(const FGrid& Grid)
 {
-	//Do Nothing?
+	//기본 Action이므로 아무것도 안하고 끝남.
 
 	ActionEnd();
 }
@@ -124,18 +124,15 @@ void UUnitActionComponent::ActionStart()
 void UUnitActionComponent::ActionEnd()
 {
 
-	UE_LOG(LogTemp,Warning,TEXT("UUnitActionComponent::ActionEnd() 1"));
 	SetCanDoActionThisTurn(false);
 
 	if (OnActionEnd.IsBound())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UUnitActionComponent::ActionEnd() 2"));
 		OnActionEnd.Broadcast();
 	}
 
 	if (OnActionCompleteForControlPawn.IsBound())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UUnitActionComponent::ActionEnd() 3"));
 		OnActionCompleteForControlPawn.Broadcast();
 	}
 }

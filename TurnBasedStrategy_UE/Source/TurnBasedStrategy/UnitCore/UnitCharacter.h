@@ -15,12 +15,8 @@ class UUnitAttackActionComponent;
 class UUnitInteractActionComponent;
 class UWaitActionComponent;
 class ADamageTextActor;
-//class UDamageTextWidget;
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSpawned);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitDead);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnActionPlayed); //??
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature);
 
 
 //Tag MyUnit , Enemy ??
@@ -34,12 +30,15 @@ public:
 	// Sets default values for this character's properties
 	AUnitCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Reaction")
+		TSubclassOf<ADamageTextActor> DamageTextActorBP;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UStatComponent* StatComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UUnitMoveActionComponent* UnitMoveActionComponent;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UUnitAttackActionComponent* UnitAttackActionComponent;
 
@@ -49,12 +48,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UWaitActionComponent* WaitActionComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
-	TSubclassOf<ADamageTextActor> DamageTextActorBP;
-
-	FOnUnitSpawned OnUnitSpawned;
-	FOnUnitDead OnUnitDead;
-	FOnActionPlayed OnFinishAllAction;
+	FUnitDelegateSignature OnFinishAllAction;
 
 private:
 
@@ -92,8 +86,6 @@ public:
 
 	void FinishUnitAllAction();
 
-
 	bool IsThisUnitCanAction() const;
-
 
 };

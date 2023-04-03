@@ -61,7 +61,6 @@ void AUnitControlPawn::BeginPlay()
 		MainCanvasWidget->AddToViewport();
 	}
 
-	//FindAllPlayerUnits();
 }
 
 // Called every frame
@@ -69,7 +68,7 @@ void AUnitControlPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	
+	//ControlPawn의 Grid위치에 맞게 보간이동함.
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (IsValid(gridManager))
 	{
@@ -135,15 +134,19 @@ void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
 
 void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 {
+	//UI 모드나, Busy 상태면 이동 못함.
 	if (PawnMode == EPawnMode::UI || PawnMode == EPawnMode::Busy)
 	{
 		return;
 	}
 
+	//키보드 입력.. 이동할 방향임.
 	const FVector2D moveVal = Val.Get<FVector2D>();
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
 
+	//이동버튼 누르는 동안...
+	//대충 0.15초마다 한칸씩 이동할 수 있게 버튼 누른 시간 누적합
 	if (moveVal.Size() > 0.0f)
 	{
 		if (!GetWorld())
@@ -157,6 +160,8 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 	{
 		FGrid move(0, 0);
 
+
+		/*누른 버튼의 방향에 맞게 이동방향 Grid를 만듬*/
 		if (moveVal.X != 0.0f)
 		{
 			if (moveVal.X >= 0.01f)
@@ -167,8 +172,6 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 			{
 				move.X = -1;
 			}
-
-
 		}
 
 		if (moveVal.Y != 0.0f)
@@ -183,21 +186,19 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 			}
 		}
 
-		UE_LOG(LogTemp, Warning, TEXT("move grid : %d / %d"), move.X, move.Y);
+		//UE_LOG(LogTemp, Warning, TEXT("move grid : %d / %d"), move.X, move.Y);
 
 		if (move.Size() > 0)
 		{
 			PivotGrid += move;
 			MoveAccumulate = 0.0f;
 		}
-
 	}
-	
-
 }
 
 void AUnitControlPawn::GridMoveStart(const FInputActionValue& Val)
 {
+	//최초 이동을 할땐 바로 이동할 수 있어야함.
 	MoveAccumulate = 1.0f;
 }
 
@@ -213,6 +214,9 @@ void AUnitControlPawn::HandleControlEnter(const bool& Val)
 		return;
 	}
 
+	//Pawn의 현재 상태에 따라 Enter 버튼의 행동이 다름.
+	//Selection : Pawn이 현재 Grid 위치의 유닛을 선택하는 모드
+	//Action : 선택된 유닛의 Action을 실행하는 모드
 	switch (PawnMode)
 	{
 	case EPawnMode::Selection:
@@ -228,6 +232,9 @@ void AUnitControlPawn::HandleControlEnter(const bool& Val)
 
 bool AUnitControlPawn::TryUnitSelect()
 {
+	//Unit 선택을 시도함. MyUnit 태그가 붙어있으면 유닛을 선택할 것임.
+	//결과에 따라 true or false return한다.
+
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
 	{
@@ -267,17 +274,17 @@ bool AUnitControlPawn::TryUnitSelect()
 
 void AUnitControlPawn::SetSelectedUnit(AUnitCharacter* InputUnit)
 {
+	//Pawn이 현재 유닛을 선택한다.
 
 	if (!IsValid(InputUnit)
-		|| !IsValid(InputUnit) ||
-		SelectedUnit == InputUnit)
+		|| SelectedUnit == InputUnit) // 올바르지 않은 유닛이거나, 이미 선택한 유닛이면 더이상 하지 않음.
 	{
 		return;
 	}
 
 	SelectedUnit = InputUnit;
 
-	if (OnSelectedUnitChanged.IsBound())
+	if (OnSelectedUnitChanged.IsBound()) // 유닛이 변경됐다는 것을 알림.
 	{
 		OnSelectedUnitChanged.Broadcast();
 	}
@@ -286,6 +293,8 @@ void AUnitControlPawn::SetSelectedUnit(AUnitCharacter* InputUnit)
 
 void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
 {
+	//Pawn이 실행하고 싶은 Unit의 Action을 선택함.
+
 	if (SelectedAction == InputUnitAction)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(" InputAction is Equal with Currently Selected Action. -- AUnitControlPawn::SetSelectedAction()"));
@@ -303,6 +312,11 @@ void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
 
 void AUnitControlPawn::DoSelection()
 {
+	//지금은 사용하지 않음
+	//이 Function은 마우스 클릭 위치에 있는 유닛을 선택하기 위해 존재함.
+	//현재 Pawn은 WASD로 Grid 상을 움직이고
+	//현재 Grid의 유닛을 선택하는 식으로 변경됨. 
+
 	bool unitSelect = TryUnitSelect();
 
 	if (unitSelect)

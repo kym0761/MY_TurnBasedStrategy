@@ -39,6 +39,10 @@ private:
 	UPROPERTY()
 		AUnitControlPawn* PlayerUnitControlPawnRef;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (BitMask, BitmaskEnum = "EBitMaskExample"))
+		int32 BitmaskExample;
+
 public:	
 	// Sets default values for this actor's properties
 	ATurnManager();

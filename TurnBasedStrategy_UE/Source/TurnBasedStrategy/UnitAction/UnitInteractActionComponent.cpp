@@ -26,6 +26,8 @@ void UUnitInteractActionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 {
+	//Interact는 현재 위치에서 상하좌우에서만 일어날 것임.
+
 	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
@@ -52,7 +54,6 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 			continue;
 		}
 
-
 		AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 		if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && !targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 		{
@@ -68,51 +69,27 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 
 TSet<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDataSet() const
 {
+	//위 Function의 GridVisualData 버전
+
 	TSet<FGridVisualData> validVisualDataSet;
-	FGrid unitGrid = Unit->GetGrid();
+	auto grids = GetValidActionGridSet();
 
-	AGridManager* gridManager = AGridManager::GetGridManager();
-
-	if (!IsValid(gridManager))
+	for (auto grid : grids)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
-		return validVisualDataSet;
-	}
-
-	TArray<int32> dx{ 1,-1,0,0 };
-	TArray<int32> dy{ 0,0,-1,1 };
-
-	for (int i = 0; i < dx.Num(); i++)
-	{
-		FGrid resultGrid = FGrid(dx[i], dy[i]);
-		resultGrid += unitGrid;
-
-		//존재하지 않는 Grid
-		if (!gridManager->IsValidGrid(resultGrid))
-		{
-			continue;
-		}
-
-		AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-		if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && !targetUnit->ActorHasTag(GetOwner()->Tags[0]))
-		{
-			continue;
-		}
-
 		FGridVisualData resultVisualData;
-		resultVisualData.Grid = resultGrid;
+		resultVisualData.Grid = grid;
 		resultVisualData.GridVisualType = EGridVisualType::Warning;
 
-		//통과하면 문제없으니 validSet에 추가
 		validVisualDataSet.Add(resultVisualData);
 	}
-
 
 	return validVisualDataSet;
 }
 
 void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 {
+	//TODO : Interact가 되도록 만들어야함.
+
 	TSet<FGrid> tempArr = GetValidActionGridSet();
 
 	if (tempArr.Contains(Grid))

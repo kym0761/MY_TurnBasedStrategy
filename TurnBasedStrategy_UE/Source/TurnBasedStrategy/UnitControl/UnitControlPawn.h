@@ -101,7 +101,7 @@ protected:
 		FGrid PivotGrid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
-		float MoveInterval = 0.25f;
+		float MoveInterval = 0.15f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
 		float MoveAccumulate = 0.0f;

@@ -18,6 +18,7 @@ enum class EUnitActionType : uint8
 	Wait UMETA(DisplayName = "Wait")
 };
 
+//Grid 위치에 대한 Action Value를 계산하기 위한 Struct
 USTRUCT(BlueprintType, Blueprintable)
 struct FActionValueToken
 {
