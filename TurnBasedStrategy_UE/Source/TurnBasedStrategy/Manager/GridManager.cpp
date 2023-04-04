@@ -115,10 +115,12 @@ void AGridManager::CreateGridSystem()
 			TArray<TEnumAsByte<EObjectTypeQuery>> objects;
 			
 			objects.Add(UEngineTypes::ConvertToObjectType(
-				ECollisionChannel::ECC_GameTraceChannel12)); // ObjectType : Obstacle.. DefaultEngine.ini 참고
+				ECollisionChannel::ECC_GameTraceChannel2)); // ObjectType : Obstacle.. DefaultEngine.ini 참고
 			
 			TArray<AActor*> ignores;
 			TArray<FHitResult> outHits;
+
+			UKismetSystemLibrary::
 
 			UKismetSystemLibrary::LineTraceMultiForObjects(
 				GetWorld(),
@@ -127,8 +129,8 @@ void AGridManager::CreateGridSystem()
 				objects,
 				true,
 				ignores,
-				EDrawDebugTrace::None,
-				//EDrawDebugTrace::ForDuration,
+				//EDrawDebugTrace::None,
+				EDrawDebugTrace::ForDuration,
 				outHits,
 				true,
 				FLinearColor::Red,
