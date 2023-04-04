@@ -13,6 +13,7 @@
 #include "UnitCore/UnitCharacter.h"
 
 #include "UnitAction/UnitAttackActionComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 AGridManager::AGridManager()
@@ -65,6 +66,10 @@ void AGridManager::BeginPlay()
 
 void AGridManager::CreateGridSystem()
 {
+	if (IsValid(GridSystem))
+	{
+		GridSystem = nullptr;
+	}
 	GridSystem = NewObject<UGridSystem>();
 
 	GridSystem->SetGridSystem(
@@ -72,10 +77,15 @@ void AGridManager::CreateGridSystem()
 		Y_Length,
 		[](UGridSystem* gs, FGrid grid) {
 			UGridObject* gridObj = NewObject<UGridObject>();
-	gridObj->SetGrid(grid);
-	gridObj->SetGridSystem(gs);
-	return gridObj;
+			gridObj->SetGrid(grid);
+			gridObj->SetGridSystem(gs);
+			return gridObj;
 		});
+
+	if (IsValid(PathFindingSystem))
+	{
+		PathFindingSystem = nullptr;
+	}
 
 	PathFindingSystem = NewObject<UPathFindingSystem>();
 
@@ -85,10 +95,62 @@ void AGridManager::CreateGridSystem()
 		[](UPathFindingSystem* pfs, FGrid grid)
 		{
 			UPathNode* pathNode = NewObject<UPathNode>();
-	pathNode->SetGrid(grid);
-	return pathNode;
+			pathNode->SetGrid(grid);
+			return pathNode;
 		}
 	);
+
+	//Grid 맵에 장애물 적용. 통과 불가.
+	auto map = PathFindingSystem->GetPathNodeMap();
+	for (int32 i = 0; i < X_Length; i++)
+	{
+		for (int32 j = 0; j < Y_Length; j++)
+		{
+			FGrid grid(i,j);
+			FVector pos = GridToWorld(grid);
+
+			FVector startPos = pos + FVector(0.0f, 0.0f, 5000.0f);
+			FVector endPos = FVector(startPos.X, startPos.Y, -5000.0f);
+
+			TArray<TEnumAsByte<EObjectTypeQuery>> objects;
+			
+			objects.Add(UEngineTypes::ConvertToObjectType(
+				ECollisionChannel::ECC_GameTraceChannel12)); // ObjectType : Obstacle.. DefaultEngine.ini 참고
+			
+			TArray<AActor*> ignores;
+			TArray<FHitResult> outHits;
+
+			UKismetSystemLibrary::LineTraceMultiForObjects(
+				GetWorld(),
+				startPos,
+				endPos,
+				objects,
+				true,
+				ignores,
+				EDrawDebugTrace::None,
+				//EDrawDebugTrace::ForDuration,
+				outHits,
+				true,
+				FLinearColor::Red,
+				FLinearColor::Blue,
+				5.0f
+			);
+
+			//UE_LOG(LogTemp, Warning, TEXT(" Grid(%d : %d) Trace Num : %d"), i, j, outHits.Num());
+
+			//outhits이 1개 이상의 값을 가지고 있다면, 해당 위치에 장애물이 존재하고 있는 것임.
+			if (outHits.Num() > 0)
+			{
+				UPathNode* pathNode = map[grid];
+				if (IsValid(pathNode))
+				{
+					pathNode->SetIsWalkable(false);
+				}
+			}
+
+		}
+	}
+
 }
 
 // Called every frame

@@ -146,7 +146,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 	//UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
 
 	//이동버튼 누르는 동안...
-	//대충 0.15초마다 한칸씩 이동할 수 있게 버튼 누른 시간 누적합
+	//0.15초마다 한칸씩 이동할 수 있게 버튼 누른 시간 누적합
 	if (moveVal.Size() > 0.0f)
 	{
 		if (!GetWorld())
@@ -312,11 +312,6 @@ void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
 
 void AUnitControlPawn::DoSelection()
 {
-	//지금은 사용하지 않음
-	//이 Function은 마우스 클릭 위치에 있는 유닛을 선택하기 위해 존재함.
-	//현재 Pawn은 WASD로 Grid 상을 움직이고
-	//현재 Grid의 유닛을 선택하는 식으로 변경됨. 
-
 	bool unitSelect = TryUnitSelect();
 
 	if (unitSelect)

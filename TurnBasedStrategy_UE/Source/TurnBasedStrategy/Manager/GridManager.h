@@ -51,7 +51,7 @@ private:
 
 	/*
 	* GridVisual
-	* 이 Instanced Component들은 선택할 수 있을 만한 Grid의 정보들을 Visual로 보여주는 역할을 한다.
+	* 이 Instanced Mesh Component들은 Grid의 정보를 시각적으로 보여주는 역할을 한다.
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_Move;
