@@ -22,6 +22,7 @@ class TURNBASEDSTRATEGY_API UActionSelectButtonWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+
 	UActionSelectButtonWidget(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
@@ -46,4 +47,6 @@ public:
 
 	UFUNCTION()
 	void OnButtonClicked();
+
+	void SetFocusThisButton();
 };

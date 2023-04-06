@@ -69,15 +69,25 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 		FGrid downLeftGrid = currentGrid + FGrid(-1, -1);
 		FGrid downRightGrid = currentGrid + FGrid(1, -1);
 
-		float upValue = GridSet.Contains(upGrid) ? 0.0f : 1.0f;
-		float downValue = GridSet.Contains(downGrid) ? 0.0f : 1.0f;
-		float leftValue = GridSet.Contains(leftGrid) ? 0.0f : 1.0f;
-		float rightValue = GridSet.Contains(rightGrid) ? 0.0f : 1.0f;
+		bool up = GridSet.Contains(upGrid);
+		bool down = GridSet.Contains(downGrid);
+		bool left = GridSet.Contains(leftGrid);
+		bool right = GridSet.Contains(rightGrid);
 
-		float upLeftValue = GridSet.Contains(upLeftGrid) ? 0.0f : 1.0f;
-		float upRightValue = GridSet.Contains(upRightGrid) ? 0.0f : 1.0f;
-		float downLeftValue = GridSet.Contains(downLeftGrid) ? 0.0f : 1.0f;
-		float downRightValue = GridSet.Contains(downRightGrid) ? 0.0f : 1.0f;
+		bool upLeft = (up && left) && GridSet.Contains(upLeftGrid);
+		bool upRight = (up && right) && GridSet.Contains(upRightGrid);
+		bool downLeft = (down && left) && GridSet.Contains(downLeftGrid);
+		bool downRight = (down && right) && GridSet.Contains(downRightGrid);
+
+		float upValue = up ? 0.0f : 1.0f;
+		float downValue = down ? 0.0f : 1.0f;
+		float leftValue = left ? 0.0f : 1.0f;
+		float rightValue = right ? 0.0f : 1.0f;
+
+		float upLeftValue = upLeft ? 0.0f : 1.0f;
+		float upRightValue = upRight ? 0.0f : 1.0f;
+		float downLeftValue = downLeft ? 0.0f : 1.0f;
+		float downRightValue = downRight ? 0.0f : 1.0f;
 
 		SetCustomDataValue(i, 0, upValue);
 		SetCustomDataValue(i, 1, downValue);

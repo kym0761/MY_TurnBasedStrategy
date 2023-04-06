@@ -4,6 +4,11 @@
 #include "UnitAnimInstance.h"
 #include "StatComponent.h"
 
+UUnitAnimInstance::UUnitAnimInstance()
+{
+
+}
+
 void UUnitAnimInstance::AnimNotify_AttackHit()
 {
 	if (OnAttackHit.IsBound())
@@ -90,7 +95,8 @@ void UUnitAnimInstance::PlayUnitHitMontage()
 		return;
 	}
 
-	APawn* owner = TryGetPawnOwner();
+
+	AActor* owner = GetOwningActor();
 	UStatComponent* stat = nullptr;
 	if (IsValid(owner))
 	{

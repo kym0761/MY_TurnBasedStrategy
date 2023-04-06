@@ -120,8 +120,6 @@ void AGridManager::CreateGridSystem()
 			TArray<AActor*> ignores;
 			TArray<FHitResult> outHits;
 
-			UKismetSystemLibrary::
-
 			UKismetSystemLibrary::LineTraceMultiForObjects(
 				GetWorld(),
 				startPos,

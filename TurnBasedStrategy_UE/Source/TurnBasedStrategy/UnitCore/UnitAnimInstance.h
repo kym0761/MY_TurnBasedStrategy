@@ -16,6 +16,11 @@ class TURNBASEDSTRATEGY_API UUnitAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 public:
 
+	UUnitAnimInstance();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AnimMontage")
+		UAnimMontage* UnitMontage;
+
 	UPROPERTY()
 		FOnNotifyWorks OnAttackHit;
 	UPROPERTY()
@@ -25,8 +30,9 @@ public:
 	UPROPERTY()
 		FOnNotifyWorks OnHitEnd;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AnimMontage")
-		UAnimMontage* UnitMontage;
+protected:
+
+public:
 
 	UFUNCTION()
 		void AnimNotify_AttackHit();

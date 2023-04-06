@@ -6,14 +6,17 @@
 #include "Components/TextBlock.h"
 #include "UnitAction/UnitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
-//#include "UnitControl/UnitSelectPawn.h"
 #include "Manager/GridManager.h"
 #include "UnitControl/UnitControlPawn.h"
 
 UActionSelectButtonWidget::UActionSelectButtonWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	bIsFocusable = true;
+	if (IsValid(Button_Select))
+	{
+		Button_Select->IsFocusable = true;
+	}
+	
 }
 
 void UActionSelectButtonWidget::NativeConstruct()
@@ -89,4 +92,12 @@ void UActionSelectButtonWidget::OnButtonClicked()
 		OnButtonClickedCompleted.Broadcast();
 	}
 
+}
+
+void UActionSelectButtonWidget::SetFocusThisButton()
+{
+	if (IsValid(Button_Select))
+	{
+		Button_Select->SetFocus();
+	}
 }

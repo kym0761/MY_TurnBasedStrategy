@@ -61,7 +61,11 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 	//첫번째 버튼에 Focus
 	if (VerticalBox_ActionList->GetChildrenCount() > 0)
 	{
-		VerticalBox_ActionList->GetChildAt(0)->SetFocus();
+		auto firstButton = Cast<UActionSelectButtonWidget>(VerticalBox_ActionList->GetChildAt(0));
+		if (IsValid(firstButton))
+		{
+			firstButton->SetFocusThisButton();
+		}
 	}
 
 }

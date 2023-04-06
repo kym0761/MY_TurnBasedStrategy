@@ -347,6 +347,7 @@ void AUnitControlPawn::DoSelection()
 			canvasSlot->SetSize(FVector2D(300, 500));
 		}
 
+		SetControlPawnMode(EPawnMode::UI);
 		UnitActionsWidget->InitUnitActionsWidget(SelectedUnit);
 	}
 }
@@ -390,6 +391,29 @@ void AUnitControlPawn::DoAction()
 void AUnitControlPawn::SetControlPawnMode(EPawnMode ModeInput)
 {
 	PawnMode = ModeInput;
+
+	if (APlayerController* pc = Cast<APlayerController>(GetController()))
+	{
+		switch (ModeInput)
+		{
+		case EPawnMode::Selection:
+			pc->SetInputMode(FInputModeGameOnly());
+			break;
+		case EPawnMode::Action:
+			pc->SetInputMode(FInputModeGameOnly());
+			break;
+		case EPawnMode::UI:
+			pc->SetInputMode(FInputModeUIOnly());
+			break;
+		case EPawnMode::Busy:
+			pc->SetInputMode(FInputModeGameOnly());
+			break;
+		default:
+			pc->SetInputMode(FInputModeGameOnly());
+			break;
+		}
+	}
+
 }
 
 void AUnitControlPawn::SetBusyOrNot(bool BusyInput)

@@ -201,7 +201,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 
 			FGrid resultGrid = FGrid(x, y);
 			resultGrid += unitGrid;
-			
+
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))
 			{
@@ -212,11 +212,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 			testData.Grid = resultGrid;
 			testData.GridVisualType = EGridVisualType::Move;
 
-			if (resultGrid == unitGrid) //지금 현재 Unit의 위치
-			{
-				testData.GridVisualType = EGridVisualType::Warning;
-			}
-			else if (gridManager->HasAnyUnitOnGrid(resultGrid) || //누군가 점유중
+			if (gridManager->HasAnyUnitOnGrid(resultGrid) || //누군가 점유중
 				!gridManager->IsWalkableGrid(resultGrid) || //걸을 수 없는 위치?
 				!gridManager->HasPath(unitGrid, resultGrid, false) || //도착 불가능한 위치?
 				gridManager->GetPathLength(unitGrid, resultGrid) > MaxActionRange) 	//의도와 달리 먼 거리?
@@ -226,7 +222,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 
 			bool bisFriend = false;
 			auto targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (IsValid(targetUnit) && GetOwner()->Tags.Num()>0)
+			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
 			{
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
 				if (bisFriend) // 만약 아군 위치라면 노란색으로 변경함.
@@ -278,7 +274,8 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	}
 
 
-	//~~ Move Debuging Sphere.
+	// ! Move Debuging Sphere
+	//비주얼 측면에서 현재 계속 있어도 괜찮아보여서 일단 유지 중. 필요없으면 비활성화할 것
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
 		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
