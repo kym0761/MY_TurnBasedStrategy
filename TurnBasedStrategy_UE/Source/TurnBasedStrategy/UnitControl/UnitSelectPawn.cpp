@@ -17,7 +17,7 @@
 #include "Components/CanvasPanel.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "Manager/SRPG_GameMode.h"
 
 // Sets default values
 AUnitSelectPawn::AUnitSelectPawn()
@@ -174,10 +174,10 @@ bool AUnitSelectPawn::TraceToGrid(FHitResult& OutHit)
 void AUnitSelectPawn::OnTracedGridChanged()
 {
 
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (!IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+		UE_LOG(LogTemp, Warning, TEXT("gameMode Can't be found"));
 		return;
 	}
 
@@ -187,7 +187,7 @@ void AUnitSelectPawn::OnTracedGridChanged()
 		if (gridArray.Contains(CurrentTracedGrid))
 		{
 			FVector unitLoc = SelectedAction->GetOwner()->GetActorLocation();
-			FVector hitLoc = gridManager->GridToWorld(CurrentTracedGrid);
+			FVector hitLoc = gameMode->GridToWorld(CurrentTracedGrid);
 			hitLoc.Z = unitLoc.Z;
 			FRotator look = UKismetMathLibrary::FindLookAtRotation(unitLoc, hitLoc);
 
@@ -277,16 +277,16 @@ void AUnitSelectPawn::DoAction()
 	{
 		FVector hitLocation = hit.Location;
 
-		AGridManager* gridManager = AGridManager::GetGridManager();
-		if (!IsValid(gridManager))
+		ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+		if (!IsValid(gameMode))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+			UE_LOG(LogTemp, Warning, TEXT("gameMode Can't be found"));
 			return;
 		}
 
-		FGrid grid = gridManager->WorldToGrid(hitLocation);
+		FGrid grid = gameMode->WorldToGrid(hitLocation);
 
-		if (!gridManager->IsValidGrid(grid))
+		if (!gameMode->IsValidGrid(grid))
 		{
 			return;
 		}
@@ -347,17 +347,17 @@ bool AUnitSelectPawn::TryUnitSelect()
 	if (result)
 	{
 		FVector hitLocation = hit.Location;
-		AGridManager* gridManager = AGridManager::GetGridManager();
-		if (!IsValid(gridManager))
+		ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+		if (!IsValid(gameMode))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("GridManager Not Valid"));
+			UE_LOG(LogTemp, Warning, TEXT("gameMode Not Valid"));
 			return false;
 		}
 
-		FGrid hitGrid = gridManager->WorldToGrid(hitLocation);
-		if (gridManager->IsValidGrid(hitGrid))
+		FGrid hitGrid = gameMode->WorldToGrid(hitLocation);
+		if (gameMode->IsValidGrid(hitGrid))
 		{
-			auto gridUnitArr = gridManager->GetUnitArrayAtGrid(hitGrid);
+			auto gridUnitArr = gameMode->GetUnitArrayAtGrid(hitGrid);
 
 			if (gridUnitArr.Num() == 0)
 			{
@@ -527,16 +527,16 @@ void AUnitSelectPawn::UnitLook()
 		{
 			FVector hitLocation = hit.Location;
 
-			AGridManager* gridManager = AGridManager::GetGridManager();
-			if (!IsValid(gridManager))
+			ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+			if (!IsValid(gameMode))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+				UE_LOG(LogTemp, Warning, TEXT("gameMode Can't be found"));
 				return;
 			}
 
-			FGrid grid = gridManager->WorldToGrid(hitLocation);
+			FGrid grid = gameMode->WorldToGrid(hitLocation);
 
-			if (!gridManager->IsValidGrid(grid))
+			if (!gameMode->IsValidGrid(grid))
 			{
 				return;
 			}

@@ -2,7 +2,7 @@
 
 
 #include "InstancedGridVisualComponent.h"
-#include "Manager/GridManager.h"
+#include "Manager/SRPG_GameMode.h"
 
 UInstancedGridVisualComponent::UInstancedGridVisualComponent()
 {
@@ -18,10 +18,10 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 {
 	FTransformArrayA2 VisualTransformArray;
 
-	AGridManager* gridManager = Cast<AGridManager>(GetOwner());
-	if (!IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
 	{
-		//gridManager Not Valid.
+		//gameMode Not Valid.
 		return;
 	}
 
@@ -30,12 +30,12 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 
 	for (const FGrid& grid : gridArray)
 	{
-		if (!gridManager->IsValidGrid(grid))
+		if (!gameMode->IsValidGrid(grid))
 		{
 			continue;
 		}
 
-		FVector worldPos = gridManager->GridToWorld(grid);
+		FVector worldPos = gameMode->GridToWorld(grid);
 		worldPos.Z += Height;
 
 		FTransform visualTransform;

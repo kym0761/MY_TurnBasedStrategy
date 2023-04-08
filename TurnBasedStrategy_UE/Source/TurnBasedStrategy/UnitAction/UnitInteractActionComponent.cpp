@@ -5,7 +5,7 @@
 
 #include "UnitCore/UnitCharacter.h"
 #include "Manager/GridManager.h"
-
+#include "Manager/SRPG_GameMode.h"
 
 UUnitInteractActionComponent::UUnitInteractActionComponent()
 {
@@ -31,10 +31,9 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 	TSet<FGrid> validSet;
 
 	FGrid unitGrid = Unit->GetGrid();
-	AGridManager* gridManager = AGridManager::GetGridManager();
 
-
-	if (!IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
 		return validSet;
@@ -49,12 +48,12 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 		FGrid resultGrid = unitGrid + offsetGrid;
 
 		//존재하지 않는 Grid
-		if (!gridManager->IsValidGrid(resultGrid))
+		if (!gameMode->IsValidGrid(resultGrid))
 		{
 			continue;
 		}
 
-		AUnitCharacter* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
+		AUnitCharacter* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
 		if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && !targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 		{
 			continue;

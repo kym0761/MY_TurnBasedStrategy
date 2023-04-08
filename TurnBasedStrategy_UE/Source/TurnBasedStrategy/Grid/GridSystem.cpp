@@ -36,7 +36,7 @@ TMap<FGrid, UGridObject*> UGridSystem::GetGridObjectMap() const
 
 UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 {
-	if (GridObjectMap.Contains(Grid))
+	if (GridObjectMap.Num() > 0 && GridObjectMap.Contains(Grid))
 	{
 		if (IsValid(GridObjectMap[Grid]))
 		{

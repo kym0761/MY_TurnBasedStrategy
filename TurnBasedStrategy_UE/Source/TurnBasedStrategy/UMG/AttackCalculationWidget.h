@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Manager/AttackManager.h"
+#include "Manager/Turn.h"
 #include "AttackCalculationWidget.generated.h"
 
 class UVerticalBox;

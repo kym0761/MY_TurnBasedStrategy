@@ -17,6 +17,8 @@ class UInstancedGridVisualComponent;
 class UPathFindingSystem;
 class UGridSystem;
 
+class ASRPG_GameMode;
+
 /* 
  * GridSystem과 PathFindingSystem의 조화를 위해서
  * 각 System은 각각의 UObject만 관리하고
@@ -42,13 +44,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 	UPathFindingSystem* PathFindingSystem;
 
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
-	int32 X_Length = 10;
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
-	int32 Y_Length = 10;
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
-	float CellSize = 100.0f;
-
 	/*
 	* GridVisual
 	* 이 Instanced Mesh Component들은 Grid의 정보를 시각적으로 보여주는 역할을 한다.
@@ -68,7 +63,18 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_DANGER;
 
+	UPROPERTY()
+		ASRPG_GameMode* SRPG_GameModeRef;
+
 #pragma endregion
+
+public:
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+		int32 X_Length = 10;
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+		int32 Y_Length = 10;
+	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+		float CellSize = 100.0f;
 
 public:	
 	// Sets default values for this actor's properties
@@ -82,44 +88,46 @@ protected:
 
 	//virtual void OnConstruction(const FTransform& Transform);
 
-	//Init
-	void CreateGridSystem();
+	////Init
+	//void CreateGridSystem();
 
 public:	
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	/*GridVisual Functions*/
+	void Setup();
+
+	///*GridVisual Functions*/
 	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
 	void ShowFromGridSet(const TSet<FGrid>& GridSet, EGridVisualType GridVisualType, const float Height = 0.01f);
 	void ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVisualDataSet, const float Height = 0.01f);
 	void RemoveAllGridVisual();
 
-	/*PathFinding Functions*/
-	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
-	int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
-	UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
-	TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
-	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
-	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
-	void InitAllPathFindingNodes();
+	///*PathFinding Functions*/
+	//TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
+	//int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
+	//UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
+	//TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
+	//TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
+	//bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
+	//void InitAllPathFindingNodes();
 
-	/*Grid System Functions*/
-	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
-	TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
-	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
-	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
-	bool IsWalkableGrid(const FGrid& GridValue) const;
-	int32 GetPathLength(const FGrid& Start, const FGrid& End);
-	bool IsValidGrid(const FGrid& Grid) const;
-	FGrid WorldToGrid(const FVector& WorldPosition) const;
-	FVector GridToWorld(const FGrid& Grid) const;
-	UGridObject* GetValidGridObject(const FGrid& Grid) const;
-	void AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
-	void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
-	void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
-	TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
+	///*Grid System Functions*/
+	//TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
+	//TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
+	//AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
+	//bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
+	//bool IsWalkableGrid(const FGrid& GridValue) const;
+	//int32 GetPathLength(const FGrid& Start, const FGrid& End);
+	//bool IsValidGrid(const FGrid& Grid) const;
+	//FGrid WorldToGrid(const FVector& WorldPosition) const;
+	//FVector GridToWorld(const FGrid& Grid) const;
+	//UGridObject* GetValidGridObject(const FGrid& Grid) const;
+	//void AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
+	//void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
+	//void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
+	//TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
 
 
 

@@ -78,12 +78,15 @@ public:
 	bool HasActionComponent(EUnitActionType UnitActionType);
 	UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
 
+	void InitUnit();
+
 	UFUNCTION()
 	void StartUnitTurn();
 
 	UFUNCTION()
 		void OnSelectedUnitChanged();
 
+	void ActivateUnitAllAction();
 	void FinishUnitAllAction();
 
 	bool IsThisUnitCanAction() const;

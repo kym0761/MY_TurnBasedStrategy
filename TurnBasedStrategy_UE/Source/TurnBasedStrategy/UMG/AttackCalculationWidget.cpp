@@ -8,6 +8,7 @@
 #include "CalculationUnitStatWidget.h"
 #include "Components/TextBlock.h"
 #include "AttackOrderWidget.h"
+#include "Manager/SRPG_GameMode.h"
 
 UAttackCalculationWidget::UAttackCalculationWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -83,11 +84,12 @@ void UAttackCalculationWidget::OnButton_AttackClicked()
 {
 	//공격을 실행하고 Attack UI 제거.
 
-	AAttackManager* attackManager = AAttackManager::GetAttackManager();
-	if (IsValid(attackManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+
+	if (IsValid(gameMode))
 	{
-		attackManager->SetupAttackManager(Attacker, Defender);
-		attackManager->StartAttack();
+		gameMode->SetupAttackManaging(Attacker, Defender);
+		gameMode->StartAttack();
 	}
 
 
@@ -105,16 +107,16 @@ void UAttackCalculationWidget::SetAttackOrders()
 		return;
 	}
 
-	AAttackManager* attackManager = AAttackManager::GetAttackManager();
-	if (!IsValid(attackManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
 	{
 
-		UE_LOG(LogTemp, Warning, TEXT("AttackManager is Invalid. -- UAttackCalculationWidget::OnButton_AttackClicked()"));
+		UE_LOG(LogTemp, Warning, TEXT("gameMode is Invalid. -- UAttackCalculationWidget::OnButton_AttackClicked()"));
 		return;
 	}
 
-	attackManager->SetupAttackManager(Attacker, Defender);
-	AttackOrders = attackManager->GetAttackOrder();
+	gameMode->SetupAttackManaging(Attacker, Defender);
+	AttackOrders = gameMode->GetAttackOrder();
 
 	//공격 or 반격 정보를 Parsing하여 UI에 최종 반영.
 	for (FAttackOrder& order : AttackOrders)

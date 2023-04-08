@@ -11,7 +11,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Manager/GridManager.h"
-#include "Manager/TurnManager.h"
+#include "Manager/SRPG_GameMode.h"
 #include "UnitControl/UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -40,28 +40,15 @@ void AUnitCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (IsValid(gridManager))
-	{
-		Grid = gridManager->WorldToGrid(GetActorLocation());
-		gridManager->AddUnitAtGrid(this, Grid);
-	}
-
 }
 
 void AUnitCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (IsValid(gameMode))
 	{
-		gridManager->RemoveUnitAtGrid(this,gridManager->WorldToGrid(GetActorLocation()));
-	}
-
-	ATurnManager* turnManager = ATurnManager::GetTurnManager();
-	if (IsValid(turnManager))
-	{
-		turnManager->RemoveUnitFromTurnManager(this);
+		gameMode->RemoveUnitAtGrid(this, gameMode->WorldToGrid(GetActorLocation()));
+		gameMode->RemoveUnitFromTurnManaging(this);
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -138,12 +125,22 @@ UUnitActionComponent* AUnitCharacter::GetUnitActionComponent(EUnitActionType Uni
 	}
 }
 
+void AUnitCharacter::InitUnit()
+{
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (IsValid(gameMode))
+	{
+		Grid = gameMode->WorldToGrid(GetActorLocation());
+		gameMode->AddUnitAtGrid(this, Grid);
+	}
+}
+
 void AUnitCharacter::StartUnitTurn()
 {
 	//Function when TurnChanged.
-	UE_LOG(LogTemp, Warning, TEXT("StartUnitTurn -> %s"), *GetActorLabel());
+	//UE_LOG(LogTemp, Warning, TEXT("StartUnitTurn -> %s"), *GetActorLabel());
 
-
+	ActivateUnitAllAction();
 }
 
 bool AUnitCharacter::HasActionComponent(EUnitActionType UnitActionType)
@@ -174,6 +171,28 @@ void AUnitCharacter::OnSelectedUnitChanged()
 			UE_LOG(LogTemp, Warning, TEXT("OnSelectedUnitChanged -> %s"), *GetActorLabel());
 		}
 	}
+}
+
+void AUnitCharacter::ActivateUnitAllAction()
+{
+	//턴이 시작됐을 때, 이 유닛이 할 수 있는 행동을 전부 다 Set해준다.
+
+	TArray<UActorComponent*> unitActions;
+	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
+
+	for (UActorComponent* unitAction : unitActions)
+	{
+		UUnitActionComponent* unitAction_Cast =
+			Cast<UUnitActionComponent>(unitAction);
+
+		if (!IsValid(unitAction_Cast))
+		{
+			continue;
+		}
+
+		unitAction_Cast->SetCanDoActionThisTurn(true);
+	}
+
 }
 
 void AUnitCharacter::FinishUnitAllAction()

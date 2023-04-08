@@ -6,7 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Grid/Grid.h"
 #include "InputActionValue.h"
-#include "Turn/Turn.h"
+#include "Manager/Turn.h"
 #include "UnitControlPawn.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitControlDelegate);
@@ -90,11 +90,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component|Camera")
 		USpringArmComponent* CameraBoom;
 
-protected:
-
 	//Start Position
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG")
 		FGrid StartGrid;
+
+protected:
 
 	//Current Position
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
@@ -129,6 +129,8 @@ protected:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	//virtual void PossessedBy(AController * NewController) override;
 
 public:	
 	// Called every frame

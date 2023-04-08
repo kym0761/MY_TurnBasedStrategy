@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Manager/AttackManager.h"
 #include "AttackOrderWidget.generated.h"
 
 class UTextBlock;

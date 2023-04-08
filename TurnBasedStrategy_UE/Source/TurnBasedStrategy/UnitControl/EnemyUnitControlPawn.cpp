@@ -2,7 +2,8 @@
 
 
 #include "EnemyUnitControlPawn.h"
-#include "Manager/GridManager.h"
+//#include "Manager/GridManager.h"
+#include "Manager/SRPG_GameMode.h"
 #include "UnitCore/UnitCharacter.h"
 #include "UnitAction/UnitMoveActionComponent.h"
 #include "UnitAction/UnitAttackActionComponent.h"
@@ -17,7 +18,7 @@ void AEnemyUnitControlPawn::BeginPlay()
 	Super::Super::BeginPlay();
 
 	//!! EnemyUnitControlPawn은 사실 어디에 있든 별 상관 없을지도 모른다.
-	InitGridPosition(FGrid(0,0));
+	//InitGridPosition(FGrid(0,0));
 }
 
 void AEnemyUnitControlPawn::Tick(float DeltaTime)
@@ -37,15 +38,15 @@ void AEnemyUnitControlPawn::TriggerToPlay()
 
 void AEnemyUnitControlPawn::FindEnemyAllUnits()
 {
-	AGridManager* gridManager = AGridManager::GetGridManager();
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 
-	if (!IsValid(gridManager))
+	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
 		return;
 	}
 
-	auto unitArr = gridManager->GetAllUnitInGridSystem();
+	auto unitArr = gameMode->GetAllUnitInGridSystem();
 	TArray<AUnitCharacter*> enemyArr;
 	for (auto unit : unitArr)
 	{
@@ -95,6 +96,14 @@ void AEnemyUnitControlPawn::MoveProcedure()
 	if (EnemyUnits.Num() == 0)
 	{
 		//Move가 끝났을 가능성이 높음
+
+		ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+		if (IsValid(gameMode))
+		{
+			gameMode->NextTurn();
+		}
+
+
 		return;
 	}
 
@@ -112,7 +121,7 @@ void AEnemyUnitControlPawn::MoveProcedure()
 
 	//unitMoveComp->OnActionEnd.AddDynamic(this, &AEnemyUnitControlPawn::OnUnitMoveFinished);
 	
-	//실질적 Unit Move : Function Name 바꿀 필요있을 듯.
+	//실질적 Unit Move ---- TODO : Function Name 바꿀 필요있을 듯.
 	unitMoveComp->TestFunction();
 	EnemyUnits.RemoveAt(0);
 }

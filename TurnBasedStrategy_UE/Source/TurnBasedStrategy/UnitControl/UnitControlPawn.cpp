@@ -12,7 +12,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SceneComponent.h"
 
-#include "Manager/GridManager.h"
+//#include "Manager/GridManager.h"
+#include "Manager/SRPG_GameMode.h"
 #include "UnitCore/UnitCharacter.h"
 
 #include "UMG/UnitActionListWidget.h"
@@ -52,16 +53,19 @@ AUnitControlPawn::AUnitControlPawn()
 void AUnitControlPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	InitGridPosition(StartGrid);
 
 	MainCanvasWidget = CreateWidget<UMainCanvasWidget>(GetWorld(), UMainCanvasWidgetClass);
 	if (IsValid(MainCanvasWidget))
 	{
 		MainCanvasWidget->AddToViewport();
 	}
-
 }
+
+//void AUnitControlPawn::PossessedBy(AController* NewController)
+//{
+//	Super::PossessedBy(NewController);
+//	//InitGridPosition(StartGrid);
+//}
 
 // Called every frame
 void AUnitControlPawn::Tick(float DeltaTime)
@@ -69,10 +73,10 @@ void AUnitControlPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//ControlPawn의 Grid위치에 맞게 보간이동함.
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (IsValid(gameMode))
 	{
-		FVector worldLoc = gridManager->GridToWorld(PivotGrid);
+		FVector worldLoc = gameMode->GridToWorld(PivotGrid);
 		FVector currentLoc = GetActorLocation();
 		FVector loc = FMath::VInterpTo(currentLoc, worldLoc, DeltaTime, 10.0f);
 
@@ -124,11 +128,15 @@ void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
 {
 	PivotGrid = Grid;
 
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (IsValid(gameMode))
 	{
-		FVector worldLoc = gridManager->GridToWorld(PivotGrid);
+		FVector worldLoc = gameMode->GridToWorld(PivotGrid);
 		SetActorLocation(worldLoc);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("InitGridPosition() GameMode is Invalid."));
 	}
 }
 
@@ -209,7 +217,7 @@ void AUnitControlPawn::GridMoveEnd(const FInputActionValue& Val)
 
 void AUnitControlPawn::HandleControlEnter(const bool& Val)
 {
-	if (bIsBusy)
+	if (PawnMode == EPawnMode::Busy)
 	{
 		return;
 	}
@@ -235,20 +243,20 @@ bool AUnitControlPawn::TryUnitSelect()
 	//Unit 선택을 시도함. MyUnit 태그가 붙어있으면 유닛을 선택할 것임.
 	//결과에 따라 true or false return한다.
 
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (!IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("GridManager Not Valid"));
+		UE_LOG(LogTemp, Warning, TEXT("gameMode Not Valid"));
 		return false;
 	}
 
-	if (!gridManager->IsValidGrid(PivotGrid))
+	if (!gameMode->IsValidGrid(PivotGrid))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid is Not Valid"));
 		return false;
 	}
 
-	auto unitOnGrid = gridManager->GetUnitAtGrid(PivotGrid);
+	AUnitCharacter* unitOnGrid = gameMode->GetUnitAtGrid(PivotGrid);
 
 	if (!IsValid(unitOnGrid))
 	{
@@ -372,14 +380,14 @@ void AUnitControlPawn::DoAction()
 		return;
 	}
 
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (!IsValid(gridManager))
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Action Failed Cause GridManager Can't be found"));
+		UE_LOG(LogTemp, Warning, TEXT("gameMode Can't be found"));
 		return;
 	}
 
-	if (!gridManager->IsValidGrid(PivotGrid))
+	if (!gameMode->IsValidGrid(PivotGrid))
 	{
 		return;
 	}
@@ -418,7 +426,7 @@ void AUnitControlPawn::SetControlPawnMode(EPawnMode ModeInput)
 
 void AUnitControlPawn::SetBusyOrNot(bool BusyInput)
 {
-	bIsBusy = BusyInput;
+	PawnMode = BusyInput ? EPawnMode::Busy : EPawnMode::Selection;
 }
 
 void AUnitControlPawn::OnUnitActionCompleted()
@@ -431,15 +439,15 @@ void AUnitControlPawn::OnUnitActionCompleted()
 
 void AUnitControlPawn::FindAllPlayerUnits()
 {
-	AGridManager* gridManager = AGridManager::GetGridManager();
+	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 
-	if (!IsValid(gridManager))
+	if (!IsValid(gameMode))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
 		return;
 	}
 
-	auto unitArr = gridManager->GetAllUnitInGridSystem();
+	auto unitArr = gameMode->GetAllUnitInGridSystem();
 	TArray<AUnitCharacter*> playerArr;
 
 	for (auto unit : unitArr)
