@@ -62,14 +62,14 @@ void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, A
 	}
 
 	//아군 Stat 및 이름
-	CalculationStat_Ally->InitCalculationUnitStat(Attacker);
+	CalculationStat_Ally->UpdateCalculationUnitStat(Attacker, Defender);
 	if (IsValid(TextBlock_AllyName))
 	{
 		TextBlock_AllyName->SetText(FText::FromString(Attacker->GetActorLabel()));
 	}
 
 	//적군 Stat 및 이름
-	CalculationStat_Enemy->InitCalculationUnitStat(Defender);
+	CalculationStat_Enemy->UpdateCalculationUnitStat(Defender, Attacker);
 	if (IsValid(TextBlock_EnemyName))
 	{
 		TextBlock_EnemyName->SetText(FText::FromString(Defender->GetActorLabel()));

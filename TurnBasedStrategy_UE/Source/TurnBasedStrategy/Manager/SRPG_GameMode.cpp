@@ -390,24 +390,34 @@ void ASRPG_GameMode::OnAttackHit()
 {
 	//Attacker의 공격을 맞았다면 Defender의 hit 애니메이션 재생함.
 
-	FAttackOrder& currentOrder = OrderToPlay[0];
-	AActor* currentDefender = currentOrder.Defender;
+	FAttackOrder currentOrder = OrderToPlay[0];
 
 	if (!IsValid(currentOrder.Defender) || !IsValid(currentOrder.Attacker))
 	{
 		return;
 	}
 
-	UGameplayStatics::ApplyDamage(currentOrder.Defender, currentOrder.Damage, nullptr, currentOrder.Attacker, UDamageType::StaticClass());
-
-	if (!IsValid(currentDefender))
+	//크리티컬 예시
+	float randCrit = FMath::FRandRange(0.0f, 1.0f);
+	if (currentOrder.CritRate >= randCrit)
 	{
-		return;
+		currentOrder.Damage *= 2;
+	}
+
+	float randAccuracy = FMath::FRandRange(0.0f,1.0f);
+	if (currentOrder.Accuracy >= randAccuracy)
+	{
+		UGameplayStatics::ApplyDamage(currentOrder.Defender, currentOrder.Damage, nullptr, currentOrder.Attacker, UDamageType::StaticClass());
+	}
+	else{
+	//빗나간 경우 처리하기?
+
 	}
 
 	USkeletalMeshComponent* defenderMesh = currentOrder.Defender->FindComponentByClass<USkeletalMeshComponent>();
 	if (!IsValid(defenderMesh))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ASRPG_GameMode::OnAttackHit()  Defender Mesh is Invalid."));
 		return;
 	}
 
@@ -415,7 +425,14 @@ void ASRPG_GameMode::OnAttackHit()
 	if (IsValid(defenderAnim))
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Play Hit Montage?"));
-		defenderAnim->PlayUnitHitMontage();
+		if (currentOrder.Accuracy >= randAccuracy)
+		{
+			defenderAnim->PlayUnitHitMontage();
+		}
+		else
+		{
+			defenderAnim->PlayUnitAvoidMontage();
+		}
 	}
 }
 
@@ -462,27 +479,66 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 		return attackOrders;
 	}
 
-	FAttackOrder attack;
-	attack.AttackOrderType = EAttackOrderType::Attack;
+
 	int32 attackerDamage = attackerStatComponent->GetSTR();
-	attack.Damage = attackerDamage;
+	int32 attackerSpeed = attackerStatComponent->GetSPD();
+	int32 attackerDEF = attackerStatComponent->GetDEF();
+	int32 attackerSKL = attackerStatComponent->GetSKL();
+	int32 attackerLUK = attackerStatComponent->GetLUK();
+
+	int32 defenderDamage = defenderStatComponent->GetSTR();
+	int32 defenderSpeed = defenderStatComponent->GetSPD();
+	int32 defenderDEF = defenderStatComponent->GetDEF();
+	int32 defenderSKL = defenderStatComponent->GetSKL();
+	int32 defenderLUK = defenderStatComponent->GetLUK();
+
+	FAttackOrder attack;
+	FAttackOrder counterAttack;
+
+	attack.AttackOrderType = EAttackOrderType::Attack;
+	attack.Damage = attackerDamage - defenderDEF;
 	attack.Attacker = Attacker;
 	attack.Defender = Defender;
+	attack.Accuracy = CalculateAccuracy(Attacker, Defender);
+	attack.CritRate = CalculateCriticalRate(Attacker, Defender);
 
-	FAttackOrder counterAttack;
 	counterAttack.AttackOrderType = EAttackOrderType::Defend;
-	int32 defenderDamage = defenderStatComponent->GetSTR();
-	counterAttack.Damage = defenderDamage;
+	counterAttack.Damage = defenderDamage - defenderDEF;
 	counterAttack.Attacker = Defender;
 	counterAttack.Defender = Attacker;
+	counterAttack.Accuracy = CalculateAccuracy(Defender, Attacker);
+	counterAttack.CritRate = CalculateCriticalRate(Defender, Attacker);
 
-	// 테스트 용도로 공/반/공/공 형식으로 공격함.
-	// 추후 SPD 값 혹은	보유 스킬에 따라 공격 횟수가 달라질 수 있음.
+	// 공격 순서는 1 공격자 2 방어자
+	// 공격 속도 차이에 따라 공격자와 방어자가 추가 공격을 행할 수가 있음.
+	// 추후 스킬 존재 유무에 따라 공격자와 방어자의 초기 순서와 공격 횟수가 바뀔 수도 있음.
 	attackOrders.Add(attack);
 	attackOrders.Add(counterAttack);
-	attackOrders.Add(attack);
-	attackOrders.Add(attack);
 
+	//스피드가 5보다 더 높으면 공격을 추가함.
+	if (attackerSpeed > defenderSpeed + 5)
+	{
+		attackOrders.Add(attack);
+	}
+
+	//스피드가 5보다 더 높으면 공격을 추가함.
+	if (attackerSpeed +5 < defenderSpeed)
+	{
+		attackOrders.Add(counterAttack);
+	}
+
+	//Attacker는 10보다 더 높으면 추가로 1/2의 데미지만큼 공격을 추가함.
+	if (attackerSpeed > defenderSpeed + 10)
+	{
+		FAttackOrder addAttack;
+		attack.AttackOrderType = EAttackOrderType::Attack;
+		addAttack.Damage = attackerDamage / 2;
+		addAttack.Attacker = Attacker;
+		addAttack.Defender = Defender;
+		addAttack.Accuracy = attack.Accuracy;
+		addAttack.CritRate = attack.CritRate;
+		attackOrders.Add(addAttack);
+	}
 
 	return 	attackOrders;
 }
@@ -537,6 +593,81 @@ void ASRPG_GameMode::BindOnHitEnd(UUnitAnimInstance* AnimInst)
 	toBind.BindUFunction(this, FName("OnHitEnd"));
 
 	AnimInst->BindTo_OnHitEnd(toBind);
+}
+
+float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
+{
+	//critRate 0.0f~1.0f 사이 값.
+
+	UStatComponent* attackerStatComponent =
+		Attacker->FindComponentByClass<UStatComponent>();
+
+	UStatComponent* defenderStatComponent =
+		Defender->FindComponentByClass<UStatComponent>();
+
+	if (!(IsValid(attackerStatComponent) && IsValid(defenderStatComponent)))
+	{
+		//불가능한 크리티컬 확률임.
+		return -1.0f;
+	}
+
+	int32 attackerSKL = attackerStatComponent->GetSKL();
+	int32 attackerLUK = attackerStatComponent->GetLUK();
+
+	int32 defenderSKL = defenderStatComponent->GetSKL();
+	int32 defenderLUK = defenderStatComponent->GetLUK();
+
+	//크리 공식 = (공격자 Skill - 방어자 Skill) + (공격자 운 - 방어자 운) / 100.0 + 공격자 SKill + 공격자 운
+	float critRate =
+		(
+			FMath::Clamp(attackerSKL - defenderSKL, 0, attackerSKL)
+			+ FMath::Clamp(attackerLUK - defenderLUK, 0, attackerLUK)
+			)
+		/
+		(
+			100.0f + attackerSKL + attackerLUK
+			);
+
+	return critRate;
+}
+
+float ASRPG_GameMode::CalculateAccuracy(AActor* Attacker, AActor* Defender)
+{
+	//명중률은 0~1 사이 값임.
+	//TODO : 명중률은 보여주기만 되는 값이고 현재는 전투 결과에 영향가지 않음.
+	//			공격에 명중률을 적용해서 회피도 되게 만들어야함.
+
+
+	UStatComponent* attackerStatComponent =
+		Attacker->FindComponentByClass<UStatComponent>();
+
+	UStatComponent* defenderStatComponent =
+		Defender->FindComponentByClass<UStatComponent>();
+
+	if (!(IsValid(attackerStatComponent) && IsValid(defenderStatComponent)))
+	{
+		//불가능한 명중률임.
+		return -1.0f;
+	}
+
+	int32 attackerSpeed = attackerStatComponent->GetSPD();
+	int32 attackerSKL = attackerStatComponent->GetSKL();
+	int32 attackerLUK = attackerStatComponent->GetLUK();
+
+	int32 defenderSpeed = defenderStatComponent->GetSPD();
+	int32 defenderSKL = defenderStatComponent->GetSKL();
+	int32 defenderLUK = defenderStatComponent->GetLUK();
+
+
+	//명중률 보정값 + 스킬 차이 + 스피드 차이 + 공격자의 행운 / 100
+	//보정값은 게임 난이도에 따라 변경될 수도 있을 듯?
+	float correction = 80.0f;
+	float accuracy = (correction + (attackerSKL - defenderSKL) + (attackerSpeed - defenderSpeed) + attackerLUK) / 100.0f;
+
+	//명중률은 0~1사이로 Clamp
+	accuracy = FMath::Clamp(accuracy, 0.0f, 1.0f);
+
+	return accuracy;
 }
 
 void ASRPG_GameMode::TryPlayNextOrder()

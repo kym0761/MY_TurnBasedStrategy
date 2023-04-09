@@ -41,6 +41,5 @@ public:
 		UStatComponent* CurrentStatComponent;
 public:
 
-	void InitCalculationUnitStat(AActor* ActorHasStatComponent);
-	void UpdateUnitStatWidget();
+	void UpdateCalculationUnitStat(AActor* StatOwner, AActor* Opponent);
 };

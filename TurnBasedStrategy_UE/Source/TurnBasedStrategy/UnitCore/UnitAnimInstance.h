@@ -50,4 +50,5 @@ public:
 
 	void PlayUnitAttackMontage();
 	void PlayUnitHitMontage();
+	void PlayUnitAvoidMontage();
 };

@@ -201,7 +201,8 @@ public:
 		void OnHitEnd();
 
 	TArray<FAttackOrder> CalculateAttackOrder(AActor* Attacker, AActor* Defender);
-
+	float CalculateCriticalRate(AActor* Attacker, AActor* Defender);
+	float CalculateAccuracy(AActor* Attacker, AActor* Defender);
 
 	void BindOnAttackHit(UUnitAnimInstance* AnimInst);
 	void BindOnAttackEnd(UUnitAnimInstance* AnimInst);

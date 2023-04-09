@@ -121,3 +121,14 @@ void UUnitAnimInstance::PlayUnitHitMontage()
 	}
 
 }
+
+void UUnitAnimInstance::PlayUnitAvoidMontage()
+{
+	if (!IsValid(UnitMontage))
+	{
+		return;
+	}
+
+	Montage_Play(UnitMontage);
+	Montage_JumpToSection(FName("Avoid01"));
+}

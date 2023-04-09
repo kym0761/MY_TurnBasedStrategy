@@ -40,6 +40,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
 		int32 Damage;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
+		float CritRate;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
+		float Accuracy;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
 		AActor* Attacker;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
 		AActor* Defender;

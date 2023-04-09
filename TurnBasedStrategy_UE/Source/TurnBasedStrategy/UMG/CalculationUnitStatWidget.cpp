@@ -5,39 +5,35 @@
 #include "UnitCore/StatComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
+#include "Manager/SRPG_GameMode.h"
 
-void UCalculationUnitStatWidget::InitCalculationUnitStat(AActor* ActorHasStatComponent)
+void UCalculationUnitStatWidget::UpdateCalculationUnitStat(AActor* StatOwner, AActor* Opponent)
 {
-	CurrentStatComponent =
-		ActorHasStatComponent->FindComponentByClass<UStatComponent>();
+	auto gamemode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 
-	UpdateUnitStatWidget();
-
-}
-
-void UCalculationUnitStatWidget::UpdateUnitStatWidget()
-{
-	if (!IsValid(CurrentStatComponent))
+	if (!gamemode)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CurrentStatComponent is Not Valid"));
 		return;
 	}
 
-	//현재 명중률 , 크리티컬 확률 등의 공식을 생각하지 않아서 UI에서 보여줄 임시 숫자를 사용함.
 	
-	float hp = CurrentStatComponent->GetHP();
-	float maxhp = CurrentStatComponent->GetMaxHP();
+	auto ownerStat = StatOwner->FindComponentByClass<UStatComponent>();
+	//auto opponentStat = Opponent->FindComponentByClass<UStatComponent>();
+
+
+	float hp = ownerStat->GetHP();
+	float maxhp = ownerStat->GetMaxHP();
 	ProgressBar_HP->SetPercent(hp / maxhp);
 
-	TextBlock_HP->SetText(FText::FromString(FString::SanitizeFloat(hp,0)));
+	TextBlock_HP->SetText(FText::FromString(FString::SanitizeFloat(hp, 0)));
 
-	int32 str = CurrentStatComponent->GetSTR();
+	int32 str = ownerStat->GetSTR();
 	TextBlock_DMG->SetText(FText::FromString(FString::FromInt(str)));
 
-	float hit = 99.0f;
-	TextBlock_Hit->SetText(FText::FromString(FString::SanitizeFloat(hit)));
+	float hit = gamemode->CalculateAccuracy(StatOwner, Opponent) * 100.0f;
+	TextBlock_Hit->SetText(FText::FromString(FString::SanitizeFloat(hit) + FString(" %")));
 
+	float crit = gamemode->CalculateCriticalRate(StatOwner, Opponent) * 100.0f;
+	TextBlock_Crit->SetText(FText::FromString(FString::SanitizeFloat(crit) + FString(" %")));
 
-	float crit = 1.2f;
-	TextBlock_Crit->SetText(FText::FromString(FString::SanitizeFloat(crit)));
 }

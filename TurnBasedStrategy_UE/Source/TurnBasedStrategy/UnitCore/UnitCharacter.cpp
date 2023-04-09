@@ -91,7 +91,7 @@ float AUnitCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 
 	if (StatComponent->GetHP() <= 0.0f)
 	{
-		SetLifeSpan(5.0f);
+		SetLifeSpan(2.5f);
 	}
 
 	return DamageAmount;
