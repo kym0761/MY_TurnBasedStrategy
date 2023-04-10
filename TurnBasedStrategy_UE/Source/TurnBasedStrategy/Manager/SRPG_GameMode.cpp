@@ -456,9 +456,9 @@ void ASRPG_GameMode::OnHitEnd()
 
 TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AActor* Defender)
 {
-	//현재 공격 Order는 임의로 공격자 우선 -> 방어자 반격임.
-
-	TArray<FAttackOrder> attackOrders;
+	// 공격 순서는 1 공격자 2 방어자
+	// 공격 속도 차이에 따라 공격자와 방어자가 추가 공격을 행할 수가 있음.
+	// 추후 스킬 존재 유무에 따라 공격자와 방어자의 초기 순서와 공격 횟수가 바뀔 수도 있음.
 
 	if (!IsValid(Attacker) || !IsValid(Defender))
 	{
@@ -468,7 +468,6 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 
 	UStatComponent* attackerStatComponent =
 		Attacker->FindComponentByClass<UStatComponent>();
-
 	UStatComponent* defenderStatComponent =
 		Defender->FindComponentByClass<UStatComponent>();
 
@@ -478,7 +477,6 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 
 		return attackOrders;
 	}
-
 
 	int32 attackerDamage = attackerStatComponent->GetSTR();
 	int32 attackerSpeed = attackerStatComponent->GetSPD();
@@ -493,8 +491,6 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	int32 defenderLUK = defenderStatComponent->GetLUK();
 
 	FAttackOrder attack;
-	FAttackOrder counterAttack;
-
 	attack.AttackOrderType = EAttackOrderType::Attack;
 	attack.Damage = attackerDamage - defenderDEF;
 	attack.Attacker = Attacker;
@@ -502,6 +498,7 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	attack.Accuracy = CalculateAccuracy(Attacker, Defender);
 	attack.CritRate = CalculateCriticalRate(Attacker, Defender);
 
+	FAttackOrder counterAttack;
 	counterAttack.AttackOrderType = EAttackOrderType::Defend;
 	counterAttack.Damage = defenderDamage - defenderDEF;
 	counterAttack.Attacker = Defender;
@@ -509,34 +506,45 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	counterAttack.Accuracy = CalculateAccuracy(Defender, Attacker);
 	counterAttack.CritRate = CalculateCriticalRate(Defender, Attacker);
 
-	// 공격 순서는 1 공격자 2 방어자
-	// 공격 속도 차이에 따라 공격자와 방어자가 추가 공격을 행할 수가 있음.
-	// 추후 스킬 존재 유무에 따라 공격자와 방어자의 초기 순서와 공격 횟수가 바뀔 수도 있음.
+	TArray<FAttackOrder> attackOrders;
 	attackOrders.Add(attack);
 	attackOrders.Add(counterAttack);
 
-	//스피드가 5보다 더 높으면 공격을 추가함.
+	//Attacker의 스피드가 5보다 더 높으면 공격을 추가함.
 	if (attackerSpeed > defenderSpeed + 5)
 	{
 		attackOrders.Add(attack);
 	}
 
-	//스피드가 5보다 더 높으면 공격을 추가함.
+	//Defender의 스피드가 5보다 더 높으면 공격을 추가함.
 	if (attackerSpeed +5 < defenderSpeed)
 	{
 		attackOrders.Add(counterAttack);
 	}
 
-	//Attacker는 10보다 더 높으면 추가로 1/2의 데미지만큼 공격을 추가함.
+	//Attacker의 스피드가 10보다 더 높으면 추가로 1/2의 데미지만큼 공격을 추가함.
 	if (attackerSpeed > defenderSpeed + 10)
 	{
 		FAttackOrder addAttack;
 		attack.AttackOrderType = EAttackOrderType::Attack;
-		addAttack.Damage = attackerDamage / 2;
+		addAttack.Damage = attack.Damage / 2;
 		addAttack.Attacker = Attacker;
 		addAttack.Defender = Defender;
 		addAttack.Accuracy = attack.Accuracy;
 		addAttack.CritRate = attack.CritRate;
+		attackOrders.Add(addAttack);
+	}
+
+	//defender의 스피드가 10보다 더 높으면 추가로 1/2의 데미지만큼 공격을 추가함.
+	if (attackerSpeed +10 < defenderSpeed)
+	{
+		FAttackOrder addAttack;
+		attack.AttackOrderType = EAttackOrderType::Defend;
+		addAttack.Damage = counterAttack.Damage / 2;
+		addAttack.Attacker = Defender;
+		addAttack.Defender = Attacker;
+		addAttack.Accuracy = counterAttack.Accuracy;
+		addAttack.CritRate = counterAttack.CritRate;
 		attackOrders.Add(addAttack);
 	}
 

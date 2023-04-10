@@ -112,7 +112,6 @@ public:
 
 #pragma endregion
 
-
 #pragma region TurnManaging
 
 private:
@@ -212,7 +211,6 @@ public:
 	void TryPlayNextOrder();
 
 	TArray<FAttackOrder> GetAttackOrder() const;
-
 
 #pragma endregion
 

@@ -12,7 +12,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
-#include "UnitControl/UnitSelectPawn.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "../UMG/DamageTextActor.h"
@@ -163,14 +162,8 @@ bool AUnitCharacter::HasActionComponent(EUnitActionType UnitActionType)
 
 void AUnitCharacter::OnSelectedUnitChanged()
 {	
-	AUnitSelectPawn* unitSelectPawn = AUnitSelectPawn::GetUnitSelectPawn();
-	if (IsValid(unitSelectPawn))
-	{
-		if (unitSelectPawn->GetSelectedUnit() == this)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("OnSelectedUnitChanged -> %s"), *GetActorLabel());
-		}
-	}
+	UE_LOG(LogTemp, Warning, TEXT("OnSelectedUnitChanged -> %s"), *GetActorLabel());
+
 }
 
 void AUnitCharacter::ActivateUnitAllAction()

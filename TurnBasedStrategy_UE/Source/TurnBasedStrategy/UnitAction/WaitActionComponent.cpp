@@ -3,7 +3,6 @@
 
 #include "WaitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "UnitControl/UnitSelectPawn.h"
 #include "UnitCore/UnitCharacter.h"
 UWaitActionComponent::UWaitActionComponent()
 {
