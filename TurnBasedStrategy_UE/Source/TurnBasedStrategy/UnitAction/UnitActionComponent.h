@@ -7,11 +7,12 @@
 #include "UnitAction.h"
 #include "UnitActionComponent.generated.h"
 
-class AUnitCharacter;
+class AUnit;
+class ASRPG_GameMode;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitActionDelegate);
 
-UCLASS(abstract ,ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(abstract /*, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent)*/)
 class TURNBASEDSTRATEGY_API UUnitActionComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -23,8 +24,8 @@ public:
 	FUnitActionDelegate OnActionCompleteForControlPawn;
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-	AUnitCharacter* Unit;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	//AUnit* Unit;
 
 	//최대 Action 범위
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
@@ -56,6 +57,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FString GetActionName() const;
+	AUnit* GetOwningUnit() const;
 
 	//UI를 띄워야할 Action을 위해서 TakeAction 이전에 발동해야함.
 	virtual void DealWithGridBeforeAction(const FGrid& Grid);
@@ -65,7 +67,7 @@ public:
 	virtual TSet<FGridVisualData> GetValidActionGridVisualDataSet() const;
 	virtual TSet<FGrid> GetValidActionGridSet() const;
 
-	AUnitCharacter* GetUnit() const;
+	//AUnitCharacter* GetUnit() const;
 
 	bool IsCanDoActionThisTurn() const;
 	void SetCanDoActionThisTurn(bool InputBool);
@@ -74,10 +76,7 @@ public:
 	/*AI 행동*/
 	virtual FGrid ThinkAIBestActionGrid();
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid);
-	virtual void TestFunction();
-
-	UFUNCTION(BlueprintCallable)
-		void TestUnitAction();
+	virtual void AI_Action();
 
 	virtual void SelectThisAction();
 

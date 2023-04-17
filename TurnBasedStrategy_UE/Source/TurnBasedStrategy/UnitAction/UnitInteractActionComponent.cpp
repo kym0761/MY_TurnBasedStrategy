@@ -3,7 +3,7 @@
 
 #include "UnitInteractActionComponent.h"
 
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 #include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
 
@@ -30,7 +30,13 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 
 	TSet<FGrid> validSet;
 
-	FGrid unitGrid = Unit->GetGrid();
+	AUnit* unit = GetOwningUnit();
+	if (!IsValid(unit))
+	{
+		return validSet;
+	}
+
+	FGrid unitGrid = unit->GetGrid();
 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
@@ -53,7 +59,7 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 			continue;
 		}
 
-		AUnitCharacter* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+		AUnit* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
 		if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && !targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 		{
 			continue;

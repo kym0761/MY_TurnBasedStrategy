@@ -3,7 +3,7 @@
 
 #include "SRPG_GameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 #include "UnitControl/EnemyUnitControlPawn.h"
 #include "UnitControl/UnitControlPawn.h"
 
@@ -11,7 +11,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "UnitAction/UnitAttackActionComponent.h"
 #include "UnitCore/StatComponent.h"
-#include "UnitCore/UnitCharacter.h"
 
 #include "Grid/GridObject.h"
 #include "Grid/PathNode.h"
@@ -36,7 +35,7 @@ void ASRPG_GameMode::BeginPlay()
 
 void ASRPG_GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
-	Super::InitGame(MapName, Options,ErrorMessage);
+	Super::InitGame(MapName, Options, ErrorMessage);
 
 }
 
@@ -64,11 +63,11 @@ void ASRPG_GameMode::InitTurn()
 	// 마지막엔 UnitControlPawn에게도 해당 유닛이 각각 본인들의 것이라는 것을 알려줌.
 
 	TArray<AActor*> unitArr;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitCharacter::StaticClass(), unitArr);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), unitArr);
 
 	for (auto actor : unitArr)
 	{
-		AUnitCharacter* unit = Cast<AUnitCharacter>(actor);
+		AUnit* unit = Cast<AUnit>(actor);
 		if (IsValid(unit))
 		{
 			AddUnitForTurnManaging(unit);
@@ -109,10 +108,12 @@ void ASRPG_GameMode::NextTurn()
 		SetTurnType(ETurnType::PlayerTurn);
 		NextTurnNumber();
 		break;
-	//case ETurnType::AllyTurn:
-	//	SetTurnType(ETurnType::PlayerTurn);
-	//	NextTurnNumber();
-	//	break;
+		//case ETurnType::AllyTurn:
+		//	SetTurnType(ETurnType::PlayerTurn);
+		//	NextTurnNumber();
+		//	break;
+	default:
+		break;
 	}
 
 }
@@ -225,7 +226,7 @@ void ASRPG_GameMode::StartGame()
 	TurnNumber = 1;
 }
 
-void ASRPG_GameMode::AddUnitForTurnManaging(AUnitCharacter* UnitToAdd)
+void ASRPG_GameMode::AddUnitForTurnManaging(AUnit* UnitToAdd)
 {
 	if (!IsValid(UnitToAdd))
 	{
@@ -239,21 +240,21 @@ void ASRPG_GameMode::AddUnitForTurnManaging(AUnitCharacter* UnitToAdd)
 		return;
 	}
 
-	if (UnitToAdd->ActorHasTag( FName("MyUnit")))
+	if (UnitToAdd->ActorHasTag(MYUNIT))
 	{
-		OnPlayerTurnStart.AddDynamic(UnitToAdd, &AUnitCharacter::StartUnitTurn);
+		OnPlayerTurnStart.AddDynamic(UnitToAdd, &AUnit::StartUnitTurn);
 		PlayerUnitArr.Add(UnitToAdd);
 	}
-	else if (UnitToAdd->ActorHasTag(FName("Enemy")))
+	else if (UnitToAdd->ActorHasTag(ENEMY))
 	{
-		OnEnemyTurnStart.AddDynamic(UnitToAdd, &AUnitCharacter::StartUnitTurn);
+		OnEnemyTurnStart.AddDynamic(UnitToAdd, &AUnit::StartUnitTurn);
 		EnemyUnitArr.Add(UnitToAdd);
 	}
 
 	UnitToAdd->OnFinishAllAction.AddDynamic(this, &ASRPG_GameMode::CheckCurrentTurnValidation);
 }
 
-void ASRPG_GameMode::RemoveUnitFromTurnManaging(AUnitCharacter* UnitToRemove)
+void ASRPG_GameMode::RemoveUnitFromTurnManaging(AUnit* UnitToRemove)
 {
 	if (!IsValid(UnitToRemove))
 	{
@@ -269,14 +270,14 @@ void ASRPG_GameMode::RemoveUnitFromTurnManaging(AUnitCharacter* UnitToRemove)
 
 	FName unitTag = UnitToRemove->Tags[0];
 
-	if (unitTag == FName("MyUnit"))
+	if (unitTag == MYUNIT)
 	{
-		OnPlayerTurnStart.RemoveDynamic(UnitToRemove, &AUnitCharacter::StartUnitTurn);
+		OnPlayerTurnStart.RemoveDynamic(UnitToRemove, &AUnit::StartUnitTurn);
 		PlayerUnitArr.Remove(UnitToRemove);
 	}
-	else if (unitTag == FName("Enemy"))
+	else if (unitTag == ENEMY)
 	{
-		OnEnemyTurnStart.RemoveDynamic(UnitToRemove, &AUnitCharacter::StartUnitTurn);
+		OnEnemyTurnStart.RemoveDynamic(UnitToRemove, &AUnit::StartUnitTurn);
 		EnemyUnitArr.Remove(UnitToRemove);
 	}
 
@@ -389,7 +390,7 @@ void ASRPG_GameMode::FinishAttack()
 void ASRPG_GameMode::OnAttackHit()
 {
 	//Attacker의 공격을 맞았다면 Defender의 hit 애니메이션 재생함.
-
+	//TODO : 빗나감 처리 필요.
 	FAttackOrder currentOrder = OrderToPlay[0];
 
 	if (!IsValid(currentOrder.Defender) || !IsValid(currentOrder.Attacker))
@@ -460,6 +461,8 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	// 공격 속도 차이에 따라 공격자와 방어자가 추가 공격을 행할 수가 있음.
 	// 추후 스킬 존재 유무에 따라 공격자와 방어자의 초기 순서와 공격 횟수가 바뀔 수도 있음.
 
+	TArray<FAttackOrder> attackOrders;
+
 	if (!IsValid(Attacker) || !IsValid(Defender))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Attacker or Defender is Not Valid - AAttackManager::CalculateAttackOrder()"));
@@ -506,7 +509,6 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	counterAttack.Accuracy = CalculateAccuracy(Defender, Attacker);
 	counterAttack.CritRate = CalculateCriticalRate(Defender, Attacker);
 
-	TArray<FAttackOrder> attackOrders;
 	attackOrders.Add(attack);
 	attackOrders.Add(counterAttack);
 
@@ -526,7 +528,7 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	if (attackerSpeed > defenderSpeed + 10)
 	{
 		FAttackOrder addAttack;
-		attack.AttackOrderType = EAttackOrderType::Attack;
+		addAttack.AttackOrderType = EAttackOrderType::Attack;
 		addAttack.Damage = attack.Damage / 2;
 		addAttack.Attacker = Attacker;
 		addAttack.Defender = Defender;
@@ -536,10 +538,10 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	}
 
 	//defender의 스피드가 10보다 더 높으면 추가로 1/2의 데미지만큼 공격을 추가함.
-	if (attackerSpeed +10 < defenderSpeed)
+	if (attackerSpeed + 10 < defenderSpeed)
 	{
 		FAttackOrder addAttack;
-		attack.AttackOrderType = EAttackOrderType::Defend;
+		addAttack.AttackOrderType = EAttackOrderType::Defend;
 		addAttack.Damage = counterAttack.Damage / 2;
 		addAttack.Attacker = Defender;
 		addAttack.Defender = Attacker;
@@ -817,14 +819,12 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 {
 	//!주의! return 하기 전에 PathLength를 변경시켜야함.
 
-		//PathLength의 존재 이유는, 장애물이나 다른 기타 이유로 빙 돌아서 가야할 때
-		//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
-		//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 해당 위치를 갈 수 있음.
+	//PathLength의 존재 이유는, 장애물이나 다른 기타 이유로 우회할 때
+	//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
+	//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 Valid.
 
-		//openList = 이동 가능할 위치. PriorityQueue처럼 사용할 것으로 TArray 
-		//closeSet = 이동 불가능함이 확정된 위치. 사용한 것인지만 판독하기 위한 TSet
-	TArray<UPathNode*> openList;
-	TSet<UPathNode*> closeSet;
+	TArray<UPathNode*> openList; 	//openList = 이동 가능할 위치. Heap으로 사용함.
+	TSet<UPathNode*> closeSet; 	//closeSet = 이동 불가능한 위치. 빠른 검색용 TSet
 
 	//Heap화 == PriorityQueue
 	openList.Heapify(UPathNode::PathFindingPredicated);
@@ -863,8 +863,8 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 		if (currentNode == endNode) //Break Point.
 		{
 			FGrid currentGrid = currentNode->GetGrid();
-			AUnitCharacter* currentUnit = GetUnitAtGrid(currentGrid);
-			AUnitCharacter* startUnit = GetUnitAtGrid(Start);
+			AUnit* currentUnit = GetUnitAtGrid(currentGrid);
+			AUnit* startUnit = GetUnitAtGrid(Start);
 
 			//적군이든 아군이든 누군가가 존재한다면, 해당 Grid를 점유할 수 없으므로
 			//경로가 존재할 수 없게됨.
@@ -906,8 +906,8 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			UGridObject* gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
 			if (!bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
-				AUnitCharacter* currentUnit = gridObj->GetUnit();
-				AUnitCharacter* startUnit = GetUnitAtGrid(Start);
+				AUnit* currentUnit = gridObj->GetUnit();
+				AUnit* startUnit = GetUnitAtGrid(Start);
 				if (IsValid(currentUnit) && IsValid(startUnit))
 				{
 					if (currentUnit->ActorHasTag(startUnit->Tags[0]))
@@ -1061,7 +1061,7 @@ void ASRPG_GameMode::InitAllPathFindingNodes()
 	}
 }
 
-TArray<AUnitCharacter*> ASRPG_GameMode::GetUnitArrayAtGrid(const FGrid& GridValue) const
+TArray<AUnit*> ASRPG_GameMode::GetUnitArrayAtGrid(const FGrid& GridValue) const
 {
 	//Grid 위에 있는 Unit을 얻음.
 	//이 Function은 Unit이 여러개일 때를 가정함.
@@ -1069,20 +1069,20 @@ TArray<AUnitCharacter*> ASRPG_GameMode::GetUnitArrayAtGrid(const FGrid& GridValu
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
 	if (!IsValid(gridObject))
 	{
-		return TArray<AUnitCharacter*>();
+		return TArray<AUnit*>();
 	}
 
 
 	return gridObject->GetUnitArray();
 }
 
-TArray<AUnitCharacter*> ASRPG_GameMode::GetAllUnitInGridSystem() const
+TArray<AUnit*> ASRPG_GameMode::GetAllUnitInGridSystem() const
 {
-	//현재 Grid 위에 존재하는 모든 Unit Character를 얻어냄.
+	//현재 Grid 위에 존재하는 모든 Unit을 얻어냄.
 
 	TMap<FGrid, UGridObject*> gridObjs = GetAllGridObjectsThatHasUnit();
 
-	TArray<AUnitCharacter*> unitArray;
+	TArray<AUnit*> unitArray;
 
 	for (auto gridObj : gridObjs)
 	{
@@ -1097,12 +1097,12 @@ TArray<AUnitCharacter*> ASRPG_GameMode::GetAllUnitInGridSystem() const
 	return unitArray;
 }
 
-AUnitCharacter* ASRPG_GameMode::GetUnitAtGrid(const FGrid& GridValue) const
+AUnit* ASRPG_GameMode::GetUnitAtGrid(const FGrid& GridValue) const
 {
 	//Grid 위에 있는 Unit을 얻음.
 		//이 Function은 Unit이 하나일 때를 가정함.
 
-	TArray<AUnitCharacter*> gridArray = GetUnitArrayAtGrid(GridValue);
+	TArray<AUnit*> gridArray = GetUnitArrayAtGrid(GridValue);
 
 	if (gridArray.Num() == 0)
 	{
@@ -1202,7 +1202,7 @@ UGridObject* ASRPG_GameMode::GetValidGridObject(const FGrid& Grid) const
 	return gridObj;
 }
 
-void ASRPG_GameMode::AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
+void ASRPG_GameMode::AddUnitAtGrid(AUnit* Unit, const FGrid& GridValue)
 {
 	if (!IsValid(GridSystem))
 	{
@@ -1216,7 +1216,7 @@ void ASRPG_GameMode::AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
 	}
 }
 
-void ASRPG_GameMode::RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue)
+void ASRPG_GameMode::RemoveUnitAtGrid(AUnit* Unit, const FGrid& GridValue)
 {
 	if (!IsValid(GridSystem))
 	{
@@ -1230,13 +1230,10 @@ void ASRPG_GameMode::RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridVal
 	}
 }
 
-void ASRPG_GameMode::MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to)
+void ASRPG_GameMode::MoveUnitGrid(AUnit* Unit, const FGrid& From, const FGrid& to)
 {
 	RemoveUnitAtGrid(Unit, From);
 	AddUnitAtGrid(Unit, to);
-
-	//Unit이 자신의 현재 위치를 보유하고 있음.
-	Unit->SetGrid(to);
 
 	if (OnAnyUnitMoved.IsBound())
 	{
@@ -1279,10 +1276,10 @@ void ASRPG_GameMode::SetupGridManaging(AGridManager* GridManager)
 	CreateGridSystem();
 
 	TArray<AActor*> units;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitCharacter::StaticClass(), units);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), units);
 	for (auto actor : units)
 	{
-		AUnitCharacter* unit = Cast<AUnitCharacter>(actor);
+		AUnit* unit = Cast<AUnit>(actor);
 		if (IsValid(unit))
 		{
 			unit->InitUnit();

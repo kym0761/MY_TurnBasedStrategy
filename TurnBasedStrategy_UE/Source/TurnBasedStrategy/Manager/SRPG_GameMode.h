@@ -8,7 +8,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "SRPG_GameMode.generated.h"
 
-class AUnitCharacter;
+//class AUnitCharacter;
+class AUnit;
 class AEnemyUnitControlPawn;
 class AUnitControlPawn;
 
@@ -90,9 +91,12 @@ public:
 	void InitAllPathFindingNodes();
 
 	/*Grid System Functions*/
-	TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
-	TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
-	AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
+	//TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
+	//TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
+	//AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
+	TArray<AUnit*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
+	TArray<AUnit*> GetAllUnitInGridSystem() const;
+	AUnit* GetUnitAtGrid(const FGrid& GridValue) const;
 	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	bool IsWalkableGrid(const FGrid& GridValue) const;
 	int32 GetPathLength(const FGrid& Start, const FGrid& End);
@@ -100,9 +104,9 @@ public:
 	FGrid WorldToGrid(const FVector& WorldPosition) const;
 	FVector GridToWorld(const FGrid& Grid) const;
 	UGridObject* GetValidGridObject(const FGrid& Grid) const;
-	void AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
-	void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
-	void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
+	void AddUnitAtGrid(AUnit* Unit, const FGrid& GridValue);
+	void RemoveUnitAtGrid(AUnit* Unit, const FGrid& GridValue);
+	void MoveUnitGrid(AUnit* Unit, const FGrid& From, const FGrid& to);
 	TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
 
 	//TestUI¿¡¼­ CallµÊ.
@@ -123,10 +127,10 @@ private:
 		ETurnType TurnType;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
-		TArray<AUnitCharacter*> PlayerUnitArr;
+		TArray<AUnit*> PlayerUnitArr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
-		TArray<AUnitCharacter*> EnemyUnitArr;
+		TArray<AUnit*> EnemyUnitArr;
 
 	UPROPERTY()
 		AEnemyUnitControlPawn* EnemyUnitControlPawnRef;
@@ -158,8 +162,8 @@ public:
 	void NextTurnNumber();
 	void StartGame();
 
-	void AddUnitForTurnManaging(AUnitCharacter* UnitToAdd);
-	void RemoveUnitFromTurnManaging(AUnitCharacter* UnitToRemove);
+	void AddUnitForTurnManaging(AUnit* UnitToAdd);
+	void RemoveUnitFromTurnManaging(AUnit* UnitToRemove);
 
 #pragma endregion
 

@@ -21,7 +21,10 @@ class TURNBASEDSTRATEGY_API UGridSystem : public UObject
 	GENERATED_BODY()
 
 private:
+
+	UPROPERTY()
 	int32 X_Length;
+	UPROPERTY()
 	int32 Y_Length;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category ="Grid", Meta = (AllowPrivateAccess = true))

@@ -2,25 +2,24 @@
 
 
 #include "UnitActionListWidget.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 #include "UnitAction/UnitActionComponent.h"
 #include "ActionSelectButtonWidget.h"
 #include "Components/VerticalBox.h"
 
-void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharacter)
+void UUnitActionListWidget::InitUnitActionsWidget(AUnit* SelectedUnit)
 {
 	//1. 유닛의 Action을 전부 검색
 	//2. 가능한 Action을 확인
 	//3. 가능한 Action에 대한 버튼 생성.
 
-	if (!IsValid(SelectedCharacter))
+	if (!IsValid(SelectedUnit))
 	{
 		return;
 	}
 
 	TArray<UActorComponent*> unitActions;
-
-	SelectedCharacter->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
+	SelectedUnit->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
 
 	for (UActorComponent* unitAction : unitActions)
 	{
@@ -55,7 +54,8 @@ void UUnitActionListWidget::InitUnitActionsWidget(AUnitCharacter* SelectedCharac
 		//버튼 추가
 		VerticalBox_ActionList->AddChild(buttonWidget);
 		buttonWidget->InitActionSelectButton(unitAction_Cast);
-		buttonWidget->OnButtonClickedCompleted.AddDynamic(this, &UUnitActionListWidget::OnButtonClickedCompletedFunc);
+		buttonWidget->OnButtonClickedCompleted.AddDynamic(
+			this, &UUnitActionListWidget::OnButtonClickedCompletedFunc);
 	}
 
 	//첫번째 버튼에 Focus

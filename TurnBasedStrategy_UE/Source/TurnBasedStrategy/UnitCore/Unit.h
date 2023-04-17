@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/Actor.h"
 #include "Grid/Grid.h"
 #include "UnitAction/UnitAction.h"
-#include "UnitCharacter.generated.h"
+#include "Unit.generated.h"
 
 class UStatComponent;
 class UUnitMoveActionComponent;
@@ -16,16 +16,18 @@ class UUnitInteractActionComponent;
 class UWaitActionComponent;
 class ADamageTextActor;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature_n);
 
 UCLASS()
-class TURNBASEDSTRATEGY_API AUnitCharacter : public ACharacter
+class TURNBASEDSTRATEGY_API AUnit : public AActor
 {
 	GENERATED_BODY()
-
-public:
-	// Sets default values for this character's properties
-	AUnitCharacter();
+	
+public:	
+	// Sets default values for this actor's properties
+	AUnit();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	USceneComponent* SceneRoot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Reaction")
 		TSubclassOf<ADamageTextActor> DamageTextActorBP;
@@ -45,47 +47,43 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UWaitActionComponent* WaitActionComponent;
 
-	FUnitDelegateSignature OnFinishAllAction;
+	FUnitDelegateSignature_n OnFinishAllAction;
 
 private:
 
-	//현재 Grid 위치 값
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-	FGrid Grid;
+	////현재 Grid 위치 값
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	//	FGrid Grid;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	//virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+		class AController* EventInstigator, AActor* DamageCauser) override;
 
-	//virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
-	//	class AController* EventInstigator, AActor* DamageCauser) override;
+	FGrid GetGrid();
 
-	//FGrid GetGrid();
-	//void SetGrid(FGrid GridValue);
+	bool HasActionComponent(EUnitActionType UnitActionType);
+	UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
 
-	//bool HasActionComponent(EUnitActionType UnitActionType);
-	//UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
+	void InitUnit();
 
-	//void InitUnit();
+	UFUNCTION()
+		void StartUnitTurn();
 
-	//UFUNCTION()
-	//void StartUnitTurn();
+	UFUNCTION()
+		void OnSelectedUnitChanged();
 
-	//UFUNCTION()
-	//	void OnSelectedUnitChanged();
+	void ActivateUnitAllAction();
+	void FinishUnitAllAction();
 
-	//void ActivateUnitAllAction();
-	//void FinishUnitAllAction();
-
-	//bool IsThisUnitCanAction() const;
+	bool IsThisUnitCanAction() const;
 
 };

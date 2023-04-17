@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TURNBASEDSTRATEGY_API UUnitConversationActionComponent : public UUnitActionComponent
 {
 	GENERATED_BODY()

@@ -2,9 +2,8 @@
 
 
 #include "EnemyUnitControlPawn.h"
-//#include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 #include "UnitAction/UnitMoveActionComponent.h"
 #include "UnitAction/UnitAttackActionComponent.h"
 
@@ -47,7 +46,7 @@ void AEnemyUnitControlPawn::FindEnemyAllUnits()
 	}
 
 	auto unitArr = gameMode->GetAllUnitInGridSystem();
-	TArray<AUnitCharacter*> enemyArr;
+	TArray<AUnit*> enemyArr;
 	for (auto unit : unitArr)
 	{
 		if (!IsValid(unit))
@@ -55,7 +54,7 @@ void AEnemyUnitControlPawn::FindEnemyAllUnits()
 			continue;
 		}
 
-		if (unit->ActorHasTag(TEXT("Enemy")))
+		if (unit->ActorHasTag(ENEMY))
 		{
 			enemyArr.Add(unit);
 		}
@@ -121,8 +120,7 @@ void AEnemyUnitControlPawn::MoveProcedure()
 
 	//unitMoveComp->OnActionEnd.AddDynamic(this, &AEnemyUnitControlPawn::OnUnitMoveFinished);
 	
-	//실질적 Unit Move ---- TODO : Function Name 바꿀 필요있을 듯.
-	unitMoveComp->TestFunction();
+	unitMoveComp->AI_Action();
 	EnemyUnits.RemoveAt(0);
 }
 

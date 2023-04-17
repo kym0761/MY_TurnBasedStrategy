@@ -49,11 +49,3 @@ public:
 		AActor* Defender;
 
 };
-
-//UENUM(meta = (Bitflags))
-//enum class EBitmaskExample : uint8
-//{
-//	A,
-//	B,
-//	C
-//};

@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class TURNBASEDSTRATEGY_API UUnitMoveActionComponent : public UUnitActionComponent
 {
@@ -19,16 +20,16 @@ public:
 
 private:
 
-		//tick에서 필요한 정보들
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	//tick에서 필요한 정보들
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		FGrid Destination;
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		bool bMoveActivate = false;
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		TArray<FGrid> Path;
 
-		//Tick Logic
-		bool bIsMoving = false;
+	UPROPERTY()
+		ASRPG_GameMode* GameModeRef;
 
 protected:
 
@@ -47,7 +48,7 @@ public:
 
 	virtual FGrid ThinkAIBestActionGrid() override;
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
-	virtual void TestFunction() override;
+	virtual void AI_Action() override;
 
 protected:
 	

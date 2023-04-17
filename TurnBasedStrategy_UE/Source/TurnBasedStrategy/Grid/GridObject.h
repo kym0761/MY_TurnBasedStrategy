@@ -10,7 +10,7 @@
  * 
  */
 
-class AUnitCharacter;
+class AUnit;
 class UGridSystem;
 
 UCLASS()
@@ -31,16 +31,16 @@ private:
 		FGrid Grid;
 
 	UPROPERTY()
-		TArray<AUnitCharacter*> UnitArray;
+		TArray<AUnit*> UnitArray;
 
 public:
 
 	FString ToString() const;
-	void AddUnit(AUnitCharacter* Unit);
-	void RemoveUnit(AUnitCharacter* Unit);
+	void AddUnit(AUnit* Unit);
+	void RemoveUnit(AUnit* Unit);
 	bool HasAnyUnit() const;
-	AUnitCharacter* GetUnit() const;
-	TArray<AUnitCharacter*> GetUnitArray() const;
+	AUnit* GetUnit() const;
+	TArray<AUnit*> GetUnitArray() const;
 	void SetGrid(FGrid InGrid);
 	FGrid GetGrid() const;
 

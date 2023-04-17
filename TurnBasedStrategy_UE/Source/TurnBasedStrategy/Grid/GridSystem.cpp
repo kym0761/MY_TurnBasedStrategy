@@ -3,7 +3,7 @@
 
 #include "GridSystem.h"
 #include "GridObject.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 
 UGridSystem::UGridSystem()
 {
@@ -54,7 +54,7 @@ TMap<FGrid, UGridObject*> UGridSystem::GetAllGridObjectsThatHasUnit() const
 	
 	for (TPair<FGrid,UGridObject*> gridPair : GridObjectMap)
 	{
-		AUnitCharacter* unit = gridPair.Value->GetUnit();
+		AUnit* unit = gridPair.Value->GetUnit();
 		if (IsValid(unit))
 		{
 			resultMap.Add(gridPair);

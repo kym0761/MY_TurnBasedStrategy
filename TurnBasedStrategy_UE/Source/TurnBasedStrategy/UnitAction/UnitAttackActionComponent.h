@@ -38,7 +38,7 @@ public:
 
 	virtual FGrid ThinkAIBestActionGrid() override;
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
-	virtual void TestFunction() override;
+	virtual void AI_Action() override;
 
 	//적 공격 가능 범위를 표현
 	TSet<FGrid> GetEnemyAttackableGridRange();

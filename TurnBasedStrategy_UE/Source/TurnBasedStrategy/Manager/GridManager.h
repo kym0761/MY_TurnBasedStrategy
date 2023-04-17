@@ -5,13 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid/Grid.h"
-#include "Grid/GridVisual.h"
 #include "GridManager.generated.h"
 
-class AGridVisual;
 class UGridObject;
 class UPathNode;
-class AUnitCharacter;
+class AUnit;
 class UBillboardComponent;
 class UInstancedGridVisualComponent;
 class UPathFindingSystem;
@@ -98,37 +96,11 @@ public:
 
 	void Setup();
 
-	///*GridVisual Functions*/
+	//*GridVisual Functions*/
 	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
 	void ShowFromGridSet(const TSet<FGrid>& GridSet, EGridVisualType GridVisualType, const float Height = 0.01f);
 	void ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVisualDataSet, const float Height = 0.01f);
 	void RemoveAllGridVisual();
-
-	///*PathFinding Functions*/
-	//TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false);
-	//int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
-	//UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
-	//TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
-	//TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
-	//bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
-	//void InitAllPathFindingNodes();
-
-	///*Grid System Functions*/
-	//TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
-	//TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
-	//AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
-	//bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
-	//bool IsWalkableGrid(const FGrid& GridValue) const;
-	//int32 GetPathLength(const FGrid& Start, const FGrid& End);
-	//bool IsValidGrid(const FGrid& Grid) const;
-	//FGrid WorldToGrid(const FVector& WorldPosition) const;
-	//FVector GridToWorld(const FGrid& Grid) const;
-	//UGridObject* GetValidGridObject(const FGrid& Grid) const;
-	//void AddUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
-	//void RemoveUnitAtGrid(AUnitCharacter* Unit, const FGrid& GridValue);
-	//void MoveUnitGrid(AUnitCharacter* Unit, const FGrid& From, const FGrid& to);
-	//TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
-
 
 
 	static AGridManager* GetGridManager();

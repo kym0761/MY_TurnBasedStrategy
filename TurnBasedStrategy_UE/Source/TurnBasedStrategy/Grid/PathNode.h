@@ -19,13 +19,19 @@ public:
 
 private:
 
-	int32 G_Cost; // 현재까지의 cost
-	int32 H_Cost; // 앞으로 필요할 것으로 예상되는 cost
-	int32 F_Cost; // 총합 cost
+	UPROPERTY()
+		int32 G_Cost; // 현재까지의 cost
+	UPROPERTY()
+		int32 H_Cost; // 앞으로 필요할 것으로 예상되는 cost
+	UPROPERTY()
+		int32 F_Cost; // 총합 cost
 
-	FGrid Grid;
-	bool bIsWalkable;
-	UPathNode* ParentNode;
+	UPROPERTY()
+		FGrid Grid;
+	UPROPERTY()
+		bool bIsWalkable;
+	UPROPERTY()
+		UPathNode* ParentNode;
 
 public:
 

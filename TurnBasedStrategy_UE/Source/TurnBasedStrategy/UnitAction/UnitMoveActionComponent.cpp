@@ -2,7 +2,7 @@
 
 
 #include "UnitMoveActionComponent.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 
 #include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
@@ -24,6 +24,7 @@ void UUnitMoveActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GameModeRef = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 }
 
 // Called every frame
@@ -34,65 +35,64 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	//유닛 이동이 활성화되면 PathArray에 맞춰 유닛을 이동시킴.
 	if (bMoveActivate)
 	{
-		ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-		if (!IsValid(gameMode))
+		if (!IsValid(GameModeRef))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+			UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- Grid Manager is not Valid"));
+			return;
+		}
+
+		AUnit* unit = GetOwningUnit();
+		if (!IsValid(unit))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- unit is not Valid"));
 			return;
 		}
 
 		if (Path.Num() > 0)
 		{
-			FVector currentLocation = GetOwner()->GetActorLocation();
-			FVector worldLocation = gameMode->GridToWorld(Path[0]) + FVector(0.0f, 0.0f, currentLocation.Z);
+			FVector currentLocation = unit->GetActorLocation();
+			FVector worldLocation = GameModeRef->GridToWorld(Path[0]);// +FVector(0.0f, 0.0f, currentLocation.Z);
 
 			float dist = FVector::Distance(currentLocation, worldLocation);
+			FVector rotVector = worldLocation - currentLocation;
+			rotVector.Z = 0.0f;
+			FRotator rot = rotVector.Rotation();
 
 			//UE_LOG(LogTemp, Warning, TEXT("Dist : %f"), dist);
 
-			if (FMath::IsNearlyEqual(dist, 0.0f, 50.0f))
+			//현재 지점으로 다 움직인 것 같다면, 다음 path로 변경.
+			if (FMath::IsNearlyEqual(dist, 0.0f,0.01f))
 			{
 				Path.RemoveAt(0);
-				bIsMoving = false;
-				return;
-			}
-			else if(bIsMoving == false)
-			{
-				//a simple temp Move Function.
-				AAIController* aiController = Cast<AAIController>(Unit->GetController());
-				if (!IsValid(aiController))
+				if (!(Path.Num() > 0))
 				{
 					return;
 				}
-
-				aiController->MoveToLocation(worldLocation, 0.0f, false);
-				bIsMoving = true;
-				//UE_LOG(LogTemp, Warning, TEXT("Moving"));
+			}
+			else
+			{
+				FVector movedLocation = FMath::VInterpConstantTo(unit->GetActorLocation(), worldLocation, DeltaTime, 360);
+				unit->SetActorLocation(movedLocation);
+				FRotator movedRotation = FMath::RInterpConstantTo(unit->GetActorRotation(), rot, DeltaTime, 360);
+				unit->SetActorRotation(movedRotation);
 				return;
 			}
-
 		}
 		else
 		{
 			FVector currentLocation = GetOwner()->GetActorLocation();
-			FGrid currentGrid = gameMode->WorldToGrid(currentLocation);
+			FGrid currentGrid = GameModeRef->WorldToGrid(currentLocation);
 
 			//현재 위치가 목적지면 멈추어야함.
 			if (currentGrid == Destination)
 			{
-				//a simple temp Move Function.
-				AAIController* aiController = Cast<AAIController>(Unit->GetController());
-				if (!IsValid(aiController))
-				{
-					return;
-				}
-
-				//Stop은 이후에 Rotation 이 바뀔 때의 문제를 해결하기 위해서 꼭 필요함.
-				aiController->StopMovement();
-
 				ActionEnd();
-				UE_LOG(LogTemp, Warning, TEXT("Stopped."));
+				UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- Stopped."));
 				return;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- Didn't Reach to Destination... it it error.."));
 			}
 		}
 
@@ -107,7 +107,13 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 
 	TSet<FGrid> validSet;
 
-	FGrid unitGrid = Unit->GetGrid();
+	AUnit* unit = GetOwningUnit();
+	if (!IsValid(unit))
+	{
+		return validSet;
+	}
+
+	FGrid unitGrid = unit->GetGrid();
 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	
@@ -150,7 +156,7 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 			}
 
 			bool bisFriend = false;
-			AUnitCharacter* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+			AUnit* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
 			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
 			{
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
@@ -181,8 +187,17 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 	//이동할 수 있는 위치와 Range 상으로는 가능하지만 실제로는 이동 불가능한 위치들을 전부 도출함.
 
 	TSet<FGridVisualData> validVisualDataSet;
-	FGrid unitGrid = Unit->GetGrid();
 
+	AUnit* unit = GetOwningUnit();
+	if (!IsValid(unit))
+	{
+		return validVisualDataSet;
+	}
+
+	FGrid unitGrid = unit->GetGrid();
+
+	TSet<FGrid> validSet = GetValidActionGridSet();
+	 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 
 	if (!IsValid(gameMode))
@@ -190,7 +205,6 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
 		return validVisualDataSet;
 	}
-
 
 	for (int x = -MaxActionRange; x <= MaxActionRange; x++)
 	{
@@ -214,13 +228,15 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 			testData.Grid = resultGrid;
 			testData.GridVisualType = EGridVisualType::Move;
 
-			if (gameMode->HasAnyUnitOnGrid(resultGrid) || //누군가 점유중
-				!gameMode->IsWalkableGrid(resultGrid) || //걸을 수 없는 위치?
-				!gameMode->HasPath(unitGrid, resultGrid, false) || //도착 불가능한 위치?
-				gameMode->GetPathLength(unitGrid, resultGrid) > MaxActionRange) 	//의도와 달리 먼 거리?
+			//if (gameMode->HasAnyUnitOnGrid(grid) || //누군가 점유중
+			//	!gameMode->IsWalkableGrid(grid) || //걸을 수 없는 위치?
+			//	!gameMode->HasPath(unitGrid, grid, false) || //도착 불가능한 위치?
+			//	gameMode->GetPathLength(unitGrid, grid) > MaxActionRange) 	//의도와 달리 먼 거리?
+			if(!validSet.Contains(resultGrid))
 			{
 				testData.GridVisualType = EGridVisualType::NO;
 			}
+
 
 			bool bisFriend = false;
 			auto targetUnit = gameMode->GetUnitAtGrid(resultGrid);
@@ -232,14 +248,15 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 					testData.GridVisualType = EGridVisualType::Warning;
 				}
 			}
-			
-			if (targetUnit == GetOwner()) //현재 유닛 위치는 이동가능한 걸로 판정함.
+
+			if (targetUnit == unit) //현재 유닛 위치는 이동가능한 걸로 판정함.
 			{
 				testData.GridVisualType = EGridVisualType::Move;
 			}
 
 			//통과하면 문제없으니 validSet에 추가
 			validVisualDataSet.Add(testData);
+
 		}
 	}
 
@@ -255,7 +272,10 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	}
 
 	int32 pathLength;
-	TArray<FGrid> pathArray = gameMode->FindPath(Unit->GetGrid(), Grid, pathLength);
+	AUnit* unit = GetOwningUnit();
+
+
+	TArray<FGrid> pathArray = gameMode->FindPath(unit->GetGrid(), Grid, pathLength);
 
 	if (pathLength > MaxActionRange)
 	{
@@ -311,10 +331,23 @@ void UUnitMoveActionComponent::ActionStart()
 void UUnitMoveActionComponent::ActionEnd()
 {
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	if (!IsValid(gameMode))
+	{
+		return;
+	}
 	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		return;
+	}
+	AUnit* unit= GetOwningUnit();
+	if (!IsValid(unit))
+	{
+		return;
+	}
 
 	//Update Grid Data
-	gameMode->MoveUnitGrid(Unit, Unit->GetGrid(), Destination);
+	gameMode->MoveUnitGrid(unit, unit->GetGrid(), Destination);
 
 	//Remove Visual
 	gridManager->RemoveAllGridVisual();
@@ -335,9 +368,6 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 {
 	//어느 위치가 이동하기 가장 적절한지 계산함.
 
-	TSet<FGrid> grids = GetValidActionGridSet(); //이동할 수 있는 위치 전부.
-	TArray<FActionValueToken> actionValues;
-
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
 	{
@@ -346,12 +376,15 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 	}
 
 	//이 행동을 취할 AI의 Unit.
-	AUnitCharacter* owner_Casted = Cast<AUnitCharacter>(GetOwner());
-	if (!IsValid(owner_Casted))
+	AUnit* unit = GetOwningUnit();
+	if (!IsValid(unit))
 	{
 		//불가.
 		return FGrid(-1, -1);
 	}
+
+	TSet<FGrid> grids = GetValidActionGridSet(); //이동할 수 있는 위치 전부.
+	TArray<FActionValueToken> actionValues;
 
 	//이동 가능한 위치 전부 확인하여 해당 위치의 Value를 계산.
 	for (FGrid& grid : grids)
@@ -382,10 +415,9 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 
 int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
-
-	//owner가 적절하지 않으면 밸류계산 불가능.
-	AActor* owner = GetOwner();
-	if (!IsValid(owner) || owner->Tags.Num() == 0)
+	//unit이 적절하지 않으면 밸류계산 불가능.
+	AUnit* unit = GetOwningUnit();
+	if (!IsValid(unit) || unit->Tags.Num() == 0)
 	{
 		return -1;
 	}
@@ -402,22 +434,17 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -10000;
 	}
 
-	FName teamTag = owner->Tags[0];
+	FName teamTag = unit->Tags[0];
 	int32 distanceToTarget = TNumericLimits<int32>::Max();
 	TMap<FGrid, UGridObject*> gridObjMap = gameMode->GetAllGridObjectsThatHasUnit();
 
-	auto owner_cast = Cast<AUnitCharacter>(owner);
-	FGrid ownerGrid;
-	if (IsValid(owner_cast))
-	{
-		ownerGrid = owner_cast->GetGrid();
-	}
 
+	FGrid unitGrid = unit->GetGrid();
 	//TODO : TargetGrid에 적 유닛이 존재해서 Distance가 무조건 -1이 나옴.
 	//유닛이 존재하는 Grid에 대해서, 현재 유닛과의 거리 계산 및 가치 계산.
 	for (auto gridPair : gridObjMap)
 	{
-		AUnitCharacter* targetUnit = gridPair.Value->GetUnit();
+		AUnit* targetUnit = gridPair.Value->GetUnit();
 
 		//Unit이 Invalid하면 스킵.
 		if (!IsValid(targetUnit))
@@ -425,8 +452,8 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 			continue;
 		}
 		
-		//Target과 현재 Owner와 같으면 스킵.
-		if (targetUnit == owner)
+		//Target과 현재 unit과 같으면 스킵.
+		if (targetUnit == unit)
 		{
 			continue;
 		}
@@ -456,7 +483,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	return reverseValueOffset - distanceToTarget;
 }
 
-void UUnitMoveActionComponent::TestFunction()
+void UUnitMoveActionComponent::AI_Action()
 {
 	TakeAction(ThinkAIBestActionGrid());
 }

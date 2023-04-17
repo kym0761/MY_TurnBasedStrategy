@@ -7,14 +7,12 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 
-//#include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SceneComponent.h"
 
-//#include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 
 #include "UMG/UnitActionListWidget.h"
 #include "UMG/MainCanvasWidget.h"
@@ -256,7 +254,7 @@ bool AUnitControlPawn::TryUnitSelect()
 		return false;
 	}
 
-	AUnitCharacter* unitOnGrid = gameMode->GetUnitAtGrid(PivotGrid);
+	AUnit* unitOnGrid = gameMode->GetUnitAtGrid(PivotGrid);
 
 	if (!IsValid(unitOnGrid))
 	{
@@ -270,7 +268,7 @@ bool AUnitControlPawn::TryUnitSelect()
 		return false;
 	}
 
-	if (unitOnGrid->ActorHasTag(FName("MyUnit")))
+	if (unitOnGrid->ActorHasTag(MYUNIT))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Unit Set!"));
 		SetSelectedUnit(unitOnGrid);
@@ -280,17 +278,17 @@ bool AUnitControlPawn::TryUnitSelect()
 	return false;
 }
 
-void AUnitControlPawn::SetSelectedUnit(AUnitCharacter* InputUnit)
+void AUnitControlPawn::SetSelectedUnit(AUnit* UnitToSelect)
 {
 	//Pawn이 현재 유닛을 선택한다.
 
-	if (!IsValid(InputUnit)
-		|| SelectedUnit == InputUnit) // 올바르지 않은 유닛이거나, 이미 선택한 유닛이면 더이상 하지 않음.
+	if (!IsValid(UnitToSelect)
+		|| SelectedUnit == UnitToSelect) // 올바르지 않은 유닛이거나, 이미 선택한 유닛이면 더이상 하지 않음.
 	{
 		return;
 	}
 
-	SelectedUnit = InputUnit;
+	SelectedUnit = UnitToSelect;
 
 	if (OnSelectedUnitChanged.IsBound()) // 유닛이 변경됐다는 것을 알림.
 	{
@@ -299,17 +297,17 @@ void AUnitControlPawn::SetSelectedUnit(AUnitCharacter* InputUnit)
 
 }
 
-void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* InputUnitAction)
+void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* UnitActionToSelect)
 {
 	//Pawn이 실행하고 싶은 Unit의 Action을 선택함.
 
-	if (SelectedAction == InputUnitAction)
+	if (SelectedAction == UnitActionToSelect)
 	{
 		UE_LOG(LogTemp, Warning, TEXT(" InputAction is Equal with Currently Selected Action. -- AUnitControlPawn::SetSelectedAction()"));
 		return;
 	}
 
-	SelectedAction = InputUnitAction;
+	SelectedAction = UnitActionToSelect;
 	SelectedAction->SelectThisAction();
 
 	if (OnSelectedActionChanged.IsBound())
@@ -448,7 +446,7 @@ void AUnitControlPawn::FindAllPlayerUnits()
 	}
 
 	auto unitArr = gameMode->GetAllUnitInGridSystem();
-	TArray<AUnitCharacter*> playerArr;
+	TArray<AUnit*> playerArr;
 
 	for (auto unit : unitArr)
 	{
@@ -457,7 +455,7 @@ void AUnitControlPawn::FindAllPlayerUnits()
 			continue;
 		}
 
-		if (unit->ActorHasTag(TEXT("MyUnit")))
+		if (unit->ActorHasTag(MYUNIT))
 		{
 			playerArr.Add(unit);
 		}

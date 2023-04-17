@@ -17,9 +17,9 @@ struct FGrid
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	int32 X;
+		int32 X;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-	int32 Y;
+		int32 Y;
 
 	FGrid();
 	FGrid(int32 _X, int32 _Y);
@@ -74,3 +74,8 @@ uint32 GetTypeHash(const FGridVisualData& GridVisualData)
 {
 	return FCrc::MemCrc32(&GridVisualData, sizeof(FGridVisualData));
 }
+
+
+/*À¯´Ö Áø¿µ*/
+#define MYUNIT FName("MyUnit")
+#define ENEMY FName("Enemy")

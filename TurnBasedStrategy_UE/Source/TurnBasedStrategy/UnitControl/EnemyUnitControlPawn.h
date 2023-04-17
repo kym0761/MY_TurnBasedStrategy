@@ -6,6 +6,8 @@
 #include "UnitControl/UnitControlPawn.h"
 #include "EnemyUnitControlPawn.generated.h"
 
+class AUnit;
+
 /**
  * Enemy를 움직이게 할 AI ControlPawn.
  */
@@ -21,7 +23,7 @@ public:
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
-	TArray<AUnitCharacter*> EnemyUnits;
+	TArray<AUnit*> EnemyUnits;
 
 protected:
 	// Called when the game starts or when spawned

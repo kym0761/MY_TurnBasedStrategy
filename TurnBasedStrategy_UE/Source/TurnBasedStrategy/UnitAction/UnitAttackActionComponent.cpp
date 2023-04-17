@@ -4,7 +4,7 @@
 #include "UnitAttackActionComponent.h"
 #include "UMG/AttackCalculationWidget.h"
 #include "UnitCore/StatComponent.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 #include "UnitMoveActionComponent.h"
 #include "Manager/SRPG_GameMode.h"
 #include "Manager/GridManager.h"
@@ -48,7 +48,7 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
-	AUnitCharacter* unit = gameMode->GetUnitAtGrid(Grid);
+	AUnit* unit = gameMode->GetUnitAtGrid(Grid);
 	if (!IsValid(unit))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("there is no unit at you selected."));
@@ -78,7 +78,13 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 
 	TSet<FGrid> validSet;
 
-	FGrid unitGrid = Unit->GetGrid();
+	AUnit* unit = GetOwningUnit();
+	if (!IsValid(unit))
+	{
+		return validSet;
+	}
+
+	FGrid unitGrid = unit->GetGrid();
 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 
@@ -113,8 +119,9 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 			}
 
 			//상대가 같은 팀 tag가 붙어있으면 스킵.
-			AUnitCharacter* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
-			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && targetUnit->ActorHasTag(GetOwner()->Tags[0]))
+			AUnit* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && 
+				targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 			{
 				continue;
 			}
@@ -131,10 +138,10 @@ TSet<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataSe
 {
 	//위 Function의 Visual Data 버전
 
-	auto grids = GetValidActionGridSet();
+	TSet<FGrid> grids = GetValidActionGridSet();
 	TSet<FGridVisualData> validVisualDataSet;
 
-	for (auto grid : grids)
+	for (FGrid& grid : grids)
 	{
 		FGridVisualData resultData;
 		resultData.Grid = grid;
@@ -171,7 +178,7 @@ void UUnitAttackActionComponent::ActionEnd()
 	gridManager->RemoveAllGridVisual();
 
 	//공격을 마친 유닛은 이후 다른 행동 불가.
-	auto owner = Cast<AUnitCharacter>(GetOwner());
+	AUnit* owner = GetOwningUnit();
 	if (IsValid(owner))
 	{
 		owner->FinishUnitAllAction();
@@ -304,7 +311,7 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	return (int32)valueScore;
 }
 
-void UUnitAttackActionComponent::TestFunction()
+void UUnitAttackActionComponent::AI_Action()
 {
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
@@ -314,13 +321,6 @@ void UUnitAttackActionComponent::TestFunction()
 	}
 
 	FGrid grid = ThinkAIBestActionGrid();
-
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (!IsValid(gridManager))
-	{
-		//불가.
-		return;
-	}
 
 	gameMode->SetupAttackManaging(GetOwner(), gameMode->GetUnitAtGrid(grid));
 	gameMode->StartAttack();

@@ -19,7 +19,9 @@ class TURNBASEDSTRATEGY_API UPathFindingSystem : public UObject
 
 private:
 
+	UPROPERTY()
 	int32 X_Length;
+	UPROPERTY()
 	int32 Y_Length;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PathFinding", Meta = (AllowPrivateAccess = true))

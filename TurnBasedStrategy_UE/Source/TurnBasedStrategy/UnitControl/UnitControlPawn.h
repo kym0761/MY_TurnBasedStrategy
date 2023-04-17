@@ -20,7 +20,7 @@ class USceneComponent;
 class UUnitActionComponent;
 class UUnitActionListWidget;
 class UMainCanvasWidget;
-class AUnitCharacter;
+class AUnit;
 
 /*
 * Player가 사용할 UnitControlPawn.
@@ -110,7 +110,7 @@ protected:
 		bool bIsBusy;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		AUnitCharacter* SelectedUnit;
+		AUnit* SelectedUnit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		UUnitActionComponent* SelectedAction;
@@ -151,8 +151,8 @@ public:
 	void HandleControlEnter(const bool& Val);
 
 	bool TryUnitSelect();
-	void SetSelectedUnit(AUnitCharacter* InputUnit);
-	void SetSelectedAction(UUnitActionComponent* InputUnitAction);
+	void SetSelectedUnit(AUnit* UnitToSelect);
+	void SetSelectedAction(UUnitActionComponent* UnitActionToSelect);
 
 	void DoSelection();
 	void DoDeselection();

@@ -3,7 +3,7 @@
 
 #include "WaitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 UWaitActionComponent::UWaitActionComponent()
 {
 	ActionName = TEXT("Wait");
@@ -28,7 +28,7 @@ void UWaitActionComponent::TakeAction(const FGrid& Grid)
 
 	ActionEnd();
 
-	auto owner = Cast<AUnitCharacter>(GetOwner());
+	auto owner = Cast<AUnit>(GetOwner());
 	if (IsValid(owner))
 	{
 		owner->FinishUnitAllAction();

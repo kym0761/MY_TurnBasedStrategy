@@ -29,8 +29,6 @@ void UUnitActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
-	Unit = Cast<AUnitCharacter>(GetOwner());
 }
 
 
@@ -45,6 +43,12 @@ void UUnitActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 FString UUnitActionComponent::GetActionName() const
 {
 	return ActionName;
+}
+
+AUnit* UUnitActionComponent::GetOwningUnit() const
+{
+
+	return Cast<AUnit>(GetOwner());
 }
 
 void UUnitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
@@ -74,10 +78,10 @@ TSet<FGrid> UUnitActionComponent::GetValidActionGridSet() const
 	return TSet<FGrid>();
 }
 
-AUnitCharacter* UUnitActionComponent::GetUnit() const
-{
-	return Unit;
-}
+//AUnitCharacter* UUnitActionComponent::GetUnit() const
+//{
+//	return Unit;
+//}
 
 bool UUnitActionComponent::IsCanDoActionThisTurn() const
 {
@@ -167,14 +171,9 @@ int32 UUnitActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	return 0;
 }
 
-void UUnitActionComponent::TestFunction()
+void UUnitActionComponent::AI_Action()
 {
 	TakeAction(ThinkAIBestActionGrid());
-}
-
-void UUnitActionComponent::TestUnitAction()
-{
-	TestFunction();
 }
 
 void UUnitActionComponent::SelectThisAction()

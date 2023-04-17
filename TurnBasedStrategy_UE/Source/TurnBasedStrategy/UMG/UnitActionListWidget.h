@@ -7,7 +7,7 @@
 #include "UnitActionListWidget.generated.h"
 
 class UVerticalBox;
-class AUnitCharacter;
+class AUnit;
 class UActionSelectButtonWidget;
 
 /**
@@ -27,7 +27,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
 		UVerticalBox* VerticalBox_ActionList;
 
-	void InitUnitActionsWidget(AUnitCharacter* SelectedCharacter);
+	void InitUnitActionsWidget(AUnit* SelectedUnit);
 
 	UFUNCTION()
 		void OnButtonClickedCompletedFunc();

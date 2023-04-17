@@ -2,7 +2,7 @@
 
 
 #include "GridObject.h"
-#include "UnitCore/UnitCharacter.h"
+#include "UnitCore/Unit.h"
 #include "GridSystem.h"
 
 UGridObject::UGridObject()
@@ -24,7 +24,7 @@ FString UGridObject::ToString() const
 	return str;
 }
 
-void UGridObject::AddUnit(AUnitCharacter* Unit)
+void UGridObject::AddUnit(AUnit* Unit)
 {
 	if (!IsValid(Unit))
 	{
@@ -34,7 +34,7 @@ void UGridObject::AddUnit(AUnitCharacter* Unit)
 	UnitArray.Add(Unit);
 }
 
-void UGridObject::RemoveUnit(AUnitCharacter* Unit)
+void UGridObject::RemoveUnit(AUnit* Unit)
 {
 	if (UnitArray.Contains(Unit))
 	{
@@ -52,7 +52,7 @@ bool UGridObject::HasAnyUnit() const
 	return UnitArray.Num() > 0;
 }
 
-AUnitCharacter* UGridObject::GetUnit() const
+AUnit* UGridObject::GetUnit() const
 {
 	if (HasAnyUnit())
 	{
@@ -62,7 +62,7 @@ AUnitCharacter* UGridObject::GetUnit() const
 	return nullptr;
 }
 
-TArray<AUnitCharacter*> UGridObject::GetUnitArray() const
+TArray<AUnit*> UGridObject::GetUnitArray() const
 {
 	return UnitArray;
 }
