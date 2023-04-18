@@ -312,7 +312,7 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	
 	Destination = dest;
 	Path = pathArray;
-
+	Prev_Grid = gameMode->WorldToGrid(unit->GetActorLocation());
 	ActionStart();
 }
 
@@ -347,7 +347,7 @@ void UUnitMoveActionComponent::ActionEnd()
 	}
 
 	//Update Grid Data
-	gameMode->MoveUnitGrid(unit, unit->GetGrid(), Destination);
+	gameMode->MoveUnitGrid(unit, Prev_Grid, Destination);
 
 	//Remove Visual
 	gridManager->RemoveAllGridVisual();

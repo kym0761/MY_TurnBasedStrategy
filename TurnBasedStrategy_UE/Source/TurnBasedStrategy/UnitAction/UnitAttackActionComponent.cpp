@@ -156,6 +156,7 @@ TSet<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataSe
 void UUnitAttackActionComponent::TakeAction(const FGrid& Grid)
 {
 	//Attack Action의 TakeAction은 AttackManager에서 최종호출됨.
+	//AI의 경우, 가능한 공격할 위치가 없다면, AI_Action에서 TakeAction을 하여 공격을 종료함.
 
 	ActionEnd();	
 }
@@ -220,6 +221,12 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 		FActionValueToken actionValueToken;
 		actionValueToken.Grid = grid;
 		actionValueToken.ActionValue = CalculateActionValue(grid);
+
+		//Action Value가 마이너스면, 해당 위치를 공격하려는 시도를 하지말 것.
+		if (actionValueToken.ActionValue == -1)
+		{
+			continue;
+		}
 
 		actionValues.Add(actionValueToken);
 	}
@@ -321,6 +328,12 @@ void UUnitAttackActionComponent::AI_Action()
 	}
 
 	FGrid grid = ThinkAIBestActionGrid();
+
+	//공격이 불가능하면 takeaction처리하여 공격 행동을 종료함.
+	if (grid == FGrid(-1, -1))
+	{
+		TakeAction(grid);
+	}
 
 	gameMode->SetupAttackManaging(GetOwner(), gameMode->GetUnitAtGrid(grid));
 	gameMode->StartAttack();

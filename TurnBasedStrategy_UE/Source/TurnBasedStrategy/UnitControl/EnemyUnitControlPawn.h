@@ -8,6 +8,17 @@
 
 class AUnit;
 
+UENUM(BlueprintType)
+enum class EAIPawnMode : uint8
+{
+	NONE UMETA(DisplayName = "NONE"),
+
+	Move UMETA(DisplayName = "Move"),
+	Attack UMETA(DisplayName = "Attack"),
+	Wait UMETA(DisplayName = "Wait")
+
+};
+
 /**
  * Enemy를 움직이게 할 AI ControlPawn.
  */
@@ -23,7 +34,10 @@ public:
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
-	TArray<AUnit*> EnemyUnits;
+		TArray<AUnit*> EnemyUnits;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
+		EAIPawnMode AIPawnMode = EAIPawnMode::NONE;
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,6 +52,10 @@ public:
 	void FindEnemyAllUnits();
 
 	void MoveProcedure();
+	void AttackProcedure();
+	void WaitProcedure();
+
+	void DoAIControl();
 
 	virtual void OnUnitActionCompleted() override;
 };

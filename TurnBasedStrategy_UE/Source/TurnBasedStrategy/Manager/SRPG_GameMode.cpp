@@ -105,8 +105,8 @@ void ASRPG_GameMode::NextTurn()
 	case ETurnType::EnemyTurn:
 		//SetTurnType(ETurnType::AllyTurn);
 		////!! Ally를 만들게 되면 이 부분을 변경할 것.
-		SetTurnType(ETurnType::PlayerTurn);
 		NextTurnNumber();
+		SetTurnType(ETurnType::PlayerTurn);
 		break;
 		//case ETurnType::AllyTurn:
 		//	SetTurnType(ETurnType::PlayerTurn);
@@ -205,10 +205,10 @@ void ASRPG_GameMode::SetTurnType(ETurnType TurnTypeInput)
 
 		break;
 	case ETurnType::AllyTurn:
-		if (OnAllyTurnStart.IsBound())
-		{
-			OnAllyTurnStart.Broadcast();
-		}
+		//if (OnAllyTurnStart.IsBound())
+		//{
+		//	OnAllyTurnStart.Broadcast();
+		//}
 		break;
 	default:
 		break;
@@ -314,11 +314,11 @@ void ASRPG_GameMode::StartAttack()
 	}
 
 	CurrentAttackActionComponent = currentAttacker->FindComponentByClass<UUnitAttackActionComponent>();
-
-	if (!IsValid(CurrentAttackActionComponent))
-	{
-		//!!경고 필요.
-	}
+	//DefenderAttackActionComponent = currentDefender->FindComponentByClass<UUnitAttackActionComponent>();
+	//if (!IsValid(AttackerAttackActionComponent))
+	//{
+	//	//!!경고 필요.
+	//}
 
 
 	if (IsValid(currentAttacker))
@@ -410,8 +410,9 @@ void ASRPG_GameMode::OnAttackHit()
 	{
 		UGameplayStatics::ApplyDamage(currentOrder.Defender, currentOrder.Damage, nullptr, currentOrder.Attacker, UDamageType::StaticClass());
 	}
-	else{
-	//빗나간 경우 처리하기?
+	else
+	{
+		//빗나간 경우 처리하기?
 
 	}
 
@@ -1210,10 +1211,12 @@ void ASRPG_GameMode::AddUnitAtGrid(AUnit* Unit, const FGrid& GridValue)
 	}
 
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
-	if (IsValid(gridObject))
+	if (!IsValid(gridObject))
 	{
-		gridObject->AddUnit(Unit);
+		return;
 	}
+
+	gridObject->AddUnit(Unit);
 }
 
 void ASRPG_GameMode::RemoveUnitAtGrid(AUnit* Unit, const FGrid& GridValue)
@@ -1224,10 +1227,12 @@ void ASRPG_GameMode::RemoveUnitAtGrid(AUnit* Unit, const FGrid& GridValue)
 	}
 
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
-	if (IsValid(gridObject))
+	if (!IsValid(gridObject))
 	{
-		gridObject->RemoveUnit(Unit);
+		return;
 	}
+
+	gridObject->RemoveUnit(Unit);
 }
 
 void ASRPG_GameMode::MoveUnitGrid(AUnit* Unit, const FGrid& From, const FGrid& to)

@@ -143,7 +143,7 @@ public:
 	/*턴 시작했을 때 각 진영의 유닛들에게 Callback.*/
 	FTurnManagingDelegate OnPlayerTurnStart;
 	FTurnManagingDelegate OnEnemyTurnStart;
-	FTurnManagingDelegate OnAllyTurnStart; //!! 아직 Ally를 안만듬.
+	//FTurnManagingDelegate OnAllyTurnStart; //!! 아직 Ally를 안만듬.
 
 	//Temp.. For Call in test UI 
 	UFUNCTION(BlueprintCallable)
@@ -185,6 +185,12 @@ private:
 
 	UPROPERTY()
 		UUnitAttackActionComponent* CurrentAttackActionComponent;
+
+	//UPROPERTY()
+	//	UUnitAttackActionComponent* AttackerAttackActionComponent;
+
+	//UPROPERTY()
+	//	UUnitAttackActionComponent* DefenderAttackActionComponent;
 
 public:
 

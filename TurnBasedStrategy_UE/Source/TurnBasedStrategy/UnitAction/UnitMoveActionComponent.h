@@ -30,6 +30,8 @@ private:
 
 	UPROPERTY()
 		ASRPG_GameMode* GameModeRef;
+	UPROPERTY()
+		FGrid Prev_Grid;
 
 protected:
 
