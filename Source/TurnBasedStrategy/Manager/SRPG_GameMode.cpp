@@ -910,7 +910,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 	InitAllPathFindingNodes();
 
 	//startNode 상태
-	//G = 0 , H = 예상되는 직선 길이, F = G+H
+	//G = 0 , H = 예상되는 직선 길이(X+Y), F = G+H
 	startNode->SetGCost(0);
 	startNode->SetHCost(CalculateGridDistance(Start, End));
 	startNode->CalculateFCost();
@@ -928,8 +928,6 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			//이 위치로는 이동할 수 없음. 다른 길을 찾아야함.
 			continue;
 		}
-
-		closeSet.Add(currentNode); // 현재 위치를 접근했으니 clostList에 추가. MaxMoveCost를 넘었으면 접근하지 않은 것으로 취급해야함.
 
 		if (currentNode == endNode) //Break Point.
 		{
@@ -950,7 +948,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			return CalculatePath(endNode);
 		}
 
-		//UE_LOG(LogTemp, Warning, TEXT("Node Position : %d, %d"), currentNode->GetGrid().X, currentNode->GetGrid().Y);
+		//Debug::Print(DEBUG_TEXT("Node Position :") + currentNode->GetGrid().ToString());
 
 		TArray<UPathNode*> nearNodeArray = GetNearNodeArray(currentNode);
 		for (UPathNode* nearNode : nearNodeArray)
