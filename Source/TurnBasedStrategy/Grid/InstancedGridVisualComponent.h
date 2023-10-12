@@ -8,7 +8,7 @@
 #include "InstancedGridVisualComponent.generated.h"
 
 /**
- * 
+ * 유저에게 보이는 Grid 시각 Component
  */
 UCLASS()
 class TURNBASEDSTRATEGY_API UInstancedGridVisualComponent : public UInstancedStaticMeshComponent

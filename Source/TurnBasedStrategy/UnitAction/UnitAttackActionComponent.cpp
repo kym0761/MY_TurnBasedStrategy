@@ -9,6 +9,8 @@
 #include "Manager/SRPG_GameMode.h"
 #include "Manager/GridManager.h"
 
+#include "DebugHelper.h"
+
 UUnitAttackActionComponent::UUnitAttackActionComponent()
 {
     MaxActionRange = 1;
@@ -29,7 +31,7 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 
 	if (!IsValid(AttackCalculationWidgetClass))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AttackCalculationWidgetClass is not Valid"));
+		Debug::Print(DEBUG_TEXT("AttackCalculationWidgetClass is Invalid."));
 		return;
 	}
 
@@ -37,27 +39,27 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return;
 	}
 
 	TSet<FGrid> validAttackRange = GetValidActionGridSet();
 	if (!validAttackRange.Contains(Grid))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't Attack."));
+		Debug::Print(DEBUG_TEXT("Can't Attack."));
 		return;
 	}
 
 	AUnit* unit = gameMode->GetUnitAtGrid(Grid);
 	if (!IsValid(unit))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("there is no unit at you selected."));
+		Debug::Print(DEBUG_TEXT("there is no unit at you selected."));
 		return;
 	}
 
 	if (unit == GetOwner())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't Attack Yourself..."));
+		Debug::Print(DEBUG_TEXT("Can't Attack Yourself."));
 		return;
 	}
 
@@ -90,7 +92,7 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return validSet;
 	}
 
@@ -172,7 +174,7 @@ void UUnitAttackActionComponent::ActionEnd()
 
 	if (!IsValid(gridManager))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
 		return;
 	}
 
@@ -378,7 +380,7 @@ TSet<FGrid> UUnitAttackActionComponent::GetAttackRangeGridSetAtGrid(FGrid& Grid)
 
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return validSet;
 	}
 

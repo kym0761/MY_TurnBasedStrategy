@@ -11,6 +11,8 @@
 #include "AIController.h"
 #include "Grid/GridObject.h"
 
+#include "DebugHelper.h"
+
 UUnitMoveActionComponent::UUnitMoveActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -37,14 +39,14 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	{
 		if (!IsValid(GameModeRef))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- Grid Manager is not Valid"));
+			Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
 			return;
 		}
 
 		AUnit* unit = GetOwningUnit();
 		if (!IsValid(unit))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- unit is not Valid"));
+			Debug::Print(DEBUG_TEXT("unit is Invalid."));
 			return;
 		}
 
@@ -87,15 +89,14 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			if (currentGrid == Destination)
 			{
 				ActionEnd();
-				UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- Stopped."));
+				Debug::Print(DEBUG_TEXT("Unit Stopped."));
 				return;
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("UUnitMoveActionComponent::Tick() -- Didn't Reach to Destination... it it error.."));
+				Debug::Print(DEBUG_TEXT("Error. Didn't Reach to Destination."));
 			}
 		}
-
 	}
 
 
@@ -104,7 +105,6 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 {
 	//이동할 수 있는 범위
-
 	TSet<FGrid> validSet;
 
 	AUnit* unit = GetOwningUnit();
@@ -119,7 +119,7 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 	
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return validSet;
 	}
 
@@ -140,18 +140,21 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 			//존재하지 않는 Grid
 			if (!gameMode->IsValidGrid(resultGrid))
 			{
+				Debug::Print(DEBUG_TEXT("Grid is Invalid. : ") + resultGrid.ToString());
 				continue;
 			}
 
 			//누군가 점유중이면 Skip
 			if (gameMode->HasAnyUnitOnGrid(resultGrid))
 			{
+				Debug::Print(DEBUG_TEXT("Someone is on this Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
 			//걸을 수 없는 위치?
 			if (!gameMode->IsWalkableGrid(resultGrid))
 			{
+				Debug::Print(DEBUG_TEXT("Can't Walk on this Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
@@ -163,14 +166,17 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 			}
 
 			//도착 가능한 위치?
-			if (bisFriend && !gameMode->HasPath(unitGrid, resultGrid, true) || !gameMode->HasPath(unitGrid, resultGrid))
+			//TODO : ignore 가능한지 안가능한지 따져봐야함.
+			if (bisFriend && !gameMode->HasPath(unitGrid, resultGrid, MaxActionRange, true) || !gameMode->HasPath(unitGrid, resultGrid, MaxActionRange))
 			{
+				Debug::Print(DEBUG_TEXT("You Can't Reach to this Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
 			//의도와 달리 먼 거리?
-			if (gameMode->GetPathLength(unitGrid, resultGrid) > MaxActionRange)
+			if (gameMode->GetPathLength(unitGrid, resultGrid, MaxActionRange) == -1)
 			{
+				Debug::Print(DEBUG_TEXT("Too Far Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
@@ -202,7 +208,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return validVisualDataSet;
 	}
 
@@ -221,6 +227,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 			//존재하지 않는 Grid
 			if (!gameMode->IsValidGrid(resultGrid))
 			{
+				Debug::Print(DEBUG_TEXT("Grid is Invalid."));
 				continue;
 			}
 
@@ -234,6 +241,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 			//	gameMode->GetPathLength(unitGrid, grid) > MaxActionRange) 	//의도와 달리 먼 거리?
 			if(!validSet.Contains(resultGrid))
 			{
+				Debug::Print(DEBUG_TEXT("You Can't Select This Grid. : ") + resultGrid.ToString());
 				testData.GridVisualType = EGridVisualType::NO;
 			}
 
@@ -245,12 +253,14 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
 				if (bisFriend) // 만약 아군 위치라면 노란색으로 변경함.
 				{
+					Debug::Print(DEBUG_TEXT("Your Ally is On This Grid. : ") + resultGrid.ToString());
 					testData.GridVisualType = EGridVisualType::Warning;
 				}
 			}
 
 			if (targetUnit == unit) //현재 유닛 위치는 이동가능한 걸로 판정함.
 			{
+				Debug::Print(DEBUG_TEXT("Yourself : ") + resultGrid.ToString());
 				testData.GridVisualType = EGridVisualType::Move;
 			}
 
@@ -275,23 +285,23 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	AUnit* unit = GetOwningUnit();
 
 
-	TArray<FGrid> pathArray = gameMode->FindPath(unit->GetGrid(), Grid, pathLength);
+	TArray<FGrid> pathArray = gameMode->FindPath(unit->GetGrid(), Grid, pathLength, MaxActionRange);
 
 	if (pathLength > MaxActionRange)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("it's over MaxRange to Move here."));
+		Debug::Print(DEBUG_TEXT("it's over MaxRange to Move here. : ") + Grid.ToString());
 		return;
 	}
 
 	if (pathLength == -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't reach to the Target Grid. there is no Path"));
+		Debug::Print(DEBUG_TEXT("Can't reach to the Target Grid. there is no Path. : ") + Grid.ToString());
 		return;
 	}
 
 	if (!pathArray.Contains(Grid))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("You Can't Move to Invalid Grid"));
+		Debug::Print(DEBUG_TEXT("You Can't Move to the Invalid Grid. : ") + Grid.ToString());
 		return;
 	}
 
@@ -300,6 +310,7 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	//비주얼 측면에서 현재 계속 있어도 괜찮아보여서 일단 유지 중. 필요없으면 비활성화할 것
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("pathArray[%d] : %s"), i, *pathArray[i].ToString())
 		DrawDebugSphere(GetWorld(), gameMode->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 	}
 
@@ -469,7 +480,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		//이동하는데 필요한 거리가 가까울수록 선택함.
 		FGrid targetGrid = gridPair.Key;
 		int32 distance;
-		gameMode->FindPath(CandidateGrid, targetGrid, distance, false, true);
+		gameMode->FindPath(CandidateGrid, targetGrid, distance, MaxActionRange, false, true);
 		distanceToTarget = (distanceToTarget > distance && distance != -1) ? distance : distanceToTarget;
 	}
 

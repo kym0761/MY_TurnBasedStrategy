@@ -14,6 +14,7 @@ UActionSelectButtonWidget::UActionSelectButtonWidget(const FObjectInitializer& O
 {
 	if (IsValid(Button_Select))
 	{
+		//TODO : IsFocusable Deprecated.. -> 근데 Set함수가 없는 것 같음.
 		Button_Select->IsFocusable = true;
 	}
 	

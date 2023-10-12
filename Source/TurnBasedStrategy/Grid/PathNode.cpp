@@ -3,14 +3,9 @@
 
 #include "PathNode.h"
 
-UPathNode::UPathNode()
+UPathNode::UPathNode() :G_Cost(0), H_Cost(0), F_Cost(0), bIsWalkable(true), ParentNode(nullptr)
 {
-	G_Cost = 0;
-	H_Cost = 0;
-	F_Cost = 0;
 
-	bIsWalkable = true;
-	ParentNode = nullptr;
 }
 
 void UPathNode::SetGrid(FGrid InGrid)
@@ -34,6 +29,11 @@ int32 UPathNode::GetFCost() const
 	return F_Cost;
 }
 
+int32 UPathNode::GetGridCost() const
+{
+	return GridCost;
+}
+
 void UPathNode::SetGCost(int32 Value)
 {
 	G_Cost = Value;
@@ -47,6 +47,11 @@ void UPathNode::SetHCost(int32 Value)
 void UPathNode::SetFCost(int32 Value)
 {
 	F_Cost = Value;
+}
+
+void UPathNode::SetGridCost(int32 Value)
+{
+	GridCost = Value;
 }
 
 void UPathNode::CalculateFCost()

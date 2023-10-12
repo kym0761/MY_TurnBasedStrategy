@@ -102,6 +102,32 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 	}
 
 	
+	for (int32 i = 0; i < gridArray.Num(); i++)
+	{
+		FGrid currentGrid = gridArray[i];
+
+		//»óÇÏÁÂ¿ì
+		FGrid upGrid = currentGrid + FGrid(0, 1);
+		FGrid downGrid = currentGrid + FGrid(0, -1);
+		FGrid leftGrid = currentGrid + FGrid(-1, 0);
+		FGrid rightGrid = currentGrid + FGrid(1, 0);
+
+		bool up = GridSet.Contains(upGrid);
+		bool down = GridSet.Contains(downGrid);
+		bool left = GridSet.Contains(leftGrid);
+		bool right = GridSet.Contains(rightGrid);
+
+		float upValue = up ? 0.0f : 1.0f;
+		float downValue = down ? 0.0f : 1.0f;
+		float leftValue = left ? 0.0f : 1.0f;
+		float rightValue = right ? 0.0f : 1.0f;
+	
+		SetCustomDataValue(i, 0, upValue);
+		SetCustomDataValue(i, 1, downValue);
+		SetCustomDataValue(i, 2, leftValue);
+		SetCustomDataValue(i, 3, rightValue);
+	}
+
 }
 
 void UInstancedGridVisualComponent::RemoveGridVisuals()

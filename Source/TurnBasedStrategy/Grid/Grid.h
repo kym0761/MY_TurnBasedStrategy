@@ -17,9 +17,9 @@ struct FGrid
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-		int32 X;
+	int32 X;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-		int32 Y;
+	int32 Y;
 
 	FGrid();
 	FGrid(int32 _X, int32 _Y);
@@ -60,9 +60,9 @@ struct FGridVisualData
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-		FGrid Grid;
+	FGrid Grid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Visual")
-		EGridVisualType GridVisualType;
+	EGridVisualType GridVisualType;
 
 	static TArray<FGrid> ParseToGridArray(TArray<FGridVisualData> GridVisualArray);
 	static TSet<FGrid> ParseToGridSet(TSet<FGridVisualData> GridVisualSet);

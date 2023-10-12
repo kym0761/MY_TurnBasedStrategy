@@ -25,7 +25,6 @@ void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFun
 			//GridManager Âü°í.
 
 			UPathNode* pathNode = CreateObjectFunction(this, grid);
-			//PathNodeArray.Add(pathNode);
 			PathNodeMap.Add(grid,pathNode);
 		}
 	}

@@ -14,7 +14,9 @@
 
 #include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
-#include "../UMG/DamageTextActor.h"
+#include "UMG/DamageTextActor.h"
+
+#include "DebugHelper.h"
 
 // Sets default values
 AUnit::AUnit()
@@ -154,7 +156,7 @@ void AUnit::StartUnitTurn()
 
 void AUnit::OnSelectedUnitChanged()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AUnit::OnSelectedUnitChanged -> %s"), *GetActorLabel());
+	Debug::Print(DEBUG_TEXT("OnSelectedUnitChanged -> ") + *GetActorLabel());
 
 }
 

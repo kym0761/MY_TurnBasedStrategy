@@ -82,24 +82,26 @@ protected:
 public:
 
 	/*PathFinding Functions*/
-	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false);
+
+	TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false);
 	int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
 	UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
 	TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
 	TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
-	bool HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit = false);
+	bool HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost = 1000, bool bCanIgnoreUnit = false);
 	void InitAllPathFindingNodes();
 
 	/*Grid System Functions*/
 	//TArray<AUnitCharacter*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
 	//TArray<AUnitCharacter*> GetAllUnitInGridSystem() const;
 	//AUnitCharacter* GetUnitAtGrid(const FGrid& GridValue) const;
+
 	TArray<AUnit*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
 	TArray<AUnit*> GetAllUnitInGridSystem() const;
 	AUnit* GetUnitAtGrid(const FGrid& GridValue) const;
 	bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	bool IsWalkableGrid(const FGrid& GridValue) const;
-	int32 GetPathLength(const FGrid& Start, const FGrid& End);
+	int32 GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost);
 	bool IsValidGrid(const FGrid& Grid) const;
 	FGrid WorldToGrid(const FVector& WorldPosition) const;
 	FVector GridToWorld(const FGrid& Grid) const;

@@ -27,8 +27,9 @@ private:
 	UPROPERTY()
 	int32 Y_Length;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category ="Grid", Meta = (AllowPrivateAccess = true))
-		TMap<FGrid,UGridObject*> GridObjectMap;
+	//GridObj¿« TMap
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
+	TMap<FGrid, UGridObject*> GridObjectMap;
 
 public:
 	UGridSystem();

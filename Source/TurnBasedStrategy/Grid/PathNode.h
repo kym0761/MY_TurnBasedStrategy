@@ -19,12 +19,18 @@ public:
 
 private:
 
+	// 현재까지의 cost
 	UPROPERTY()
-		int32 G_Cost; // 현재까지의 cost
+		int32 G_Cost;
+	// 앞으로 필요할 것으로 예상되는 cost
 	UPROPERTY()
-		int32 H_Cost; // 앞으로 필요할 것으로 예상되는 cost
+		int32 H_Cost;
+	// 총합 cost
 	UPROPERTY()
-		int32 F_Cost; // 총합 cost
+		int32 F_Cost;
+	//이 Pathnode가 담당하는 Grid로 진입하기 위한 Cost
+	UPROPERTY()
+	int32 GridCost;
 
 	UPROPERTY()
 		FGrid Grid;
@@ -39,10 +45,12 @@ public:
 	int32 GetGCost() const;
 	int32 GetHCost() const;
 	int32 GetFCost() const;
+	int32 GetGridCost() const;
 
 	void SetGCost(int32 Value);
 	void SetHCost(int32 Value);
 	void SetFCost(int32 Value);
+	void SetGridCost(int32 Value);
 
 	void CalculateFCost();
 
@@ -62,34 +70,4 @@ public:
     {
         return A.GetFCost() < B.GetFCost();
     }
-};
-
-template <class InObject>
-class TPriorityQueue
-{
-private:
-	TArray<InObject> Arr;
-
-public:
-
-	//사용 예시 : TPriorityQueue<UPathNode*> pq(UPathNode::PathFindingPredicated);
-
-	template <class PREDICATE_CLASS>
-	TPriorityQueue(const PREDICATE_CLASS& Predicate) : Arr(TArray<InObject>())
-	{
-		Arr.Heapify(Predicate);
-	}
-
-	InObject Pop()
-	{
-		InObject outObj;
-		Arr.HeapPop(outObj);
-		return outObj;
-	}
-
-	void Push(InObject ObjVal)
-	{
-		Arr.HeapPush(ObjVal);
-	}
-
 };

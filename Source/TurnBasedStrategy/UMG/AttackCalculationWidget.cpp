@@ -10,6 +10,8 @@
 #include "AttackOrderWidget.h"
 #include "Manager/SRPG_GameMode.h"
 
+#include "DebugHelper.h"
+
 UAttackCalculationWidget::UAttackCalculationWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -17,6 +19,7 @@ UAttackCalculationWidget::UAttackCalculationWidget(const FObjectInitializer& Obj
 	//Button이 Focus가 잡혀야함.
 	if (IsValid(Button_Attack))
 	{
+		//TODO : IsFocusable Deprecated.. -> 근데 Set함수가 없는 것 같음.
 		Button_Attack->IsFocusable = true;
 	}
 }
@@ -49,15 +52,13 @@ void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, A
 
 	if (!IsValid(Attacker))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attacker is Invalid. - UAttackCalculationWidget::InitAttackCalculationWidget()"));
-
+		Debug::Print(DEBUG_TEXT("Attacker is Invalid."));
 		return;
 	}
 
 	if (!IsValid(Defender))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Defender is Invalid. - UAttackCalculationWidget::InitAttackCalculationWidget()"));
-
+		Debug::Print(DEBUG_TEXT("Defender is Invalid."));
 		return;
 	}
 
@@ -103,15 +104,14 @@ void UAttackCalculationWidget::SetAttackOrders()
 
 	if (!IsValid(AllyAttackOrder) || !IsValid(EnemyAttackOrder))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Please Set up UMG BP. -- UAttackCalculationWidget::OnButton_AttackClicked()"));
+		Debug::Print(DEBUG_TEXT("Please Set up UMG BP"));
 		return;
 	}
 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
 	{
-
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is Invalid. -- UAttackCalculationWidget::OnButton_AttackClicked()"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return;
 	}
 

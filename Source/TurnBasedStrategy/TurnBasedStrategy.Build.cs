@@ -12,7 +12,7 @@ public class TurnBasedStrategy : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
-        //Source Code Access.
+        //Project Source Code Access.
         PrivateIncludePaths.AddRange(new string[] { "TurnbasedStrategy" });
 
 

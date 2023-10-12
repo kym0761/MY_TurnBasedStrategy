@@ -24,6 +24,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "UnitAction/UnitActionComponent.h"
 
+#include "DebugHelper.h"
 
 // Sets default values
 AUnitControlPawn::AUnitControlPawn()
@@ -134,7 +135,7 @@ void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InitGridPosition() GameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 	}
 }
 
@@ -244,13 +245,13 @@ bool AUnitControlPawn::TryUnitSelect()
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode Not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return false;
 	}
 
 	if (!gameMode->IsValidGrid(PivotGrid))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid is Not Valid"));
+		Debug::Print(DEBUG_TEXT("Grid is Invalid."));
 		return false;
 	}
 
@@ -258,19 +259,19 @@ bool AUnitControlPawn::TryUnitSelect()
 
 	if (!IsValid(unitOnGrid))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Unit."));
+		Debug::Print(DEBUG_TEXT("No Unit."));
 		return false;
 	}
 
 	if (!(unitOnGrid->IsThisUnitCanAction()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("this Unit Can't Do AnyThing."));
+		Debug::Print(DEBUG_TEXT("this Unit Can't Do AnyThing."));
 		return false;
 	}
 
 	if (unitOnGrid->ActorHasTag(MYUNIT))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Unit Set!"));
+		Debug::Print(DEBUG_TEXT("Unit Set!"));
 		SetSelectedUnit(unitOnGrid);
 		return true;
 	}
@@ -303,7 +304,7 @@ void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* UnitActionToSelec
 
 	if (SelectedAction == UnitActionToSelect)
 	{
-		UE_LOG(LogTemp, Warning, TEXT(" InputAction is Equal with Currently Selected Action. -- AUnitControlPawn::SetSelectedAction()"));
+		Debug::Print(DEBUG_TEXT("InputAction is Equal with Currently Selected Action."));
 		return;
 	}
 
@@ -324,7 +325,7 @@ void AUnitControlPawn::DoSelection()
 	{
 		if (!IsValid(SelectedUnit))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Selected Unit Not Valid"));
+			Debug::Print(DEBUG_TEXT("Selected Unit is Invalid."));
 			return;
 		}
 
@@ -368,20 +369,20 @@ void AUnitControlPawn::DoAction()
 {
 	if (!IsValid(SelectedUnit))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("false.. Selected Unit Not Valid"));
+		Debug::Print(DEBUG_TEXT("Selected Unit is Invalid."));
 		return;
 	}
 
 	if (!IsValid(SelectedAction))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("false.. Selected Action Not Valid"));
+		Debug::Print(DEBUG_TEXT("Selected Action is Invalid."));
 		return;
 	}
 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode Can't be found"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return;
 	}
 
@@ -432,7 +433,7 @@ void AUnitControlPawn::OnUnitActionCompleted()
 	SetControlPawnMode(EPawnMode::Selection);
 	SetBusyOrNot(false);
 	DoDeselection();
-	UE_LOG(LogTemp, Warning, TEXT("AUnitControlPawn::OnUnitActionCompleted()"));
+	Debug::Print(DEBUG_TEXT("OnUnitActionCompleted"));
 }
 
 void AUnitControlPawn::FindAllPlayerUnits()
@@ -441,7 +442,7 @@ void AUnitControlPawn::FindAllPlayerUnits()
 
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
 		return;
 	}
 
@@ -483,7 +484,7 @@ void AUnitControlPawn::FindAllPlayerUnits()
 
 			unitAction_Cast->OnActionCompleteForControlPawn.Clear();
 			unitAction_Cast->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
-			UE_LOG(LogTemp, Warning, TEXT("AUnitControlPawn::FindAllPlayerUnits() Bind OK"));
+			Debug::Print(DEBUG_TEXT("Bind OK"));
 		}
 	}
 }

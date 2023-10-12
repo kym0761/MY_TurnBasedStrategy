@@ -24,6 +24,7 @@ private:
 	UPROPERTY()
 	int32 Y_Length;
 
+	//PathFinding Object
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PathFinding", Meta = (AllowPrivateAccess = true))
 		TMap<FGrid,UPathNode*> PathNodeMap;
 public:

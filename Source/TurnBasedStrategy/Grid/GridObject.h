@@ -24,14 +24,21 @@ public:
 
 private:
 
+	//이 GridObj를 보유한 GridSystem.
 	UPROPERTY()
-		UGridSystem* GridSystem;
+	UGridSystem* GridSystem;
 
+	//자신의 Grid정보
 	UPROPERTY()
-		FGrid Grid;
+	FGrid Grid;
 
+	//이 그리드를 접근하기 위해 필요한 Cost.
 	UPROPERTY()
-		TArray<AUnit*> UnitArray;
+	int32 GridCost;
+
+	//이 Grid 위에 올라온 유닛
+	UPROPERTY()
+	TArray<AUnit*> UnitArray;
 
 public:
 
@@ -46,4 +53,6 @@ public:
 
 	UGridSystem* GetGridSystem() const;
 	void SetGridSystem(UGridSystem* InGridSystem);
+	int32 GetGridCost() const;
+	void SetGridCost(int32 Val);
 };

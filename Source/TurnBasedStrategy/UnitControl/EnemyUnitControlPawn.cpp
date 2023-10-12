@@ -7,6 +7,8 @@
 #include "UnitAction/UnitMoveActionComponent.h"
 #include "UnitAction/UnitAttackActionComponent.h"
 
+#include "DebugHelper.h"
+
 AEnemyUnitControlPawn::AEnemyUnitControlPawn()
 {
 	PawnTurnType = ETurnType::EnemyTurn;
@@ -26,7 +28,7 @@ void AEnemyUnitControlPawn::Tick(float DeltaTime)
 
 void AEnemyUnitControlPawn::TriggerToPlay()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AEnemyUnitControlPawn::TriggerToPlay()"));
+	Debug::Print(DEBUG_TEXT("TriggerToPlay"));
 
 	//TODO : 현재, 유닛이 죽었을 상황에서는 AI Control이 정상적으로 동작하지 않음. 
 	//예시) 플레이어의 마지막 유닛이 공격을 했을 때 적 유닛이 죽었을 경우, 예시2) AI의 유닛이 공격 중에 AI의 유닛이 죽었을 경우. 혹은 플레이어 유닛이 죽었을 경우.
@@ -43,7 +45,7 @@ void AEnemyUnitControlPawn::FindEnemyAllUnits()
 
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("gameMode is not Valid"));
+		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
 		return;
 	}
 
@@ -158,7 +160,7 @@ void AEnemyUnitControlPawn::WaitProcedure()
 {
 	// 유닛 각각에게 Wait할 필요 없이 그냥 턴을 끝내면 될 것 같다.
 
-	UE_LOG(LogTemp, Warning, TEXT("AEnemyUnitControlPawn::WaitProcedure()"));
+	Debug::Print(DEBUG_TEXT("WaitProcedure"));
 
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (IsValid(gameMode))

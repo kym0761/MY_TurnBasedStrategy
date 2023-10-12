@@ -18,6 +18,9 @@
 #include "Grid/GridSystem.h"
 #include "GridManager.h"
 
+#include "GridCostModifier.h"
+
+#include "DebugHelper.h"
 
 ASRPG_GameMode::ASRPG_GameMode()
 {
@@ -172,7 +175,7 @@ void ASRPG_GameMode::CheckCurrentTurnValidation()
 
 	if (IsTurnValid == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Turn Will be Changed."));
+		Debug::Print(DEBUG_TEXT("Turn Will be Changed"));
 		NextTurn();
 	}
 }
@@ -367,7 +370,8 @@ void ASRPG_GameMode::PlayAttack()
 				bAttackerWaiting = false;
 				bDefenderWaiting = false;
 
-				//UE_LOG(LogTemp, Warning, TEXT("Play Montage?"));
+
+				Debug::Print(DEBUG_TEXT("Play Montage?"));
 				attackerAnim->PlayUnitAttackMontage();
 			}
 		}
@@ -419,7 +423,7 @@ void ASRPG_GameMode::OnAttackHit()
 	USkeletalMeshComponent* defenderMesh = currentOrder.Defender->FindComponentByClass<USkeletalMeshComponent>();
 	if (!IsValid(defenderMesh))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASRPG_GameMode::OnAttackHit()  Defender Mesh is Invalid."));
+		Debug::Print(DEBUG_TEXT("Defender Mesh is Invalid."));
 		return;
 	}
 
@@ -440,19 +444,20 @@ void ASRPG_GameMode::OnAttackHit()
 
 void ASRPG_GameMode::OnAttackEnd()
 {
+	Debug::Print(DEBUG_TEXT("OnAttackEnd"));
 	bAttackerWaiting = true;
-	UE_LOG(LogTemp, Warning, TEXT("AAttackManager::OnAttackEnd()"));
 	TryPlayNextOrder();
 }
 
 void ASRPG_GameMode::OnHit()
 {
+	Debug::Print(DEBUG_TEXT("OnHit"));
 }
 
 void ASRPG_GameMode::OnHitEnd()
 {
+	Debug::Print(DEBUG_TEXT("OnHitEnd"));
 	bDefenderWaiting = true;
-	UE_LOG(LogTemp, Warning, TEXT("AAttackManager::OnHitEnd()"));
 	TryPlayNextOrder();
 }
 
@@ -466,7 +471,7 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 
 	if (!IsValid(Attacker) || !IsValid(Defender))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attacker or Defender is Not Valid - AAttackManager::CalculateAttackOrder()"));
+		Debug::Print(DEBUG_TEXT("Attacker or Defender is Invalid."));
 		return attackOrders;
 	}
 
@@ -477,8 +482,7 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 
 	if (!IsValid(attackerStatComponent) || !IsValid(defenderStatComponent))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StatComponents are Not Valid - AAttackManager::CalculateAttackOrder()"));
-
+		Debug::Print(DEBUG_TEXT("StatComponents are Invalid."));
 		return attackOrders;
 	}
 
@@ -619,6 +623,7 @@ float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
 	if (!(IsValid(attackerStatComponent) && IsValid(defenderStatComponent)))
 	{
 		//불가능한 크리티컬 확률임.
+		Debug::Print(DEBUG_TEXT("Impossible Crit Rate."));
 		return -1.0f;
 	}
 
@@ -658,6 +663,7 @@ float ASRPG_GameMode::CalculateAccuracy(AActor* Attacker, AActor* Defender)
 	if (!(IsValid(attackerStatComponent) && IsValid(defenderStatComponent)))
 	{
 		//불가능한 명중률임.
+		Debug::Print(DEBUG_TEXT("Impossible Accuracy."));
 		return -1.0f;
 	}
 
@@ -765,7 +771,7 @@ void ASRPG_GameMode::CreateGridSystem()
 	);
 
 	//Grid 맵에 장애물 적용. 통과 불가.
-	auto map = PathFindingSystem->GetPathNodeMap();
+	auto pathFindingMap = PathFindingSystem->GetPathNodeMap();
 	for (int32 i = 0; i < X_Length; i++)
 	{
 		for (int32 j = 0; j < Y_Length; j++)
@@ -805,18 +811,70 @@ void ASRPG_GameMode::CreateGridSystem()
 			//outhits이 1개 이상의 값을 가지고 있다면, 해당 위치에 장애물이 존재하고 있는 것임.
 			if (outHits.Num() > 0)
 			{
-				UPathNode* pathNode = map[grid];
+				UPathNode* pathNode = pathFindingMap[grid];
 				if (IsValid(pathNode))
 				{
 					pathNode->SetIsWalkable(false);
 				}
 			}
-
 		}
 	}
+
+	//GridModifier 체크
+
+	auto gridObjMap = GridSystem->GetGridObjectMap();
+	for (int32 i = 0; i < X_Length; i++)
+	{
+		for (int32 j = 0; j < Y_Length; j++)
+		{
+			FGrid grid(i, j);
+			FVector pos = GridToWorld(grid);
+
+			FVector startPos = pos + FVector(0.0f, 0.0f, 5000.0f);
+			FVector endPos = FVector(startPos.X, startPos.Y, -5000.0f);
+
+			TArray<TEnumAsByte<EObjectTypeQuery>> objects;
+
+			objects.Add(UEngineTypes::ConvertToObjectType(
+				ECollisionChannel::ECC_GameTraceChannel3)); // ObjectType : Obstacle Obj Type을 감지함. DefaultEngine.ini 참고
+
+			TArray<AActor*> ignores;
+			TArray<FHitResult> outHits;
+
+			UKismetSystemLibrary::LineTraceMultiForObjects(
+				GetWorld(),
+				startPos,
+				endPos,
+				objects,
+				true,
+				ignores,
+				EDrawDebugTrace::None,
+				//EDrawDebugTrace::ForDuration,
+				outHits,
+				true,
+				FLinearColor::Red,
+				FLinearColor::Blue,
+				5.0f
+			);
+
+			//UE_LOG(LogTemp, Warning, TEXT(" Grid(%d : %d) Trace Num : %d"), i, j, outHits.Num());
+
+			//outhits이 1개 이상의 값을 가지고 있다면, 해당 위치에 장애물이 존재하고 있는 것임.
+			if (outHits.Num() > 0)
+			{
+				UGridObject* gridObj = gridObjMap[grid];
+				auto gridCostModifier = Cast<AGridCostModifier>(outHits[0].GetActor());
+				if (IsValid(gridObj))
+				{
+					gridObj->SetGridCost(gridCostModifier->CostValue);
+				}
+			}
+		}
+	}
+
 }
 
-TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, bool bCanIgnoreUnit, bool bCalculateToTarget)
+TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit, bool bCalculateToTarget)
 {
 	//!주의! return 하기 전에 PathLength를 변경시켜야함.
 
@@ -834,7 +892,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
 	if (!IsValid(startNode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StartNode is Not Valid"));
+		Debug::Print(DEBUG_TEXT("StartNode is Invalid."));
 		PathLength = -1;
 		return TArray<FGrid>();
 	}
@@ -843,7 +901,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 	UPathNode* endNode = PathFindingSystem->GetValidPathNode(End);
 	if (!IsValid(endNode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("EndNode is Not Valid"));
+		Debug::Print(DEBUG_TEXT("EndNode is Invalid."));
 		PathLength = -1;
 		return TArray<FGrid>();
 	}
@@ -851,6 +909,8 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 	//모든 PathNode를 초기화 한 뒤에 시작함.
 	InitAllPathFindingNodes();
 
+	//startNode 상태
+	//G = 0 , H = 예상되는 직선 길이, F = G+H
 	startNode->SetGCost(0);
 	startNode->SetHCost(CalculateGridDistance(Start, End));
 	startNode->CalculateFCost();
@@ -860,6 +920,16 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 	while (openList.Num() > 0)
 	{
 		UPathNode* currentNode = GetLowestFCostNode(openList);
+
+		openList.Remove(currentNode); // 현재 위치를 Openlist에서 제거
+
+		if (currentNode->GetGCost() > MaxMoveCost)
+		{
+			//이 위치로는 이동할 수 없음. 다른 길을 찾아야함.
+			continue;
+		}
+
+		closeSet.Add(currentNode); // 현재 위치를 접근했으니 clostList에 추가. MaxMoveCost를 넘었으면 접근하지 않은 것으로 취급해야함.
 
 		if (currentNode == endNode) //Break Point.
 		{
@@ -879,9 +949,6 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			PathLength = endNode->GetFCost();
 			return CalculatePath(endNode);
 		}
-
-		openList.Remove(currentNode);
-		closeSet.Add(currentNode);
 
 		//UE_LOG(LogTemp, Warning, TEXT("Node Position : %d, %d"), currentNode->GetGrid().X, currentNode->GetGrid().Y);
 
@@ -928,7 +995,9 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			//F = G + H;
 			//G : 현재까지의 Cost
 			//H : 앞으로 예상되는 Cost
-			int tempGCost = currentNode->GetGCost() + CalculateGridDistance(currentNode->GetGrid(), nearNode->GetGrid());
+
+			//G = 현재까지의 GCost + 다음노드 진입에 필요한 Cost
+			int tempGCost = currentNode->GetGCost() + nearNode->GetGridCost();
 
 			if (tempGCost < nearNode->GetGCost())
 			{
@@ -1028,12 +1097,12 @@ TArray<UPathNode*> ASRPG_GameMode::GetNearNodeArray(UPathNode* CurrentNode) cons
 	return nearNodeList;
 }
 
-bool ASRPG_GameMode::HasPath(const FGrid& Start, const FGrid& End, bool bCanIgnoreUnit)
+bool ASRPG_GameMode::HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost, bool bCanIgnoreUnit)
 {
 	//FindPath의 결과 중 PathLength가 -1이면 위치까지의 경로가 존재하지 않음.
 
 	int32 pathLength = 0;
-	FindPath(Start, End, pathLength, bCanIgnoreUnit);
+	FindPath(Start, End, pathLength, MaxMoveCost, bCanIgnoreUnit);
 
 	return pathLength != -1;
 }
@@ -1044,22 +1113,37 @@ void ASRPG_GameMode::InitAllPathFindingNodes()
 	//G = 무한대(int32 최대값) , H = 0 , F = G + H = 무한대
 
 	TMap<FGrid, UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
+	TMap<FGrid, UGridObject*> gridObjs = GridSystem->GetGridObjectMap();
 
-	for (TPair<FGrid, UPathNode*> pathNodePair : pathNodes)
+	int x_Len = GridManagerRef->X_Length;
+	int y_Len = GridManagerRef->Y_Length;
+
+	for (int x = 0; x < x_Len; x++)
 	{
-		if (!IsValid(pathNodePair.Value))
+		for (int y = 0; y < y_Len; y++)
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("PathNode is Not Valid"));
-			continue;
+			FGrid grid(x, y);
+			UPathNode* pathNode = pathNodes[grid];
+			UGridObject* gridObj = gridObjs[grid];
+
+			if (!IsValid(pathNode) || !IsValid(gridObj))
+			{
+				Debug::Print(DEBUG_TEXT("Invalid Position."));
+				continue;
+			}
+
+			int32 tempG_Cost = TNumericLimits<int32>::Max();
+			int32 tempH_Cost = 0;
+			int32 tempGridCost = gridObj->GetGridCost();
+
+			pathNode->SetGCost(tempG_Cost);
+			pathNode->SetHCost(tempH_Cost);
+			pathNode->CalculateFCost();
+			pathNode->SetGridCost(tempGridCost);
+			pathNode->SetParentNode(nullptr);
 		}
-
-		UPathNode* pathNode = pathNodePair.Value;
-
-		pathNode->SetGCost(TNumericLimits<int32>::Max());
-		pathNode->SetHCost(0);
-		pathNode->CalculateFCost();
-		pathNode->SetParentNode(nullptr);
 	}
+
 }
 
 TArray<AUnit*> ASRPG_GameMode::GetUnitArrayAtGrid(const FGrid& GridValue) const
@@ -1140,10 +1224,10 @@ bool ASRPG_GameMode::IsWalkableGrid(const FGrid& GridValue) const
 	return false;
 }
 
-int32 ASRPG_GameMode::GetPathLength(const FGrid& Start, const FGrid& End)
+int32 ASRPG_GameMode::GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost)
 {
 	int32 pathLength = 0;
-	FindPath(Start, End, pathLength);
+	FindPath(Start, End, pathLength, MaxMoveCost);
 	return pathLength;
 }
 
@@ -1166,15 +1250,13 @@ FGrid ASRPG_GameMode::WorldToGrid(const FVector& WorldPosition) const
 	grid.X = FMath::RoundToInt32((WorldPosition.X - managerLocation.X) / CellSize);
 	grid.Y = FMath::RoundToInt32((WorldPosition.Y - managerLocation.Y) / CellSize);
 
-	UE_LOG(LogTemp, Warning, TEXT("Grid Pos : %s"), *grid.ToString());
+	Debug::Print(DEBUG_TEXT("Grid Pos : ") + grid.ToString());
 
 	return grid;
 }
 
 FVector ASRPG_GameMode::GridToWorld(const FGrid& Grid) const
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Grid Input : %s"), *Grid.ToString());
-
 	FVector managerLocation;
 
 	if (IsValid(GridManagerRef))
@@ -1186,7 +1268,7 @@ FVector ASRPG_GameMode::GridToWorld(const FGrid& Grid) const
 	worldPosition.X += Grid.X * CellSize;
 	worldPosition.Y += Grid.Y * CellSize;
 
-	//UE_LOG(LogTemp, Warning, TEXT("World Pos : %s"),*worldPosition.ToString());
+	//Debug::Print(DEBUG_TEXT("World Pos : ") + worldPosition.ToString());
 
 	return worldPosition;
 }

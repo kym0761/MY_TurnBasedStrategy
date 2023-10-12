@@ -5,9 +5,9 @@
 #include "UnitCore/Unit.h"
 #include "GridSystem.h"
 
-UGridObject::UGridObject()
+UGridObject::UGridObject() : Grid(FGrid()), GridCost(1)
 {
-	Grid = FGrid();
+
 }
 
 FString UGridObject::ToString() const
@@ -85,4 +85,14 @@ UGridSystem* UGridObject::GetGridSystem() const
 void UGridObject::SetGridSystem(UGridSystem* InGridSystem)
 {
 	GridSystem = InGridSystem;
+}
+
+int32 UGridObject::GetGridCost() const
+{
+	return GridCost;
+}
+
+void UGridObject::SetGridCost(int32 Val)
+{
+	GridCost = Val;
 }

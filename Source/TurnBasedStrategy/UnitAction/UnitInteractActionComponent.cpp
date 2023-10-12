@@ -7,6 +7,8 @@
 #include "Manager/GridManager.h"
 #include "Manager/SRPG_GameMode.h"
 
+#include "DebugHelper.h"
+
 UUnitInteractActionComponent::UUnitInteractActionComponent()
 {
 	MaxActionRange = 1;
@@ -41,7 +43,7 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 	if (!IsValid(gameMode))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
 		return validSet;
 	}
 
@@ -99,7 +101,7 @@ void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 
 	if (tempArr.Contains(Grid))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("InterAct At : %s"), *Grid.ToString());
+		Debug::Print(DEBUG_TEXT("InterAct At : ") + Grid.ToString());
 	}
 
 
@@ -123,7 +125,7 @@ void UUnitInteractActionComponent::ActionEnd()
 
 	if (!IsValid(gridManager))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Grid Manager is not Valid"));
+		Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
 		return;
 	}
 

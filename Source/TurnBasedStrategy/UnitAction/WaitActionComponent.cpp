@@ -4,6 +4,9 @@
 #include "WaitActionComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UnitCore/Unit.h"
+
+#include "DebugHelper.h"
+
 UWaitActionComponent::UWaitActionComponent()
 {
 	ActionName = TEXT("Wait");
@@ -24,7 +27,7 @@ void UWaitActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 void UWaitActionComponent::TakeAction(const FGrid& Grid)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("Wait OK"));
+	Debug::Print(DEBUG_TEXT("Wait OK"));
 
 	ActionEnd();
 
