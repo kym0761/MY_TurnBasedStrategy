@@ -649,10 +649,7 @@ float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
 
 float ASRPG_GameMode::CalculateAccuracy(AActor* Attacker, AActor* Defender)
 {
-	//명중률은 0~1 사이 값임.
-	//TODO : 명중률은 보여주기만 되는 값이고 현재는 전투 결과에 영향가지 않음.
-	//			공격에 명중률을 적용해서 회피도 되게 만들어야함.
-
+	//명중률은 0~1 사이 값임. 0.0f == 0%, 0.5f == 50%, 1.0f = 100% 
 
 	UStatComponent* attackerStatComponent =
 		Attacker->FindComponentByClass<UStatComponent>();
@@ -935,8 +932,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			AUnit* currentUnit = GetUnitAtGrid(currentGrid);
 			AUnit* startUnit = GetUnitAtGrid(Start);
 
-			//적군이든 아군이든 누군가가 존재한다면, 해당 Grid를 점유할 수 없으므로
-			//경로가 존재할 수 없게됨.
+			//적군이든 아군이든 누군가가 존재한다면, 해당 Grid를 점유할 수 없으므로 경로가 존재할 수 없게됨.
 			//다만, 자기 자신이라면 가능함.
 			if (!bCalculateToTarget && IsValid(currentUnit) && currentUnit != startUnit)
 			{
