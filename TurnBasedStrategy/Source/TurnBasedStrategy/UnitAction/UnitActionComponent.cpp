@@ -2,7 +2,6 @@
 
 
 #include "UnitActionComponent.h"
-#include "UnitCore/UnitCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "UnitControl/UnitControlPawn.h"
 
