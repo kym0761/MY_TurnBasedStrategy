@@ -16,7 +16,7 @@ class UUnitInteractActionComponent;
 class UWaitActionComponent;
 class ADamageTextActor;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature);
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature);
 
 UCLASS()
 class TURNBASEDSTRATEGY_API AUnitCharacter : public ACharacter
@@ -45,7 +45,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		UWaitActionComponent* WaitActionComponent;
 
-	FUnitDelegateSignature OnFinishAllAction;
+	//FUnitDelegateSignature OnFinishAllAction;
 
 private:
 

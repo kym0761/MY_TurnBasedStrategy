@@ -21,10 +21,23 @@
 /**
  * 
  */
+
+//Debug 출력 핸들 : true -> 출력 / false -> 비출력
+namespace DebugChecker
+{
+	static bool bOK_Debugging = false;
+}
+
 namespace Debug
 {
+
 	static void Print(const FString& Msg, const FColor& Color = FColor::MakeRandomColor(), int32 InKey = -1)
 	{
+		if (!DebugChecker::bOK_Debugging)
+		{
+			return;
+		}
+
 		//if (GEngine)
 		//{
 		//	GEngine->AddOnScreenDebugMessage(InKey, 3.0f, Color, Msg);

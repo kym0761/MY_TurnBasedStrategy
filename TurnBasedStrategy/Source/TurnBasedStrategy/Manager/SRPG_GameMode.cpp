@@ -688,17 +688,18 @@ void ASRPG_GameMode::TryPlayNextOrder()
 {
 	if (bAttackerWaiting && bDefenderWaiting)
 	{
-		//Remove Finished Order
+		//이미 처리한 Order를 지운다.
 		if (OrderToPlay.Num() > 0)
 		{
 			OrderToPlay.RemoveAt(0);
 		}
 
-		//누군가 죽었으면 이제 Attack 하지 않음.
+		// Order가 아직 남아있는지 확인.
 		if (OrderToPlay.Num() > 0)
 		{
 			FAttackOrder& currentOrder = OrderToPlay[0];
 
+			// 누군가 죽었으면 이제 Attack 하지 않음.
 			if (IsValid(currentOrder.Defender) && IsValid(currentOrder.Attacker))
 			{
 				UStatComponent* defenderStat = currentOrder.Defender->FindComponentByClass<UStatComponent>();

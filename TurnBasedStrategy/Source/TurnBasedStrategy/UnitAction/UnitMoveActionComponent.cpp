@@ -310,7 +310,7 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	//비주얼 측면에서 현재 계속 있어도 괜찮아보여서 일단 유지 중. 필요없으면 비활성화할 것
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("pathArray[%d] : %s"), i, *pathArray[i].ToString())
+		Debug::Print(TEXT("pathArray[%d] : %s") + pathArray[i].ToString());
 		DrawDebugSphere(GetWorld(), gameMode->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 	}
 
