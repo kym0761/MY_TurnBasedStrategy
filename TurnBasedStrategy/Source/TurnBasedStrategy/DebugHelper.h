@@ -23,7 +23,8 @@
  */
 
 //Debug 출력 핸들 : true -> 출력 / false -> 비출력
-namespace DebugChecker
+//!주의 -> 게임모드의 프로퍼티로 빌드를 매번 새로하지 않고 Debug를 활성화하게 만듬.
+namespace DebugControl
 {
 	static bool bOK_Debugging = false;
 }
@@ -33,7 +34,7 @@ namespace Debug
 
 	static void Print(const FString& Msg, const FColor& Color = FColor::MakeRandomColor(), int32 InKey = -1)
 	{
-		if (!DebugChecker::bOK_Debugging)
+		if (!DebugControl::bOK_Debugging)
 		{
 			return;
 		}

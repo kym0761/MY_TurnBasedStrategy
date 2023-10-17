@@ -226,4 +226,13 @@ public:
 
 #pragma endregion
 
+#pragma region DebugControl
+public:
+
+	//true : 디버그 Log 출력 / false : 비출력
+	//필요에 따라 GameMode의 해당 값을 바꿔서 디버그 로그 출력 조절.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug")
+	bool bUseCustomDebug = true;
+#pragma endregion
+
 };

@@ -32,8 +32,8 @@ void ASRPG_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//UE_LOG(LogTemp, Warning, TEXT("ASRPG_GameMode::beginPlay()"));
-
+	//DebugHelper.h에 존재하는 디버그 활성/ 비활성 Flag.
+	DebugControl::bOK_Debugging = bUseCustomDebug;
 }
 
 void ASRPG_GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
