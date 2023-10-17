@@ -111,7 +111,7 @@ public:
 	void MoveUnitGrid(AUnit* Unit, const FGrid& From, const FGrid& to);
 	TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
 
-	//TestUI¿¡¼­ CallµÊ.
+	//TestUIì—ì„œ Callë¨.
 	UFUNCTION(BlueprintCallable)
 	void InitGridSetting();
 	void SetupGridManaging(AGridManager* GridManager);
@@ -142,10 +142,10 @@ private:
 
 public:
 
-	/*ÅÏ ½ÃÀÛÇßÀ» ¶§ °¢ Áø¿µÀÇ À¯´Öµé¿¡°Ô Callback.*/
+	/*í„´ ì‹œì‘í–ˆì„ ë•Œ ê° ì§„ì˜ì˜ ìœ ë‹›ë“¤ì—ê²Œ Callback.*/
 	FTurnManagingDelegate OnPlayerTurnStart;
 	FTurnManagingDelegate OnEnemyTurnStart;
-	//FTurnManagingDelegate OnAllyTurnStart; //!! ¾ÆÁ÷ Ally¸¦ ¾È¸¸µë.
+	//FTurnManagingDelegate OnAllyTurnStart; //!! ì•„ì§ Allyë¥¼ ì•ˆë§Œë“¬.
 
 	//Temp.. For Call in test UI 
 	UFUNCTION(BlueprintCallable)
@@ -229,8 +229,8 @@ public:
 #pragma region DebugControl
 public:
 
-	//true : µğ¹ö±× Log Ãâ·Â / false : ºñÃâ·Â
-	//ÇÊ¿ä¿¡ µû¶ó GameModeÀÇ ÇØ´ç °ªÀ» ¹Ù²ã¼­ µğ¹ö±× ·Î±× Ãâ·Â Á¶Àı.
+	//true : ë””ë²„ê·¸ Log ì¶œë ¥ / false : ë¹„ì¶œë ¥
+	//í•„ìš”í•˜ë©´ GameModeì˜ ë¸”ë£¨í”„ë¦°íŠ¸ì—ì„œ í•´ë‹¹ ê°’ì„ ë°”ê¿”ì„œ ë””ë²„ê·¸ ë¡œê·¸ ì¶œë ¥ ì¡°ì ˆ.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Debug")
 	bool bUseCustomDebug = true;
 #pragma endregion

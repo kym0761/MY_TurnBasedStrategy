@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,7 +6,7 @@
 #include "Grid.generated.h"
 
 /**
- * Grid Á¤º¸
+ * Grid ì •ë³´
  */
 
 USTRUCT(BlueprintType, Blueprintable)
@@ -44,12 +44,12 @@ uint32 GetTypeHash(const FGrid& Grid)
 UENUM(BlueprintType)
 enum class EGridVisualType : uint8
 {
-	Move UMETA(DisplayName = "Move"), //ÀÌµ¿?
-	OK UMETA(DisplayName = "OK"), //¾Æ±º¿¡°Ô?
-	NO UMETA(DisplayName = "NO"), // Àû¿¡°Ô?
-	NO_Soft UMETA(DisplayName = "No_Soft"), //°ø°İ °¡´ÉÇÑ Ä­
-	Warning UMETA(DisplayName = "Warning"), // ¹üÀ§ °ø°İÀÇ ¹üÀ§?
-	DANGER UMETA(DisplayName = "DANGER") // À§Çè Áö¿ª?
+	Move UMETA(DisplayName = "Move"), //ì´ë™?
+	OK UMETA(DisplayName = "OK"), //ì•„êµ°ì—ê²Œ?
+	NO UMETA(DisplayName = "NO"), // ì ì—ê²Œ?
+	NO_Soft UMETA(DisplayName = "No_Soft"), //ê³µê²© ê°€ëŠ¥í•œ ì¹¸
+	Warning UMETA(DisplayName = "Warning"), // ë²”ìœ„ ê³µê²©ì˜ ë²”ìœ„?
+	DANGER UMETA(DisplayName = "DANGER") // ìœ„í—˜ ì§€ì—­?
 };
 
 USTRUCT(BlueprintType)
@@ -76,6 +76,6 @@ uint32 GetTypeHash(const FGridVisualData& GridVisualData)
 }
 
 
-/*À¯´Ö Áø¿µ*/
+/*ìœ ë‹› ì§„ì˜*/
 #define MYUNIT FName("MyUnit")
 #define ENEMY FName("Enemy")

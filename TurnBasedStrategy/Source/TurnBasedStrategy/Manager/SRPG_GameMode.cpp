@@ -32,7 +32,7 @@ void ASRPG_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//DebugHelper.h¿¡ Á¸ÀçÇÏ´Â µğ¹ö±× È°¼º/ ºñÈ°¼º Flag.
+	//DebugHelper.hì— ì¡´ì¬í•˜ëŠ” ë””ë²„ê·¸ í™œì„±/ ë¹„í™œì„± Flagë‹¤.
 	DebugControl::bOK_Debugging = bUseCustomDebug;
 }
 
@@ -62,8 +62,8 @@ ASRPG_GameMode* ASRPG_GameMode::GetSRPG_GameMode(const UObject* WorldContextObje
 
 void ASRPG_GameMode::InitTurn()
 {
-	// ¸ğµç À¯´ÖÀ» Ã£°í, À¯´ÖÀÌ PlayerÀÇ À¯´ÖÀÎÁö, ¾Æ´Ï¸é EnemyÀÎÁö È®ÀÎÇØ¼­ ºĞ·ùÇÔ.
-	// ¸¶Áö¸·¿£ UnitControlPawn¿¡°Ôµµ ÇØ´ç À¯´ÖÀÌ °¢°¢ º»ÀÎµéÀÇ °ÍÀÌ¶ó´Â °ÍÀ» ¾Ë·ÁÁÜ.
+	// ëª¨ë“  ìœ ë‹›ì„ ì°¾ê³ , ìœ ë‹›ì´ Playerì˜ ìœ ë‹›ì¸ì§€, ì•„ë‹ˆë©´ Enemyì¸ì§€ í™•ì¸í•´ì„œ ë¶„ë¥˜í•¨.
+	// ë§ˆì§€ë§‰ì—” UnitControlPawnì—ê²Œë„ í•´ë‹¹ ìœ ë‹›ì´ ê°ê° ë³¸ì¸ë“¤ì˜ ê²ƒì´ë¼ëŠ” ê²ƒì„ ì•Œë ¤ì¤Œ.
 
 	TArray<AActor*> unitArr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), unitArr);
@@ -107,7 +107,7 @@ void ASRPG_GameMode::NextTurn()
 		break;
 	case ETurnType::EnemyTurn:
 		//SetTurnType(ETurnType::AllyTurn);
-		////!! Ally¸¦ ¸¸µé°Ô µÇ¸é ÀÌ ºÎºĞÀ» º¯°æÇÒ °Í.
+		////!! Allyë¥¼ ë§Œë“¤ê²Œ ë˜ë©´ ì´ ë¶€ë¶„ì„ ë³€ê²½í•  ê²ƒ.
 		NextTurnNumber();
 		SetTurnType(ETurnType::PlayerTurn);
 		break;
@@ -320,7 +320,7 @@ void ASRPG_GameMode::StartAttack()
 	//DefenderAttackActionComponent = currentDefender->FindComponentByClass<UUnitAttackActionComponent>();
 	//if (!IsValid(AttackerAttackActionComponent))
 	//{
-	//	//!!°æ°í ÇÊ¿ä.
+	//	//!!ê²½ê³  í•„ìš”.
 	//}
 
 
@@ -393,8 +393,8 @@ void ASRPG_GameMode::FinishAttack()
 
 void ASRPG_GameMode::OnAttackHit()
 {
-	//AttackerÀÇ °ø°İÀ» ¸Â¾Ò´Ù¸é DefenderÀÇ hit ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ıÇÔ.
-	//TODO : ºø³ª°¨ Ã³¸® ÇÊ¿ä.
+	//Attackerì˜ ê³µê²©ì„ ë§ì•˜ë‹¤ë©´ Defenderì˜ hit ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒí•¨.
+	//TODO : ë¹—ë‚˜ê° ì²˜ë¦¬ í•„ìš”.
 	FAttackOrder currentOrder = OrderToPlay[0];
 
 	if (!IsValid(currentOrder.Defender) || !IsValid(currentOrder.Attacker))
@@ -402,7 +402,7 @@ void ASRPG_GameMode::OnAttackHit()
 		return;
 	}
 
-	//Å©¸®Æ¼ÄÃ ¿¹½Ã
+	//í¬ë¦¬í‹°ì»¬ ì˜ˆì‹œ
 	float randCrit = FMath::FRandRange(0.0f, 1.0f);
 	if (currentOrder.CritRate >= randCrit)
 	{
@@ -416,7 +416,7 @@ void ASRPG_GameMode::OnAttackHit()
 	}
 	else
 	{
-		//ºø³ª°£ °æ¿ì Ã³¸®ÇÏ±â?
+		//ë¹—ë‚˜ê°„ ê²½ìš° ì²˜ë¦¬í•˜ê¸°?
 
 	}
 
@@ -463,9 +463,9 @@ void ASRPG_GameMode::OnHitEnd()
 
 TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AActor* Defender)
 {
-	// °ø°İ ¼ø¼­´Â 1 °ø°İÀÚ 2 ¹æ¾îÀÚ
-	// °ø°İ ¼Óµµ Â÷ÀÌ¿¡ µû¶ó °ø°İÀÚ¿Í ¹æ¾îÀÚ°¡ Ãß°¡ °ø°İÀ» ÇàÇÒ ¼ö°¡ ÀÖÀ½.
-	// ÃßÈÄ ½ºÅ³ Á¸Àç À¯¹«¿¡ µû¶ó °ø°İÀÚ¿Í ¹æ¾îÀÚÀÇ ÃÊ±â ¼ø¼­¿Í °ø°İ È½¼ö°¡ ¹Ù²ğ ¼öµµ ÀÖÀ½.
+	// ê³µê²© ìˆœì„œëŠ” 1 ê³µê²©ì 2 ë°©ì–´ì
+	// ê³µê²© ì†ë„ ì°¨ì´ì— ë”°ë¼ ê³µê²©ìì™€ ë°©ì–´ìê°€ ì¶”ê°€ ê³µê²©ì„ í–‰í•  ìˆ˜ê°€ ìˆìŒ.
+	// ì¶”í›„ ìŠ¤í‚¬ ì¡´ì¬ ìœ ë¬´ì— ë”°ë¼ ê³µê²©ìì™€ ë°©ì–´ìì˜ ì´ˆê¸° ìˆœì„œì™€ ê³µê²© íšŸìˆ˜ê°€ ë°”ë€” ìˆ˜ë„ ìˆìŒ.
 
 	TArray<FAttackOrder> attackOrders;
 
@@ -517,19 +517,19 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 	attackOrders.Add(attack);
 	attackOrders.Add(counterAttack);
 
-	//AttackerÀÇ ½ºÇÇµå°¡ 5º¸´Ù ´õ ³ôÀ¸¸é °ø°İÀ» Ãß°¡ÇÔ.
+	//Attackerì˜ ìŠ¤í”¼ë“œê°€ 5ë³´ë‹¤ ë” ë†’ìœ¼ë©´ ê³µê²©ì„ ì¶”ê°€í•¨.
 	if (attackerSpeed > defenderSpeed + 5)
 	{
 		attackOrders.Add(attack);
 	}
 
-	//DefenderÀÇ ½ºÇÇµå°¡ 5º¸´Ù ´õ ³ôÀ¸¸é °ø°İÀ» Ãß°¡ÇÔ.
+	//Defenderì˜ ìŠ¤í”¼ë“œê°€ 5ë³´ë‹¤ ë” ë†’ìœ¼ë©´ ê³µê²©ì„ ì¶”ê°€í•¨.
 	if (attackerSpeed +5 < defenderSpeed)
 	{
 		attackOrders.Add(counterAttack);
 	}
 
-	//AttackerÀÇ ½ºÇÇµå°¡ 10º¸´Ù ´õ ³ôÀ¸¸é Ãß°¡·Î 1/2ÀÇ µ¥¹ÌÁö¸¸Å­ °ø°İÀ» Ãß°¡ÇÔ.
+	//Attackerì˜ ìŠ¤í”¼ë“œê°€ 10ë³´ë‹¤ ë” ë†’ìœ¼ë©´ ì¶”ê°€ë¡œ 1/2ì˜ ë°ë¯¸ì§€ë§Œí¼ ê³µê²©ì„ ì¶”ê°€í•¨.
 	if (attackerSpeed > defenderSpeed + 10)
 	{
 		FAttackOrder addAttack;
@@ -542,7 +542,7 @@ TArray<FAttackOrder> ASRPG_GameMode::CalculateAttackOrder(AActor* Attacker, AAct
 		attackOrders.Add(addAttack);
 	}
 
-	//defenderÀÇ ½ºÇÇµå°¡ 10º¸´Ù ´õ ³ôÀ¸¸é Ãß°¡·Î 1/2ÀÇ µ¥¹ÌÁö¸¸Å­ °ø°İÀ» Ãß°¡ÇÔ.
+	//defenderì˜ ìŠ¤í”¼ë“œê°€ 10ë³´ë‹¤ ë” ë†’ìœ¼ë©´ ì¶”ê°€ë¡œ 1/2ì˜ ë°ë¯¸ì§€ë§Œí¼ ê³µê²©ì„ ì¶”ê°€í•¨.
 	if (attackerSpeed + 10 < defenderSpeed)
 	{
 		FAttackOrder addAttack;
@@ -612,7 +612,7 @@ void ASRPG_GameMode::BindOnHitEnd(UUnitAnimInstance* AnimInst)
 
 float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
 {
-	//critRate 0.0f~1.0f »çÀÌ °ª.
+	//critRate 0.0f~1.0f ì‚¬ì´ ê°’.
 
 	UStatComponent* attackerStatComponent =
 		Attacker->FindComponentByClass<UStatComponent>();
@@ -622,7 +622,7 @@ float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
 
 	if (!(IsValid(attackerStatComponent) && IsValid(defenderStatComponent)))
 	{
-		//ºÒ°¡´ÉÇÑ Å©¸®Æ¼ÄÃ È®·üÀÓ.
+		//ë¶ˆê°€ëŠ¥í•œ í¬ë¦¬í‹°ì»¬ í™•ë¥ ì„.
 		Debug::Print(DEBUG_TEXT("Impossible Crit Rate."));
 		return -1.0f;
 	}
@@ -633,7 +633,7 @@ float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
 	int32 defenderSKL = defenderStatComponent->GetSKL();
 	int32 defenderLUK = defenderStatComponent->GetLUK();
 
-	//Å©¸® °ø½Ä = (°ø°İÀÚ Skill - ¹æ¾îÀÚ Skill) + (°ø°İÀÚ ¿î - ¹æ¾îÀÚ ¿î) / 100.0 + °ø°İÀÚ SKill + °ø°İÀÚ ¿î
+	//í¬ë¦¬ ê³µì‹ = (ê³µê²©ì Skill - ë°©ì–´ì Skill) + (ê³µê²©ì ìš´ - ë°©ì–´ì ìš´) / 100.0 + ê³µê²©ì SKill + ê³µê²©ì ìš´
 	float critRate =
 		(
 			FMath::Clamp(attackerSKL - defenderSKL, 0, attackerSKL)
@@ -649,7 +649,7 @@ float ASRPG_GameMode::CalculateCriticalRate(AActor* Attacker, AActor* Defender)
 
 float ASRPG_GameMode::CalculateAccuracy(AActor* Attacker, AActor* Defender)
 {
-	//¸íÁß·üÀº 0~1 »çÀÌ °ªÀÓ. 0.0f == 0%, 0.5f == 50%, 1.0f = 100% 
+	//ëª…ì¤‘ë¥ ì€ 0~1 ì‚¬ì´ ê°’ì„. 0.0f == 0%, 0.5f == 50%, 1.0f = 100% 
 
 	UStatComponent* attackerStatComponent =
 		Attacker->FindComponentByClass<UStatComponent>();
@@ -659,7 +659,7 @@ float ASRPG_GameMode::CalculateAccuracy(AActor* Attacker, AActor* Defender)
 
 	if (!(IsValid(attackerStatComponent) && IsValid(defenderStatComponent)))
 	{
-		//ºÒ°¡´ÉÇÑ ¸íÁß·üÀÓ.
+		//ë¶ˆê°€ëŠ¥í•œ ëª…ì¤‘ë¥ ì„.
 		Debug::Print(DEBUG_TEXT("Impossible Accuracy."));
 		return -1.0f;
 	}
@@ -673,12 +673,12 @@ float ASRPG_GameMode::CalculateAccuracy(AActor* Attacker, AActor* Defender)
 	int32 defenderLUK = defenderStatComponent->GetLUK();
 
 
-	//¸íÁß·ü º¸Á¤°ª + ½ºÅ³ Â÷ÀÌ + ½ºÇÇµå Â÷ÀÌ + °ø°İÀÚÀÇ Çà¿î / 100
-	//º¸Á¤°ªÀº °ÔÀÓ ³­ÀÌµµ¿¡ µû¶ó º¯°æµÉ ¼öµµ ÀÖÀ» µí?
+	//ëª…ì¤‘ë¥  ë³´ì •ê°’ + ìŠ¤í‚¬ ì°¨ì´ + ìŠ¤í”¼ë“œ ì°¨ì´ + ê³µê²©ìì˜ í–‰ìš´ / 100
+	//ë³´ì •ê°’ì€ ê²Œì„ ë‚œì´ë„ì— ë”°ë¼ ë³€ê²½ë  ìˆ˜ë„ ìˆì„ ë“¯?
 	float correction = 80.0f;
 	float accuracy = (correction + (attackerSKL - defenderSKL) + (attackerSpeed - defenderSpeed) + attackerLUK) / 100.0f;
 
-	//¸íÁß·üÀº 0~1»çÀÌ·Î Clamp
+	//ëª…ì¤‘ë¥ ì€ 0~1ì‚¬ì´ë¡œ Clamp
 	accuracy = FMath::Clamp(accuracy, 0.0f, 1.0f);
 
 	return accuracy;
@@ -688,18 +688,18 @@ void ASRPG_GameMode::TryPlayNextOrder()
 {
 	if (bAttackerWaiting && bDefenderWaiting)
 	{
-		//ÀÌ¹Ì Ã³¸®ÇÑ Order¸¦ Áö¿î´Ù.
+		//ì´ë¯¸ ì²˜ë¦¬í•œ Orderë¥¼ ì§€ìš´ë‹¤.
 		if (OrderToPlay.Num() > 0)
 		{
 			OrderToPlay.RemoveAt(0);
 		}
 
-		// Order°¡ ¾ÆÁ÷ ³²¾ÆÀÖ´ÂÁö È®ÀÎ.
+		// Orderê°€ ì•„ì§ ë‚¨ì•„ìˆëŠ”ì§€ í™•ì¸.
 		if (OrderToPlay.Num() > 0)
 		{
 			FAttackOrder& currentOrder = OrderToPlay[0];
 
-			// ´©±º°¡ Á×¾úÀ¸¸é ÀÌÁ¦ Attack ÇÏÁö ¾ÊÀ½.
+			// ëˆ„êµ°ê°€ ì£½ì—ˆìœ¼ë©´ ì´ì œ Attack í•˜ì§€ ì•ŠìŒ.
 			if (IsValid(currentOrder.Defender) && IsValid(currentOrder.Attacker))
 			{
 				UStatComponent* defenderStat = currentOrder.Defender->FindComponentByClass<UStatComponent>();
@@ -768,7 +768,7 @@ void ASRPG_GameMode::CreateGridSystem()
 		}
 	);
 
-	//Grid ¸Ê¿¡ Àå¾Ö¹° Àû¿ë. Åë°ú ºÒ°¡.
+	//Grid ë§µì— ì¥ì• ë¬¼ ì ìš©. í†µê³¼ ë¶ˆê°€.
 	auto pathFindingMap = PathFindingSystem->GetPathNodeMap();
 	for (int32 i = 0; i < X_Length; i++)
 	{
@@ -783,7 +783,7 @@ void ASRPG_GameMode::CreateGridSystem()
 			TArray<TEnumAsByte<EObjectTypeQuery>> objects;
 
 			objects.Add(UEngineTypes::ConvertToObjectType(
-				ECollisionChannel::ECC_GameTraceChannel2)); // ObjectType : Obstacle Obj TypeÀ» °¨ÁöÇÔ. DefaultEngine.ini Âü°í
+				ECollisionChannel::ECC_GameTraceChannel2)); // ObjectType : Obstacle Obj Typeì„ ê°ì§€í•¨. DefaultEngine.ini ì°¸ê³ 
 
 			TArray<AActor*> ignores;
 			TArray<FHitResult> outHits;
@@ -806,7 +806,7 @@ void ASRPG_GameMode::CreateGridSystem()
 
 			//UE_LOG(LogTemp, Warning, TEXT(" Grid(%d : %d) Trace Num : %d"), i, j, outHits.Num());
 
-			//outhitsÀÌ 1°³ ÀÌ»óÀÇ °ªÀ» °¡Áö°í ÀÖ´Ù¸é, ÇØ´ç À§Ä¡¿¡ Àå¾Ö¹°ÀÌ Á¸ÀçÇÏ°í ÀÖ´Â °ÍÀÓ.
+			//outhitsì´ 1ê°œ ì´ìƒì˜ ê°’ì„ ê°€ì§€ê³  ìˆë‹¤ë©´, í•´ë‹¹ ìœ„ì¹˜ì— ì¥ì• ë¬¼ì´ ì¡´ì¬í•˜ê³  ìˆëŠ” ê²ƒì„.
 			if (outHits.Num() > 0)
 			{
 				UPathNode* pathNode = pathFindingMap[grid];
@@ -818,7 +818,7 @@ void ASRPG_GameMode::CreateGridSystem()
 		}
 	}
 
-	//GridModifier Ã¼Å©
+	//GridModifier ì²´í¬
 
 	auto gridObjMap = GridSystem->GetGridObjectMap();
 	for (int32 i = 0; i < X_Length; i++)
@@ -834,7 +834,7 @@ void ASRPG_GameMode::CreateGridSystem()
 			TArray<TEnumAsByte<EObjectTypeQuery>> objects;
 
 			objects.Add(UEngineTypes::ConvertToObjectType(
-				ECollisionChannel::ECC_GameTraceChannel3)); // ObjectType : Obstacle Obj TypeÀ» °¨ÁöÇÔ. DefaultEngine.ini Âü°í
+				ECollisionChannel::ECC_GameTraceChannel3)); // ObjectType : Obstacle Obj Typeì„ ê°ì§€í•¨. DefaultEngine.ini ì°¸ê³ 
 
 			TArray<AActor*> ignores;
 			TArray<FHitResult> outHits;
@@ -857,7 +857,7 @@ void ASRPG_GameMode::CreateGridSystem()
 
 			//UE_LOG(LogTemp, Warning, TEXT(" Grid(%d : %d) Trace Num : %d"), i, j, outHits.Num());
 
-			//outhitsÀÌ 1°³ ÀÌ»óÀÇ °ªÀ» °¡Áö°í ÀÖ´Ù¸é, ÇØ´ç À§Ä¡¿¡ Àå¾Ö¹°ÀÌ Á¸ÀçÇÏ°í ÀÖ´Â °ÍÀÓ.
+			//outhitsì´ 1ê°œ ì´ìƒì˜ ê°’ì„ ê°€ì§€ê³  ìˆë‹¤ë©´, í•´ë‹¹ ìœ„ì¹˜ì— ì¥ì• ë¬¼ì´ ì¡´ì¬í•˜ê³  ìˆëŠ” ê²ƒì„.
 			if (outHits.Num() > 0)
 			{
 				UGridObject* gridObj = gridObjMap[grid];
@@ -874,19 +874,19 @@ void ASRPG_GameMode::CreateGridSystem()
 
 TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit, bool bCalculateToTarget)
 {
-	//!ÁÖÀÇ! return ÇÏ±â Àü¿¡ PathLength¸¦ º¯°æ½ÃÄÑ¾ßÇÔ.
+	//!ì£¼ì˜! return í•˜ê¸° ì „ì— PathLengthë¥¼ ë³€ê²½ì‹œì¼œì•¼í•¨.
 
-	//PathLengthÀÇ Á¸Àç ÀÌÀ¯´Â, Àå¾Ö¹°ÀÌ³ª ´Ù¸¥ ±âÅ¸ ÀÌÀ¯·Î ¿ìÈ¸ÇÒ ¶§
-	//ÀÌµ¿·Â¿¡ ÀÇÇØ ´êÀ» ¼ö ÀÖ´Â À§Ä¡ÀÎÁö È®ÀÎÇØ¾ßÇÔ.
-	//¿¹½Ã) ÀÌµ¿·ÂÀÌ 5ÀÎ À¯´ÖÀº ÇØ´ç À§Ä¡±îÁö °¡´Â PathLength°¡ 5 ÀÌÇÏÀÏ ¶§¸¸ Valid.
+	//PathLengthì˜ ì¡´ì¬ ì´ìœ ëŠ”, ì¥ì• ë¬¼ì´ë‚˜ ë‹¤ë¥¸ ê¸°íƒ€ ì´ìœ ë¡œ ìš°íšŒí•  ë•Œ
+	//ì´ë™ë ¥ì— ì˜í•´ ë‹¿ì„ ìˆ˜ ìˆëŠ” ìœ„ì¹˜ì¸ì§€ í™•ì¸í•´ì•¼í•¨.
+	//ì˜ˆì‹œ) ì´ë™ë ¥ì´ 5ì¸ ìœ ë‹›ì€ í•´ë‹¹ ìœ„ì¹˜ê¹Œì§€ ê°€ëŠ” PathLengthê°€ 5 ì´í•˜ì¼ ë•Œë§Œ Valid.
 
-	TArray<UPathNode*> openList; 	//openList = ÀÌµ¿ °¡´ÉÇÒ À§Ä¡. HeapÀ¸·Î »ç¿ëÇÔ.
-	TSet<UPathNode*> closeSet; 	//closeSet = ÀÌµ¿ ºÒ°¡´ÉÇÑ À§Ä¡. ºü¸¥ °Ë»ö¿ë TSet
+	TArray<UPathNode*> openList; 	//openList = ì´ë™ ê°€ëŠ¥í•  ìœ„ì¹˜. Heapìœ¼ë¡œ ì‚¬ìš©í•¨.
+	TSet<UPathNode*> closeSet; 	//closeSet = ì´ë™ ë¶ˆê°€ëŠ¥í•œ ìœ„ì¹˜. ë¹ ë¥¸ ê²€ìƒ‰ìš© TSet
 
-	//HeapÈ­ == PriorityQueue
+	//Heapí™” == PriorityQueue
 	openList.Heapify(UPathNode::PathFindingPredicated);
 
-	//½ÃÀÛ À§Ä¡
+	//ì‹œì‘ ìœ„ì¹˜
 	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
 	if (!IsValid(startNode))
 	{
@@ -895,7 +895,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 		return TArray<FGrid>();
 	}
 
-	//¸ñÇ¥ À§Ä¡
+	//ëª©í‘œ ìœ„ì¹˜
 	UPathNode* endNode = PathFindingSystem->GetValidPathNode(End);
 	if (!IsValid(endNode))
 	{
@@ -904,11 +904,11 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 		return TArray<FGrid>();
 	}
 
-	//¸ğµç PathNode¸¦ ÃÊ±âÈ­ ÇÑ µÚ¿¡ ½ÃÀÛÇÔ.
+	//ëª¨ë“  PathNodeë¥¼ ì´ˆê¸°í™” í•œ ë’¤ì— ì‹œì‘í•¨.
 	InitAllPathFindingNodes();
 
-	//startNode »óÅÂ
-	//G = 0 , H = ¿¹»óµÇ´Â Á÷¼± ±æÀÌ(X+Y), F = G+H
+	//startNode ìƒíƒœ
+	//G = 0 , H = ì˜ˆìƒë˜ëŠ” ì§ì„  ê¸¸ì´(X+Y), F = G+H
 	startNode->SetGCost(0);
 	startNode->SetHCost(CalculateGridDistance(Start, End));
 	startNode->CalculateFCost();
@@ -919,11 +919,11 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 	{
 		UPathNode* currentNode = GetLowestFCostNode(openList);
 
-		openList.Remove(currentNode); // ÇöÀç À§Ä¡¸¦ Openlist¿¡¼­ Á¦°Å
+		openList.Remove(currentNode); // í˜„ì¬ ìœ„ì¹˜ë¥¼ Openlistì—ì„œ ì œê±°
 
 		if (currentNode->GetGCost() > MaxMoveCost)
 		{
-			//ÀÌ À§Ä¡·Î´Â ÀÌµ¿ÇÒ ¼ö ¾øÀ½. ´Ù¸¥ ±æÀ» Ã£¾Æ¾ßÇÔ.
+			//ì´ ìœ„ì¹˜ë¡œëŠ” ì´ë™í•  ìˆ˜ ì—†ìŒ. ë‹¤ë¥¸ ê¸¸ì„ ì°¾ì•„ì•¼í•¨.
 			continue;
 		}
 
@@ -933,8 +933,8 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 			AUnit* currentUnit = GetUnitAtGrid(currentGrid);
 			AUnit* startUnit = GetUnitAtGrid(Start);
 
-			//Àû±ºÀÌµç ¾Æ±ºÀÌµç ´©±º°¡°¡ Á¸ÀçÇÑ´Ù¸é, ÇØ´ç Grid¸¦ Á¡À¯ÇÒ ¼ö ¾øÀ¸¹Ç·Î °æ·Î°¡ Á¸ÀçÇÒ ¼ö ¾ø°ÔµÊ.
-			//´Ù¸¸, ÀÚ±â ÀÚ½ÅÀÌ¶ó¸é °¡´ÉÇÔ.
+			//ì êµ°ì´ë“  ì•„êµ°ì´ë“  ëˆ„êµ°ê°€ê°€ ì¡´ì¬í•œë‹¤ë©´, í•´ë‹¹ Gridë¥¼ ì ìœ í•  ìˆ˜ ì—†ìœ¼ë¯€ë¡œ ê²½ë¡œê°€ ì¡´ì¬í•  ìˆ˜ ì—†ê²Œë¨.
+			//ë‹¤ë§Œ, ìê¸° ìì‹ ì´ë¼ë©´ ê°€ëŠ¥í•¨.
 			if (!bCalculateToTarget && IsValid(currentUnit) && currentUnit != startUnit)
 			{
 				PathLength = -1;
@@ -950,22 +950,22 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 		TArray<UPathNode*> nearNodeArray = GetNearNodeArray(currentNode);
 		for (UPathNode* nearNode : nearNodeArray)
 		{
-			//close Set ¾È¿¡ ÀÖ´Â ³ëµå´Â ¹«½Ã.
+			//close Set ì•ˆì— ìˆëŠ” ë…¸ë“œëŠ” ë¬´ì‹œ.
 			if (closeSet.Contains(nearNode))
 			{
 				continue;
 			}
 
-			//°ÉÀ» ¼ö ¾ø´Â À§Ä¡ ¹«½Ã.
+			//ê±¸ì„ ìˆ˜ ì—†ëŠ” ìœ„ì¹˜ ë¬´ì‹œ.
 			if (nearNode->GetIsWalkable() == false)
 			{
 				closeSet.Add(nearNode);
 				continue;
 			}
 
-			//bCanIgnoreUnitÀÌ trueÀÏ ¶§, Àû À¯´ÖÀ» Åë°úÇÒ ¼ö ÀÖÀ½.
-			//GridVisualÀº ¿©±â°¡ ¾Æ´Ï¶ó MoveActionComponent¿¡¼­ ValidGridVisualÀ» Ã¼Å©ÇÔ.
-			//À¯´Ö Á¤º¸´Â GridSystem¿¡ Á¢±ÙÀÌ ÇÊ¿äÇÔ.
+			//bCanIgnoreUnitì´ trueì¼ ë•Œ, ì  ìœ ë‹›ì„ í†µê³¼í•  ìˆ˜ ìˆìŒ.
+			//GridVisualì€ ì—¬ê¸°ê°€ ì•„ë‹ˆë¼ MoveActionComponentì—ì„œ ValidGridVisualì„ ì²´í¬í•¨.
+			//ìœ ë‹› ì •ë³´ëŠ” GridSystemì— ì ‘ê·¼ì´ í•„ìš”í•¨.
 			UGridObject* gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
 			if (!bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
@@ -975,11 +975,11 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 				{
 					if (currentUnit->ActorHasTag(startUnit->Tags[0]))
 					{
-						//¾Æ±ºÀÌ¸é ÀÏ´Ü Åë°ú°¡ °¡´ÉÇÔ.
+						//ì•„êµ°ì´ë©´ ì¼ë‹¨ í†µê³¼ê°€ ê°€ëŠ¥í•¨.
 					}
 					else
 					{
-						//¾Æ±ºÀÌ ¾Æ´Ï¶ó¸é Åë°ú°¡ ºÒ°¡´ÉÇÔ.
+						//ì•„êµ°ì´ ì•„ë‹ˆë¼ë©´ í†µê³¼ê°€ ë¶ˆê°€ëŠ¥í•¨.
 						closeSet.Add(nearNode);
 						continue;
 					}
@@ -988,10 +988,10 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 
 
 			//F = G + H;
-			//G : ÇöÀç±îÁöÀÇ Cost
-			//H : ¾ÕÀ¸·Î ¿¹»óµÇ´Â Cost
+			//G : í˜„ì¬ê¹Œì§€ì˜ Cost
+			//H : ì•ìœ¼ë¡œ ì˜ˆìƒë˜ëŠ” Cost
 
-			//G = ÇöÀç±îÁöÀÇ GCost + ´ÙÀ½³ëµå ÁøÀÔ¿¡ ÇÊ¿äÇÑ Cost
+			//G = í˜„ì¬ê¹Œì§€ì˜ GCost + ë‹¤ìŒë…¸ë“œ ì§„ì…ì— í•„ìš”í•œ Cost
 			int tempGCost = currentNode->GetGCost() + nearNode->GetGridCost();
 
 			if (tempGCost < nearNode->GetGCost())
@@ -1009,7 +1009,7 @@ TArray<FGrid> ASRPG_GameMode::FindPath(const FGrid& Start, const FGrid& End, int
 		}
 	}
 
-	//openList.Num() > 0ÀÎ Á¶°ÇÀÌ ³¡³¯ ¶§±îÁö ¿Ã¹Ù¸¥ °æ·Î¸¦ ¸øÃ£¾Ò´Ù¸é ½ÇÆĞ.
+	//openList.Num() > 0ì¸ ì¡°ê±´ì´ ëë‚  ë•Œê¹Œì§€ ì˜¬ë°”ë¥¸ ê²½ë¡œë¥¼ ëª»ì°¾ì•˜ë‹¤ë©´ ì‹¤íŒ¨.
 	PathLength = -1;
 	return TArray<FGrid>();
 }
@@ -1026,7 +1026,7 @@ UPathNode* ASRPG_GameMode::GetLowestFCostNode(TArray<UPathNode*>& PathNodeList)
 		return nullptr;
 	}
 
-	//PathNodeList´Â FindPath¿¡¼­ Heapify°¡ µÆ´Ù. HeapÀÇ Ã¹¹øÂ° ¿ø¼Ò°¡ °¡Àå F °ªÀÌ ³·Àº Node´Ù.
+	//PathNodeListëŠ” FindPathì—ì„œ Heapifyê°€ ëë‹¤. Heapì˜ ì²«ë²ˆì§¸ ì›ì†Œê°€ ê°€ì¥ F ê°’ì´ ë‚®ì€ Nodeë‹¤.
 	UPathNode* lowestNode = PathNodeList[0];
 
 	return lowestNode;
@@ -1039,9 +1039,9 @@ TArray<FGrid> ASRPG_GameMode::CalculatePath(UPathNode* EndNode) const
 		return TArray<FGrid>();
 	}
 
-	//Path¸¦ ¾ò´Â ¹ı
-	//PathFindingÀ» ÇÑ ÈÄ, ¸ñÇ¥ ÁöÁ¡ ³ëµåºÎÅÍ Parent¸¦ °è¼Ó ¿Ã¶ó°¡¸é¼­ Grid °ªÀ» ¾ò¾î³½´Ù.
-	//±× Grid °á°ú¸¦ µÚÁıÀ¸¸é Start -> End ±îÁöÀÇ Path´Ù.
+	//Pathë¥¼ ì–»ëŠ” ë²•
+	//PathFindingì„ í•œ í›„, ëª©í‘œ ì§€ì  ë…¸ë“œë¶€í„° Parentë¥¼ ê³„ì† ì˜¬ë¼ê°€ë©´ì„œ Grid ê°’ì„ ì–»ì–´ë‚¸ë‹¤.
+	//ê·¸ Grid ê²°ê³¼ë¥¼ ë’¤ì§‘ìœ¼ë©´ Start -> End ê¹Œì§€ì˜ Pathë‹¤.
 	TArray<FGrid> gridArray;
 
 	gridArray.Add(EndNode->GetGrid());
@@ -1052,7 +1052,7 @@ TArray<FGrid> ASRPG_GameMode::CalculatePath(UPathNode* EndNode) const
 		current = current->GetParentNode();
 	}
 
-	//°á°ú¸¦ reverseÇÏ¸é ¿Ã¹Ù¸¥ ¹æÇâÀÇ °æ·Î°¡ ³ª¿È.
+	//ê²°ê³¼ë¥¼ reverseí•˜ë©´ ì˜¬ë°”ë¥¸ ë°©í–¥ì˜ ê²½ë¡œê°€ ë‚˜ì˜´.
 	Algo::Reverse(gridArray);
 
 	return gridArray;
@@ -1060,8 +1060,8 @@ TArray<FGrid> ASRPG_GameMode::CalculatePath(UPathNode* EndNode) const
 
 TArray<UPathNode*> ASRPG_GameMode::GetNearNodeArray(UPathNode* CurrentNode) const
 {
-	//PathFinding¿¡¼­ »ç¿ëÇÒ ÇöÀç À§Ä¡ÀÇ »óÇÏÁÂ¿ì Node¸¦ Ã£´Â Function
-	//¸¸¾à, Á¸ÀçÇÏÁö ¾Ê´Â ³ëµå¶ó¸é NearNode·Î Ãß°¡ÇÏÁö ¾ÊÀ½.
+	//PathFindingì—ì„œ ì‚¬ìš©í•  í˜„ì¬ ìœ„ì¹˜ì˜ ìƒí•˜ì¢Œìš° Nodeë¥¼ ì°¾ëŠ” Function
+	//ë§Œì•½, ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ë…¸ë“œë¼ë©´ NearNodeë¡œ ì¶”ê°€í•˜ì§€ ì•ŠìŒ.
 
 	TArray<UPathNode*> nearNodeList;
 
@@ -1094,7 +1094,7 @@ TArray<UPathNode*> ASRPG_GameMode::GetNearNodeArray(UPathNode* CurrentNode) cons
 
 bool ASRPG_GameMode::HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost, bool bCanIgnoreUnit)
 {
-	//FindPathÀÇ °á°ú Áß PathLength°¡ -1ÀÌ¸é À§Ä¡±îÁöÀÇ °æ·Î°¡ Á¸ÀçÇÏÁö ¾ÊÀ½.
+	//FindPathì˜ ê²°ê³¼ ì¤‘ PathLengthê°€ -1ì´ë©´ ìœ„ì¹˜ê¹Œì§€ì˜ ê²½ë¡œê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŒ.
 
 	int32 pathLength = 0;
 	FindPath(Start, End, pathLength, MaxMoveCost, bCanIgnoreUnit);
@@ -1104,8 +1104,8 @@ bool ASRPG_GameMode::HasPath(const FGrid& Start, const FGrid& End, int32 MaxMove
 
 void ASRPG_GameMode::InitAllPathFindingNodes()
 {
-	//PathFindingGridSystemÀÇ Grid °ªÀ» PathFinding¿¡ ÀÌ¿ëÇÒ ¼ö ÀÖµµ·Ï ÀüºÎ ÃÊ±âÈ­.
-	//G = ¹«ÇÑ´ë(int32 ÃÖ´ë°ª) , H = 0 , F = G + H = ¹«ÇÑ´ë
+	//PathFindingGridSystemì˜ Grid ê°’ì„ PathFindingì— ì´ìš©í•  ìˆ˜ ìˆë„ë¡ ì „ë¶€ ì´ˆê¸°í™”.
+	//G = ë¬´í•œëŒ€(int32 ìµœëŒ€ê°’) , H = 0 , F = G + H = ë¬´í•œëŒ€
 
 	TMap<FGrid, UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
 	TMap<FGrid, UGridObject*> gridObjs = GridSystem->GetGridObjectMap();
@@ -1143,8 +1143,8 @@ void ASRPG_GameMode::InitAllPathFindingNodes()
 
 TArray<AUnit*> ASRPG_GameMode::GetUnitArrayAtGrid(const FGrid& GridValue) const
 {
-	//Grid À§¿¡ ÀÖ´Â UnitÀ» ¾òÀ½.
-	//ÀÌ FunctionÀº UnitÀÌ ¿©·¯°³ÀÏ ¶§¸¦ °¡Á¤ÇÔ.
+	//Grid ìœ„ì— ìˆëŠ” Unitì„ ì–»ìŒ.
+	//ì´ Functionì€ Unitì´ ì—¬ëŸ¬ê°œì¼ ë•Œë¥¼ ê°€ì •í•¨.
 
 	UGridObject* gridObject = GridSystem->GetValidGridObject(GridValue);
 	if (!IsValid(gridObject))
@@ -1158,7 +1158,7 @@ TArray<AUnit*> ASRPG_GameMode::GetUnitArrayAtGrid(const FGrid& GridValue) const
 
 TArray<AUnit*> ASRPG_GameMode::GetAllUnitInGridSystem() const
 {
-	//ÇöÀç Grid À§¿¡ Á¸ÀçÇÏ´Â ¸ğµç UnitÀ» ¾ò¾î³¿.
+	//í˜„ì¬ Grid ìœ„ì— ì¡´ì¬í•˜ëŠ” ëª¨ë“  Unitì„ ì–»ì–´ëƒ„.
 
 	TMap<FGrid, UGridObject*> gridObjs = GetAllGridObjectsThatHasUnit();
 
@@ -1179,8 +1179,8 @@ TArray<AUnit*> ASRPG_GameMode::GetAllUnitInGridSystem() const
 
 AUnit* ASRPG_GameMode::GetUnitAtGrid(const FGrid& GridValue) const
 {
-	//Grid À§¿¡ ÀÖ´Â UnitÀ» ¾òÀ½.
-		//ÀÌ FunctionÀº UnitÀÌ ÇÏ³ªÀÏ ¶§¸¦ °¡Á¤ÇÔ.
+	//Grid ìœ„ì— ìˆëŠ” Unitì„ ì–»ìŒ.
+		//ì´ Functionì€ Unitì´ í•˜ë‚˜ì¼ ë•Œë¥¼ ê°€ì •í•¨.
 
 	TArray<AUnit*> gridArray = GetUnitArrayAtGrid(GridValue);
 
@@ -1194,7 +1194,7 @@ AUnit* ASRPG_GameMode::GetUnitAtGrid(const FGrid& GridValue) const
 
 bool ASRPG_GameMode::HasAnyUnitOnGrid(const FGrid& GridValue) const
 {
-	//Grid À§¿¡ UnitÀÌ Á¸ÀçÇÏ´ÂÁö È®ÀÎ.
+	//Grid ìœ„ì— Unitì´ ì¡´ì¬í•˜ëŠ”ì§€ í™•ì¸.
 
 	UGridObject* gridObj = GridSystem->GetValidGridObject(GridValue);
 	if (IsValid(gridObj))
@@ -1207,8 +1207,8 @@ bool ASRPG_GameMode::HasAnyUnitOnGrid(const FGrid& GridValue) const
 
 bool ASRPG_GameMode::IsWalkableGrid(const FGrid& GridValue) const
 {
-	//Àå¾Ö¹°, ³ôÀº º®, ¿ë¾Ï? µîÀÇ À¯´ÖÀÌ ¿Ã¶ó°¥ ¼ö ¾ø´Â À§Ä¡ÀÎÁö È®ÀÎÇÔ
-	//TODO : °øÁß À¯´ÖÀÇ °æ¿ì¸¦ »ı°¢ÇØ¾ßÇÔ.
+	//ì¥ì• ë¬¼, ë†’ì€ ë²½, ìš©ì•”? ë“±ì˜ ìœ ë‹›ì´ ì˜¬ë¼ê°ˆ ìˆ˜ ì—†ëŠ” ìœ„ì¹˜ì¸ì§€ í™•ì¸í•¨
+	//TODO : ê³µì¤‘ ìœ ë‹›ì˜ ê²½ìš°ë¥¼ ìƒê°í•´ì•¼í•¨.
 
 	UPathNode* pathNode = PathFindingSystem->GetValidPathNode(GridValue);
 	if (IsValid(pathNode))
