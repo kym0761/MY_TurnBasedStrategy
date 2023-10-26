@@ -7,6 +7,7 @@
 #include "Grid/Grid.h"
 #include "InputActionValue.h"
 #include "Manager/Turn.h"
+#include "Interface/ControlPawnInterface.h"
 #include "UnitControlPawn.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitControlDelegate);
@@ -23,7 +24,7 @@ class UMainCanvasWidget;
 class AUnit;
 
 /*
-* Player°¡ »ç¿ëÇÒ UnitControlPawn.
+* Playerê°€ ì‚¬ìš©í•  UnitControlPawn.
 */
 
 UENUM(BlueprintType)
@@ -45,7 +46,7 @@ enum class EPawnDoing : uint8
 
 
 UCLASS(abstract)
-class TURNBASEDSTRATEGY_API AUnitControlPawn : public APawn
+class TURNBASEDSTRATEGY_API AUnitControlPawn : public APawn, public IControlPawnInterface
 {
 	GENERATED_BODY()
 
@@ -115,16 +116,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		UUnitActionComponent* SelectedAction;
 
-	//ÇÃ·¹ÀÌ¾î PawnÀÌ ÇöÀç ¾î¶² ¸ğµåÀÎÁö µû¶ó¼­ ¼±ÅÃÇÒ ¶§ÀÇ Çàµ¿ÀÌ ´Ş¶óÁü
-	//Selection : Enter·Î UnitSelect°¡´É
-	//Action : ¼±ÅÃµÈ À¯´Ö°ú Action¿¡ ´ëÇÑ Çàµ¿À» ÇÔ.
-	//UI : Enter·Î UI Á¶ÀÛ
+	//í”Œë ˆì´ì–´ Pawnì´ í˜„ì¬ ì–´ë–¤ ëª¨ë“œì¸ì§€ ë”°ë¼ì„œ ì„ íƒí•  ë•Œì˜ í–‰ë™ì´ ë‹¬ë¼ì§
+	//Selection : Enterë¡œ UnitSelectê°€ëŠ¥
+	//Action : ì„ íƒëœ ìœ ë‹›ê³¼ Actionì— ëŒ€í•œ í–‰ë™ì„ í•¨.
+	//UI : Enterë¡œ UI ì¡°ì‘
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
 		EPawnMode PawnMode = EPawnMode::Selection;
 
-	//¾î¶² ÅÏ¿¡ ¹İÀÀÇÒ °ÍÀÎÁö ³ªÅ¸³¿.
+	//ì–´ë–¤ í„´ì— ë°˜ì‘í•  ê²ƒì¸ì§€ ë‚˜íƒ€ëƒ„.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		ETurnType PawnTurnType = ETurnType::PlayerTurn;
+		ETurnType PawnTurnType = ETurnType::Team01Turn;
 
 protected:
 	// Called when the game starts or when spawned
@@ -164,6 +165,6 @@ public:
 	UFUNCTION()
 		virtual void OnUnitActionCompleted();
 
-	void FindAllPlayerUnits();
+	void FindAllManagingUnits() override;
 
 };

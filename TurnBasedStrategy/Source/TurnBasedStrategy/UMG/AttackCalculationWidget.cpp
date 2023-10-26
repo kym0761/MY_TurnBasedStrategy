@@ -8,7 +8,9 @@
 #include "CalculationUnitStatWidget.h"
 #include "Components/TextBlock.h"
 #include "AttackOrderWidget.h"
-#include "Manager/SRPG_GameMode.h"
+//#include "Manager/SRPG_GameMode.h"
+
+#include "Manager/BattleManager.h"
 
 #include "DebugHelper.h"
 
@@ -16,10 +18,10 @@ UAttackCalculationWidget::UAttackCalculationWidget(const FObjectInitializer& Obj
 	: Super(ObjectInitializer)
 {
 
-	//ButtonÀÌ Focus°¡ ÀâÇô¾ßÇÔ.
+	//Buttonì´ Focusê°€ ì¡í˜€ì•¼í•¨.
 	if (IsValid(Button_Attack))
 	{
-		//TODO : IsFocusable Deprecated.. -> ±Ùµ¥ SetÇÔ¼ö°¡ ¾ø´Â °Í °°À½.
+		//TODO : IsFocusable Deprecated.. -> ê·¼ë° Setí•¨ìˆ˜ê°€ ì—†ëŠ” ê²ƒ ê°™ìŒ.
 		Button_Attack->IsFocusable = true;
 	}
 }
@@ -28,7 +30,7 @@ void UAttackCalculationWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	//È¤½Ã³ª Á¸ÀçÇÒ Example Attack Order µéÀ» Á¦°ÅÇÏ°í ½ÃÀÛÇÔ.
+	//í˜¹ì‹œë‚˜ ì¡´ì¬í•  Example Attack Order ë“¤ì„ ì œê±°í•˜ê³  ì‹œì‘í•¨.
 	VerticalBox_AttackOrder->ClearChildren();
 
 	if (IsValid(Button_Attack))
@@ -39,8 +41,8 @@ void UAttackCalculationWidget::NativeConstruct()
 
 void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, AActor* InDefender)
 {
-	// Attacker¿Í Defender ÀÇ ½ºÅÈÀ» º¸¿©ÁÖ°í
-	// AttackManager¿¡°Ô¼­ AttackOrder Á¤º¸¸¦ °¡Á®¿È.
+	// Attackerì™€ Defender ì˜ ìŠ¤íƒ¯ì„ ë³´ì—¬ì£¼ê³ 
+	// AttackManagerì—ê²Œì„œ AttackOrder ì •ë³´ë¥¼ ê°€ì ¸ì˜´.
 
 	if (IsValid(Button_Attack))
 	{
@@ -62,14 +64,14 @@ void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, A
 		return;
 	}
 
-	//¾Æ±º Stat ¹× ÀÌ¸§
+	//ì•„êµ° Stat ë° ì´ë¦„
 	CalculationStat_Ally->UpdateCalculationUnitStat(Attacker, Defender);
 	if (IsValid(TextBlock_AllyName))
 	{
 		TextBlock_AllyName->SetText(FText::FromString(Attacker->GetActorLabel()));
 	}
 
-	//Àû±º Stat ¹× ÀÌ¸§
+	//ì êµ° Stat ë° ì´ë¦„
 	CalculationStat_Enemy->UpdateCalculationUnitStat(Defender, Attacker);
 	if (IsValid(TextBlock_EnemyName))
 	{
@@ -83,14 +85,13 @@ void UAttackCalculationWidget::InitAttackCalculationWidget(AActor* InAttacker, A
 
 void UAttackCalculationWidget::OnButton_AttackClicked()
 {
-	//°ø°İÀ» ½ÇÇàÇÏ°í Attack UI Á¦°Å.
+	//ê³µê²©ì„ ì‹¤í–‰í•˜ê³  Attack UI ì œê±°.
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	ABattleManager* battleManager = ABattleManager::GetBattleManager();
 
-	if (IsValid(gameMode))
+	if (IsValid(battleManager))
 	{
-		gameMode->SetupAttackManaging(Attacker, Defender);
-		gameMode->StartAttack();
+		battleManager->StartBattle(Attacker, Defender);
 	}
 
 
@@ -100,7 +101,7 @@ void UAttackCalculationWidget::OnButton_AttackClicked()
 
 void UAttackCalculationWidget::SetAttackOrders()
 {
-	//AttackManager¿¡°Ô¼­ Attacker¿Í DefenderÀÇ °ø°İ ¿¹»ó °á°ú¸¦ °¡Á®¿È.
+	//AttackManagerì—ê²Œì„œ Attackerì™€ Defenderì˜ ê³µê²© ì˜ˆìƒ ê²°ê³¼ë¥¼ ê°€ì ¸ì˜´.
 
 	if (!IsValid(AllyAttackOrder) || !IsValid(EnemyAttackOrder))
 	{
@@ -108,26 +109,27 @@ void UAttackCalculationWidget::SetAttackOrders()
 		return;
 	}
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	ABattleManager* battleManager = ABattleManager::GetBattleManager();
+
+	if (!IsValid(battleManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("battleManager is Invalid."));
 		return;
 	}
 
-	gameMode->SetupAttackManaging(Attacker, Defender);
-	AttackOrders = gameMode->GetAttackOrder();
+	battleManager->SetupBattle(Attacker, Defender);
+	BattleOrders = battleManager->GetBattleOrder();
 
-	//°ø°İ or ¹İ°İ Á¤º¸¸¦ ParsingÇÏ¿© UI¿¡ ÃÖÁ¾ ¹İ¿µ.
-	for (FAttackOrder& order : AttackOrders)
+	//ê³µê²© or ë°˜ê²© ì •ë³´ë¥¼ Parsingí•˜ì—¬ UIì— ìµœì¢… ë°˜ì˜.
+	for (FBattleOrder& order : BattleOrders)
 	{
 		UAttackOrderWidget* orderWidget = nullptr;
-		switch (order.AttackOrderType)
+		switch (order.OrderOwnerType)
 		{
-		case EAttackOrderType::Attack:
+		case EOrderOwnerType::Attacker:
 			orderWidget = CreateWidget<UAttackOrderWidget>(GetWorld(), AllyAttackOrder);
 			break;
-		case EAttackOrderType::Defend:
+		case EOrderOwnerType::Defender:
 			orderWidget = CreateWidget<UAttackOrderWidget>(GetWorld(), EnemyAttackOrder);
 			break;
 		default:
@@ -137,8 +139,8 @@ void UAttackCalculationWidget::SetAttackOrders()
 
 		if (IsValid(orderWidget))
 		{
+			orderWidget->InitBattleOrderWidget(order);
 			VerticalBox_AttackOrder->AddChild(orderWidget);
-			orderWidget->InitAttackOrderWidget(order);
 		}
 
 	}

@@ -5,21 +5,24 @@
 #include "UnitCore/StatComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
-#include "Manager/SRPG_GameMode.h"
+//#include "Manager/SRPG_GameMode.h"
+
+#include "Manager/BattleManager.h"
+
+#include "DebugHelper.h"
 
 void UCalculationUnitStatWidget::UpdateCalculationUnitStat(AActor* StatOwner, AActor* Opponent)
 {
-	auto gamemode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	auto battleManager = ABattleManager::GetBattleManager();
 
-	if (!gamemode)
+	if (!battleManager)
 	{
+		Debug::Print("battleManager is Invalid.");
 		return;
 	}
 
 	
 	auto ownerStat = StatOwner->FindComponentByClass<UStatComponent>();
-	//auto opponentStat = Opponent->FindComponentByClass<UStatComponent>();
-
 
 	float hp = ownerStat->GetHP();
 	float maxhp = ownerStat->GetMaxHP();
@@ -30,10 +33,10 @@ void UCalculationUnitStatWidget::UpdateCalculationUnitStat(AActor* StatOwner, AA
 	int32 str = ownerStat->GetSTR();
 	TextBlock_DMG->SetText(FText::FromString(FString::FromInt(str)));
 
-	float hit = gamemode->CalculateAccuracy(StatOwner, Opponent) * 100.0f;
+	float hit = battleManager->CalculateAccuracy(StatOwner, Opponent) * 100.0f;
 	TextBlock_Hit->SetText(FText::FromString(FString::SanitizeFloat(hit) + FString(" %")));
 
-	float crit = gamemode->CalculateCriticalRate(StatOwner, Opponent) * 100.0f;
+	float crit = battleManager->CalculateCriticalRate(StatOwner, Opponent) * 100.0f;
 	TextBlock_Crit->SetText(FText::FromString(FString::SanitizeFloat(crit) + FString(" %")));
 
 }

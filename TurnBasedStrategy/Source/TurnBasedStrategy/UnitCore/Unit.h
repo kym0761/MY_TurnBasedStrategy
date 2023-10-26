@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid/Grid.h"
+#include "Manager/Turn.h"
 #include "UnitAction/UnitAction.h"
 #include "Unit.generated.h"
 
@@ -13,7 +14,7 @@ class UUnitMoveActionComponent;
 class UUnitActionComponent;
 class UUnitAttackActionComponent;
 class UUnitInteractActionComponent;
-class UWaitActionComponent;
+class UUnitWaitActionComponent;
 class ADamageTextActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature);
@@ -45,21 +46,25 @@ public:
 		UUnitInteractActionComponent* UnitInteractActionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
-		UWaitActionComponent* WaitActionComponent;
+		UUnitWaitActionComponent* UnitWaitActionComponent;
 
 	FUnitDelegateSignature OnFinishAllAction;
-
+	FUnitDelegateSignature OnUnitDestroyed;
 private:
 
-	////ÇöÀç Grid À§Ä¡ °ª
+	////í˜„ìž¬ Grid ìœ„ì¹˜ ê°’
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	//	FGrid Grid;
+
+	ETeamType TeamType;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void BindToBattleManager();
 
 public:
 	// Called every frame
@@ -86,4 +91,5 @@ public:
 
 	bool IsThisUnitCanAction() const;
 
+	ETeamType GetTeamType() const;
 };

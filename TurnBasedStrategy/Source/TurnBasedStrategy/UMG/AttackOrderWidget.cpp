@@ -4,7 +4,7 @@
 #include "AttackOrderWidget.h"
 #include "Components/TextBlock.h"
 
-void UAttackOrderWidget::InitAttackOrderWidget(FAttackOrder& Order)
+void UAttackOrderWidget::InitBattleOrderWidget(FBattleOrder& Order)
 {
 	if (!IsValid(TextBlock_Damage))
 	{

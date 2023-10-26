@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Manager/Turn.h"
 #include "AttackOrderWidget.generated.h"
 
 class UTextBlock;
 
 /**
- * ÇÑ °ø°İ¿¡ ´ëÇÑ Visual Á¤º¸¸¦ ´ãÀº Widget
- * AttackCalculationWidgetÀÇ VerticalBox_AttackOrder ¾È¿¡ µé¾î°¨.
- * TODO : À¯´Ö Á×À½, È¸º¹ µîÀÇ Á¤º¸µµ º¸ÀÏ ¼ö ÀÖ°Ô ÇØ¾ßÇÔ.
+ * í•œ ê³µê²©ì— ëŒ€í•œ Visual ì •ë³´ë¥¼ ë‹´ì€ Widget
+ * AttackCalculationWidgetì˜ VerticalBox_AttackOrder ì•ˆì— ë“¤ì–´ê°.
+ * TODO : ìœ ë‹› ì£½ìŒ, íšŒë³µ ë“±ì˜ ì •ë³´ë„ ë³´ì¼ ìˆ˜ ìˆê²Œ í•´ì•¼í•¨.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UAttackOrderWidget : public UUserWidget
@@ -25,6 +26,6 @@ public:
 
 public:
 
-	void InitAttackOrderWidget(FAttackOrder& Order);
+	void InitBattleOrderWidget(FBattleOrder& Order);
 
 };

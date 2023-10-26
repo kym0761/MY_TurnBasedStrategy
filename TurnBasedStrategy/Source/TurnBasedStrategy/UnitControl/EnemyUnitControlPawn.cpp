@@ -2,16 +2,17 @@
 
 
 #include "EnemyUnitControlPawn.h"
-#include "Manager/SRPG_GameMode.h"
+//#include "Manager/SRPG_GameMode.h"
 #include "UnitCore/Unit.h"
 #include "UnitAction/UnitMoveActionComponent.h"
 #include "UnitAction/UnitAttackActionComponent.h"
+#include "Manager/TurnManager.h"
 
 #include "DebugHelper.h"
 
 AEnemyUnitControlPawn::AEnemyUnitControlPawn()
 {
-	PawnTurnType = ETurnType::EnemyTurn;
+	PawnTurnType = ETurnType::Team02Turn;
 }
 
 void AEnemyUnitControlPawn::BeginPlay()
@@ -30,77 +31,26 @@ void AEnemyUnitControlPawn::TriggerToPlay()
 {
 	Debug::Print(DEBUG_TEXT("TriggerToPlay"));
 
-	//TODO : ÇöÀç, À¯´ÖÀÌ Á×¾úÀ» »óÈ²¿¡¼­´Â AI ControlÀÌ Á¤»óÀûÀ¸·Î µ¿ÀÛÇÏÁö ¾ÊÀ½. 
-	//¿¹½Ã) ÇÃ·¹ÀÌ¾îÀÇ ¸¶Áö¸· À¯´ÖÀÌ °ø°İÀ» ÇßÀ» ¶§ Àû À¯´ÖÀÌ Á×¾úÀ» °æ¿ì, ¿¹½Ã2) AIÀÇ À¯´ÖÀÌ °ø°İ Áß¿¡ AIÀÇ À¯´ÖÀÌ Á×¾úÀ» °æ¿ì. È¤Àº ÇÃ·¹ÀÌ¾î À¯´ÖÀÌ Á×¾úÀ» °æ¿ì.
-	//ÇØ°áÃ¥ ¿¹»ó : À¯´ÖÀÌ Á×À» ¶§, ¾Ö´Ï¸ŞÀÌ¼Ç Ã³¸® ¹× À¯´Ö »èÁ¦ ½Ã°£±îÁö´Â Busy Ã³¸®ÇÏ¿© AI ControlÀ» Áö¿¬½ÃÅ°´Â ±â´ÉÀÌ ÇÊ¿äÇÒ °Í.
+	//TODO : í˜„ì¬, ìœ ë‹›ì´ ì£½ì—ˆì„ ìƒí™©ì—ì„œëŠ” AI Controlì´ ì •ìƒì ìœ¼ë¡œ ë™ì‘í•˜ì§€ ì•ŠìŒ. 
+	//ì˜ˆì‹œ) í”Œë ˆì´ì–´ì˜ ë§ˆì§€ë§‰ ìœ ë‹›ì´ ê³µê²©ì„ í–ˆì„ ë•Œ ì  ìœ ë‹›ì´ ì£½ì—ˆì„ ê²½ìš°, ì˜ˆì‹œ2) AIì˜ ìœ ë‹›ì´ ê³µê²© ì¤‘ì— AIì˜ ìœ ë‹›ì´ ì£½ì—ˆì„ ê²½ìš°. í˜¹ì€ í”Œë ˆì´ì–´ ìœ ë‹›ì´ ì£½ì—ˆì„ ê²½ìš°.
+	//í•´ê²°ì±… ì˜ˆìƒ : ìœ ë‹›ì´ ì£½ì„ ë•Œ, ì• ë‹ˆë©”ì´ì…˜ ì²˜ë¦¬ ë° ìœ ë‹› ì‚­ì œ ì‹œê°„ê¹Œì§€ëŠ” Busy ì²˜ë¦¬í•˜ì—¬ AI Controlì„ ì§€ì—°ì‹œí‚¤ëŠ” ê¸°ëŠ¥ì´ í•„ìš”í•  ê²ƒ.
 	
-	FindEnemyAllUnits();
-	AIPawnMode = EAIPawnMode::Move; // ÅÏ ½ÃÀÛµÇ¸é PawnMode°¡ Move·Î º¯°æµÊ.
+	FindAllManagingUnits();
+	AIPawnMode = EAIPawnMode::Move; // í„´ ì‹œì‘ë˜ë©´ PawnModeê°€ Moveë¡œ ë³€ê²½ë¨.
 	DoAIControl();
-}
-
-void AEnemyUnitControlPawn::FindEnemyAllUnits()
-{
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-
-	if (!IsValid(gameMode))
-	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
-		return;
-	}
-
-	auto unitArr = gameMode->GetAllUnitInGridSystem();
-	TArray<AUnit*> enemyArr;
-	for (auto unit : unitArr)
-	{
-		if (!IsValid(unit))
-		{
-			continue;
-		}
-
-		if (unit->ActorHasTag(ENEMY))
-		{
-			enemyArr.Add(unit);
-		}
-	}
-
-	EnemyUnits.Empty();
-	EnemyUnits = enemyArr;
-
-	for (auto unit : EnemyUnits)
-	{
-		unit->StartUnitTurn();
-		TArray<UActorComponent*> unitActions;
-		unit->GetComponents(UUnitActionComponent::StaticClass(), unitActions);
-
-		for (UActorComponent* unitAction : unitActions)
-		{
-			UUnitActionComponent* unitAction_Cast =
-				Cast<UUnitActionComponent>(unitAction);
-
-			if (!IsValid(unitAction_Cast))
-			{
-				continue;
-			}
-
-			unitAction_Cast->OnActionCompleteForControlPawn.Clear();
-			unitAction_Cast->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
-		}
-	}
-
 }
 
 void AEnemyUnitControlPawn::MoveProcedure()
 {
-	//1 ÀÌµ¿ÇÒ À¯´Ö ¼±ÅÃ
-	//2 ÀÌµ¿ ¸í·ÉÀ» ³»¸²
-	//3 ÀÌµ¿ ¸í·ÉÀÌ ³¡³ª¸é ActionEnd()µÇ°í, À¯´ÖÀÇ Çàµ¿À» ¸¶ÃÆ´Ù´Â °ÍÀ» AIControlPawn¿¡°Ô ¾Ë¸².
+	//1 ì´ë™í•  ìœ ë‹› ì„ íƒ
+	//2 ì´ë™ ëª…ë ¹ì„ ë‚´ë¦¼
+	//3 ì´ë™ ëª…ë ¹ì´ ëë‚˜ë©´ ActionEnd()ë˜ê³ , ìœ ë‹›ì˜ í–‰ë™ì„ ë§ˆì³¤ë‹¤ëŠ” ê²ƒì„ AIControlPawnì—ê²Œ ì•Œë¦¼.
 
 	if (EnemyUnits.Num() == 0)
 	{
-		//Move°¡ ³¡³µÀ» °¡´É¼ºÀÌ ³ôÀ½
+		//Moveê°€ ëë‚¬ì„ ê°€ëŠ¥ì„±ì´ ë†’ìŒ
 		AIPawnMode = EAIPawnMode::Attack;
-		FindEnemyAllUnits(); //°ø°İ °¡´ÉÇÑ À¯´ÖÀ» ´Ù½Ã Ã£Àº µÚ¿¡ ´ÙÀ½ ControlÀ» ½ÇÇàÇÔ.
+		FindAllManagingUnits(); //ê³µê²© ê°€ëŠ¥í•œ ìœ ë‹›ì„ ë‹¤ì‹œ ì°¾ì€ ë’¤ì— ë‹¤ìŒ Controlì„ ì‹¤í–‰í•¨.
 		DoAIControl();
 
 		return;
@@ -125,13 +75,13 @@ void AEnemyUnitControlPawn::MoveProcedure()
 
 void AEnemyUnitControlPawn::AttackProcedure()
 {
-	//1. °ø°İ °¡´ÉÇÑ À¯´ÖÀÎÁö È®ÀÎ
-	//2. °ø°İÇÔ or °ø°İ ºÒ°¡´ÉÇÏ¸é ±×³É TakeActionÇÔ.
-	//3. °ø°İÀÌ ³¡³µÀ» ¶§ ControlPawn¿¡°Ô °ø°İÀ» ¸¶ÃÆ´Ù´Â °ÍÀ» ¾Ë¸².
+	//1. ê³µê²© ê°€ëŠ¥í•œ ìœ ë‹›ì¸ì§€ í™•ì¸
+	//2. ê³µê²©í•¨ or ê³µê²© ë¶ˆê°€ëŠ¥í•˜ë©´ ê·¸ëƒ¥ TakeActioní•¨.
+	//3. ê³µê²©ì´ ëë‚¬ì„ ë•Œ ControlPawnì—ê²Œ ê³µê²©ì„ ë§ˆì³¤ë‹¤ëŠ” ê²ƒì„ ì•Œë¦¼.
 
 	if (EnemyUnits.Num() == 0)
 	{
-		//AttackÀÌ ³¡³µÀ» °¡´É¼ºÀÌ ³ôÀ½
+		//Attackì´ ëë‚¬ì„ ê°€ëŠ¥ì„±ì´ ë†’ìŒ
 		AIPawnMode = EAIPawnMode::Wait;
 		DoAIControl();
 
@@ -158,14 +108,15 @@ void AEnemyUnitControlPawn::AttackProcedure()
 
 void AEnemyUnitControlPawn::WaitProcedure()
 {
-	// À¯´Ö °¢°¢¿¡°Ô WaitÇÒ ÇÊ¿ä ¾øÀÌ ±×³É ÅÏÀ» ³¡³»¸é µÉ °Í °°´Ù.
+	// ìœ ë‹› ê°ê°ì—ê²Œ Waití•  í•„ìš” ì—†ì´ ê·¸ëƒ¥ í„´ì„ ëë‚´ë©´ ë  ê²ƒ ê°™ë‹¤.
 
 	Debug::Print(DEBUG_TEXT("WaitProcedure"));
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (IsValid(gameMode))
+	ATurnManager* turnManager = ATurnManager::GetTurnManager();
+
+	if (IsValid(turnManager))
 	{
-		gameMode->NextTurn();
+		turnManager->NextTurn();
 	}
 
 }
@@ -183,7 +134,7 @@ void AEnemyUnitControlPawn::DoAIControl()
 		break;
 	case EAIPawnMode::Attack:
 		//AttackProcedure();
-		WaitProcedure(); // °ø°İÀÌ ³Ê¹« ¿À·¡ °É·Á¼­, µğ¹ö±ëÀ» À§ÇØ ±×³É À¯´ÖÀÌ Move¸¦ ³¡³»¸é °ø°İÇÏÁö ¸»°í WaitÀ¸·Î ÅÏ Á¾·áÇÏ°Ô ¸¸µë.
+		WaitProcedure(); // ê³µê²©ì´ ë„ˆë¬´ ì˜¤ë˜ ê±¸ë ¤ì„œ, ë””ë²„ê¹…ì„ ìœ„í•´ ê·¸ëƒ¥ ìœ ë‹›ì´ Moveë¥¼ ëë‚´ë©´ ê³µê²©í•˜ì§€ ë§ê³  Waitìœ¼ë¡œ í„´ ì¢…ë£Œí•˜ê²Œ ë§Œë“¬.
 		break;
 	case EAIPawnMode::Wait:
 		WaitProcedure();
@@ -195,8 +146,8 @@ void AEnemyUnitControlPawn::DoAIControl()
 
 void AEnemyUnitControlPawn::OnUnitActionCompleted()
 {
-	//¸¸¾à, Unit ÇÏ³ª°¡ ¿òÁ÷ÀÌ´Â °ÍÀÌ ³¡³µ´Ù¸é
-	//´ÙÀ½ À¯´ÖÀ» ¿òÁ÷ÀÏ ¼ö ÀÖÀ» °ÍÀÓ.
+	//ë§Œì•½, Unit í•˜ë‚˜ê°€ ì›€ì§ì´ëŠ” ê²ƒì´ ëë‚¬ë‹¤ë©´
+	//ë‹¤ìŒ ìœ ë‹›ì„ ì›€ì§ì¼ ìˆ˜ ìˆì„ ê²ƒì„.
 
 	DoAIControl();
 }

@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UnitControl/UnitControlPawn.h"
 
+#include "Manager/TurnManager.h"
+#include "DebugHelper.h"
 
 // Sets default values for this component's properties
 UUnitActionComponent::UUnitActionComponent()
@@ -57,7 +59,7 @@ void UUnitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 
 void UUnitActionComponent::TakeAction(const FGrid& Grid)
 {
-	//�⺻ Action�̹Ƿ� �ƹ��͵� ���ϰ� ����.
+	//기본 Action이므로 아무것도 안하고 끝남.
 
 	ActionEnd();
 }
@@ -76,11 +78,6 @@ TSet<FGrid> UUnitActionComponent::GetValidActionGridSet() const
 {
 	return TSet<FGrid>();
 }
-
-//AUnitCharacter* UUnitActionComponent::GetUnit() const
-//{
-//	return Unit;
-//}
 
 bool UUnitActionComponent::IsCanDoActionThisTurn() const
 {
@@ -106,6 +103,14 @@ void UUnitActionComponent::SetCanDoActionThisTurn(bool InputBool)
 
 void UUnitActionComponent::ActionStart()
 {
+	//액션이 시작되면 IsBusy를 true로 해서 다음 행동이 멋대로 발동되는 것을 막는다.
+	//ex) 마지막 유닛이 전투를 끝내고, 적 유닛이 아직 삭제되지 않은 상태에서 턴이 넘어가는 것.
+	auto turnManager = ATurnManager::GetTurnManager();
+	if (IsValid(turnManager))
+	{
+		turnManager->SetIsBusy(true);
+	}
+
 	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (IsValid(playerController))
 	{
@@ -126,7 +131,7 @@ void UUnitActionComponent::ActionStart()
 
 void UUnitActionComponent::ActionEnd()
 {
-
+	Debug::Print(DEBUG_TEXT("Base::ActionEnd"));
 	SetCanDoActionThisTurn(false);
 
 	if (OnActionEnd.IsBound())
@@ -138,6 +143,13 @@ void UUnitActionComponent::ActionEnd()
 	{
 		OnActionCompleteForControlPawn.Broadcast();
 	}
+
+	auto turnManager = ATurnManager::GetTurnManager();
+	if (IsValid(turnManager))
+	{
+		turnManager->SetIsBusy(false);
+	}
+
 }
 
 void UUnitActionComponent::ActionSelected()

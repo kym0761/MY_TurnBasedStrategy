@@ -2,7 +2,9 @@
 
 
 #include "InstancedGridVisualComponent.h"
-#include "Manager/SRPG_GameMode.h"
+#include "Interface/GridManagerInterface.h"
+
+#include "DebugHelper.h"
 
 UInstancedGridVisualComponent::UInstancedGridVisualComponent()
 {
@@ -10,7 +12,7 @@ UInstancedGridVisualComponent::UInstancedGridVisualComponent()
 
 	SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
 
-	//»ç¿ë°¡´ÉÇÑ MaterialÀÇ Custom Data ValueÀÇ ÃÖ´ë °¹¼ö
+	//ì‚¬ìš©ê°€ëŠ¥í•œ Materialì˜ Custom Data Valueì˜ ìµœëŒ€ ê°¯ìˆ˜
 	NumCustomDataFloats = 8;
 }
 
@@ -18,24 +20,27 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 {
 	FTransformArrayA2 VisualTransformArray;
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	bool isOwnerGridManager = GetOwner()->GetClass()->ImplementsInterface(UGridManagerInterface::StaticClass());
+
+	if (!isOwnerGridManager)
 	{
-		//gameMode Not Valid.
+		Debug::Print(DEBUG_TEXT("Owner is not GridManager"));
 		return;
 	}
 
-	//SetÀÇ ¼ø¼­º¸ÀåÀÌ µÇÁö ¾ÊÀ¸¹Ç·Î ¹Ì¸® Array¸¦ ¹Ş¾Æ ÀÌ ¼ø¼­´ë·Î InstanceÀÇ »ö»óÀ» º¯°æÇÏµµ·Ï ÇÑ´Ù.
+	IGridManagerInterface* gridManager = Cast<IGridManagerInterface>(GetOwner());
+
+	//Setì˜ ìˆœì„œë³´ì¥ì´ ë˜ì§€ ì•Šìœ¼ë¯€ë¡œ ë¯¸ë¦¬ Arrayë¥¼ ë°›ì•„ ì´ ìˆœì„œëŒ€ë¡œ Instanceì˜ ìƒ‰ìƒì„ ë³€ê²½í•˜ë„ë¡ í•œë‹¤.
 	TArray<FGrid> gridArray = GridSet.Array();
 
 	for (const FGrid& grid : gridArray)
 	{
-		if (!gameMode->IsValidGrid(grid))
+		if (!gridManager->IsValidGrid(grid))
 		{
 			continue;
 		}
 
-		FVector worldPos = gameMode->GridToWorld(grid);
+		FVector worldPos = gridManager->GridToWorld(grid);
 		worldPos.Z += Height;
 
 		FTransform visualTransform;
@@ -49,21 +54,21 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 	//draw all
 	AddInstances(VisualTransformArray, false, true);
 
-	//GridÀÇ ¿Ü°û Å×µÎ¸®¸¦ ³ªÅ¸³¾Áö ¸»Áö °è»êÇÏ´Â °úÁ¤.
-	//MaterialÀÌ InstancedStaticMesh Àü¿ëÀÎ »óÅÂ¿¡¼­ Custom Data Value ³ëµåÀÇ index¿¡ ¸ÂÃç¼­ °ªÀ» ³Ö¾îÁØ´Ù.
-	//ÀÌ ±â´ÉÀ» »ç¿ëÇÏ·Á¸é
-	//InstancedMeshÀÇ NumCustomDataFloatsÀ» »ç¿ëÇÒ Custom Data Value °³¼ö¿¡ ¸ÂÃç »ı¼ºÀÚ¿¡ ¼¼ÆÃÇØÁÖ¾î¾ß ÇÔ.
+	//Gridì˜ ì™¸ê³½ í…Œë‘ë¦¬ë¥¼ ë‚˜íƒ€ë‚¼ì§€ ë§ì§€ ê³„ì‚°í•˜ëŠ” ê³¼ì •.
+	//Materialì´ InstancedStaticMesh ì „ìš©ì¸ ìƒíƒœì—ì„œ Custom Data Value ë…¸ë“œì˜ indexì— ë§ì¶°ì„œ ê°’ì„ ë„£ì–´ì¤€ë‹¤.
+	//ì´ ê¸°ëŠ¥ì„ ì‚¬ìš©í•˜ë ¤ë©´
+	//InstancedMeshì˜ NumCustomDataFloatsì„ ì‚¬ìš©í•  Custom Data Value ê°œìˆ˜ì— ë§ì¶° ìƒì„±ìì— ì„¸íŒ…í•´ì£¼ì–´ì•¼ í•¨.
 	for (int32 i = 0; i < gridArray.Num(); i++)
 	{
 		FGrid currentGrid = gridArray[i];
 
-		//»óÇÏÁÂ¿ì
+		//ìƒí•˜ì¢Œìš°
 		FGrid upGrid = currentGrid + FGrid(0,1);
 		FGrid downGrid = currentGrid + FGrid(0, -1);
 		FGrid leftGrid = currentGrid + FGrid(-1, 0);
 		FGrid rightGrid = currentGrid + FGrid(1, 0);
 
-		//´ë°¢¹æÇâ
+		//ëŒ€ê°ë°©í–¥
 		FGrid upLeftGrid = currentGrid + FGrid(-1, 1);
 		FGrid upRightGrid = currentGrid + FGrid(1, 1);
 		FGrid downLeftGrid = currentGrid + FGrid(-1, -1);
@@ -106,7 +111,7 @@ void UInstancedGridVisualComponent::DrawGridVisualswithGridSet(const TSet<FGrid>
 	{
 		FGrid currentGrid = gridArray[i];
 
-		//»óÇÏÁÂ¿ì
+		//ìƒí•˜ì¢Œìš°
 		FGrid upGrid = currentGrid + FGrid(0, 1);
 		FGrid downGrid = currentGrid + FGrid(0, -1);
 		FGrid leftGrid = currentGrid + FGrid(-1, 0);

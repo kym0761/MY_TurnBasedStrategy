@@ -4,9 +4,43 @@
 #include "UnitAnimInstance.h"
 #include "StatComponent.h"
 
+#include "Manager/BattleManager.h"
+
 UUnitAnimInstance::UUnitAnimInstance()
 {
 
+}
+
+void UUnitAnimInstance::NativeBeginPlay()
+{
+	Super::NativeBeginPlay();
+
+	BindToBattleManager();
+}
+
+void UUnitAnimInstance::BindToBattleManager()
+{
+	auto battleManager = ABattleManager::GetBattleManager();
+	if (IsValid(battleManager))
+	{
+		//공격과 관련된 Notify에 따라 발동되는 Delegate에 BattleManager의 기능을 바인드한다.
+
+		FScriptDelegate bindToOnAttackHit;
+		bindToOnAttackHit.BindUFunction(battleManager, FName("OnAttackHit"));
+		OnAttackHit.Add(bindToOnAttackHit);
+
+		FScriptDelegate bindToOnAttackEnd;
+		bindToOnAttackEnd.BindUFunction(battleManager, FName("OnAttackEnd"));
+		OnAttackEnd.Add(bindToOnAttackEnd);
+
+		FScriptDelegate bindToOnHit;
+		bindToOnHit.BindUFunction(battleManager, FName("OnHit"));
+		OnHit.Add(bindToOnHit);
+
+		FScriptDelegate bindToOnHitEnd;
+		bindToOnHitEnd.BindUFunction(battleManager, FName("OnHitEnd"));
+		OnHitEnd.Add(bindToOnHitEnd);
+	}
 }
 
 void UUnitAnimInstance::AnimNotify_AttackHit()
@@ -39,42 +73,6 @@ void UUnitAnimInstance::AnimNotify_HitEnd()
 	{
 		OnHitEnd.Broadcast();
 	}
-}
-
-void UUnitAnimInstance::BindTo_OnAttackHit(FScriptDelegate ToBind)
-{
-	if (OnAttackHit.IsBound())
-	{
-		OnAttackHit.Clear();
-	}
-	OnAttackHit.Add(ToBind);
-}
-
-void UUnitAnimInstance::BindTo_OnAttackEnd(FScriptDelegate ToBind)
-{
-	if (OnAttackEnd.IsBound())
-	{
-		OnAttackEnd.Clear();
-	}
-	OnAttackEnd.Add(ToBind);
-}
-
-void UUnitAnimInstance::BindTo_OnHit(FScriptDelegate ToBind)
-{
-	if (OnHit.IsBound())
-	{
-		OnHit.Clear();
-	}
-	OnHit.Add(ToBind);
-}
-
-void UUnitAnimInstance::BindTo_OnHitEnd(FScriptDelegate ToBind)
-{
-	if (OnHitEnd.IsBound())
-	{
-		OnHitEnd.Clear();
-	}
-	OnHitEnd.Add(ToBind);
 }
 
 void UUnitAnimInstance::PlayUnitAttackMontage()

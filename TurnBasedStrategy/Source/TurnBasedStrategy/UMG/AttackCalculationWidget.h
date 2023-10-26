@@ -14,7 +14,7 @@ class UTextBlock;
 class UAttackOrderWidget;
 
 /**
- * Attack ActionÀÇ °á°ú¸¦ ¾Ë·ÁÁÖ°í AttackÀ» ÃÖÁ¾ÀûÀ¸·Î ½ÇÇàÇÒ UI
+ * Attack Actionì˜ ê²°ê³¼ë¥¼ ì•Œë ¤ì£¼ê³  Attackì„ ìµœì¢…ì ìœ¼ë¡œ ì‹¤í–‰í•  UI
  */
 
 UCLASS(abstract)
@@ -51,7 +51,8 @@ public:
 		UTextBlock* TextBlock_EnemyName;
 	
 	UPROPERTY()
-	TArray<FAttackOrder> AttackOrders;
+	//TArray<FAttackOrder> AttackOrders;
+	TArray<FBattleOrder> BattleOrders;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category ="AttackOrder")
 	TSubclassOf<UAttackOrderWidget> AllyAttackOrder;

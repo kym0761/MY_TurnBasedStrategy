@@ -8,7 +8,6 @@
 #include "UnitActionComponent.generated.h"
 
 class AUnit;
-class ASRPG_GameMode;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitActionDelegate);
 
@@ -27,24 +26,24 @@ protected:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	//AUnit* Unit;
 
-	//ÃÖ´ë Action ¹üÀ§
+	//ìµœëŒ€ Action ë²”ìœ„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	int32 MaxActionRange;
 
-	//À¯´ÖÀÌ ÀÌ¹øÅÏ¿¡ Çàµ¿ °¡´ÉÇÑÁö?
+	//ìœ ë‹›ì´ ì´ë²ˆí„´ì— í–‰ë™ ê°€ëŠ¥í•œì§€?
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	bool bCanDoActionThisTurn;
 
-	//ActionÀÇ ÀÌ¸§. »ı¼ºÀÚ¿¡¼­ ActionNameÀ» ¼¼ÆÃÇÏ¸é UI¿¡¼­ º¸ÀÓ.
+	//Actionì˜ ì´ë¦„. ìƒì„±ìì—ì„œ ActionNameì„ ì„¸íŒ…í•˜ë©´ UIì—ì„œ ë³´ì„.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	FString ActionName;
 
 private:
 
-	//¿ÜºÎÀÇ ±â´ÉÀ» µ¿ÀûÀ¸·Î CallÇÏ±â À§ÇÔ. ¾Æ¸¶ ¾µ¶§¸¶´Ù ºñ¿ì°Ô µÉ °¡´É¼ºÀÌ ³ôÀ½.
-	//ÀÌ´Â ActionStart()¿¡¼­ BroadcastµÇ¹Ç·Î, ´Ù¸¥ °÷¿¡¼­ Á÷Á¢ CallÇÏ·Á°í ÇÏÁö¸» °Í.
-	//¾Æ·¡ 3°³µµ ¸¶Âù°¡Áö...
-	//ÇöÀç´Â ÃßÈÄ ½Ç¼ö¸¦ ¹æÁöÇÏ±â À§ÇØ privateÀ¸·Î ¼³Á¤ÇßÁö¸¸, ³ªÁß¿¡ publicÀ¸·Î ¹Ù²Ü °¡´É¼ºµµ ÀÖÀ½.
+	//ì™¸ë¶€ì˜ ê¸°ëŠ¥ì„ ë™ì ìœ¼ë¡œ Callí•˜ê¸° ìœ„í•¨. ì•„ë§ˆ ì“¸ë•Œë§ˆë‹¤ ë¹„ìš°ê²Œ ë  ê°€ëŠ¥ì„±ì´ ë†’ìŒ.
+	//ì´ëŠ” ActionStart()ì—ì„œ Broadcastë˜ë¯€ë¡œ, ë‹¤ë¥¸ ê³³ì—ì„œ ì§ì ‘ Callí•˜ë ¤ê³  í•˜ì§€ë§ ê²ƒ.
+	//ì•„ë˜ 3ê°œë„ ë§ˆì°¬ê°€ì§€...
+	//í˜„ì¬ëŠ” ì¶”í›„ ì‹¤ìˆ˜ë¥¼ ë°©ì§€í•˜ê¸° ìœ„í•´ privateìœ¼ë¡œ ì„¤ì •í–ˆì§€ë§Œ, ë‚˜ì¤‘ì— publicìœ¼ë¡œ ë°”ê¿€ ê°€ëŠ¥ì„±ë„ ìˆìŒ.
 	FUnitActionDelegate OnActionStart;
 	FUnitActionDelegate OnActionEnd;
 	FUnitActionDelegate OnActionSelected;
@@ -59,7 +58,7 @@ public:
 	FString GetActionName() const;
 	AUnit* GetOwningUnit() const;
 
-	//UI¸¦ ¶ç¿ö¾ßÇÒ ActionÀ» À§ÇØ¼­ TakeAction ÀÌÀü¿¡ ¹ßµ¿ÇØ¾ßÇÔ.
+	//UIë¥¼ ë„ì›Œì•¼í•  Actionì„ ìœ„í•´ì„œ TakeAction ì´ì „ì— ë°œë™í•´ì•¼í•¨.
 	virtual void DealWithGridBeforeAction(const FGrid& Grid);
 
 	virtual void TakeAction(const FGrid& Grid);
@@ -73,7 +72,7 @@ public:
 	void SetCanDoActionThisTurn(bool InputBool);
 	bool IsCurrentlyAvailableAction() const;
 
-	/*AI Çàµ¿*/
+	/*AI í–‰ë™*/
 	virtual FGrid ThinkAIBestActionGrid();
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid);
 	virtual void AI_Action();
@@ -86,11 +85,11 @@ public:
 
 protected:
 
-	//Action ½ÃÀÛÇÒ ¶§ ¹«Á¶°Ç CallÇØ¾ßÇÔ. Super:: ÇÊ¿äÇÔ.
+	//Action ì‹œì‘í•  ë•Œ ë¬´ì¡°ê±´ Callí•´ì•¼í•¨. Super:: í•„ìš”í•¨.
 	virtual void ActionStart();
-	//ActionÀÌ ³¡³¯ ¶§ ¹«Á¶°Ç CallÇØ¾ßÇÔ. Super:: ÇÊ¿äÇÔ.
+	//Actionì´ ëë‚  ë•Œ ë¬´ì¡°ê±´ Callí•´ì•¼í•¨. Super:: í•„ìš”í•¨.
 	virtual void ActionEnd();
-	//ActionÀÌ ¼±ÅÃµÆÀ» ¶§ ¹«Á¶°Ç CallÇØ¾ßÇÔ. Super:: ÇÊ¿äÇÔ. - ?? ÀÌ°Å ¾Æ¸¶ ¿ÜºÎ¿¡¼­ ºÒ¸®°Ô µÉ µí.
+	//Actionì´ ì„ íƒëì„ ë•Œ ë¬´ì¡°ê±´ Callí•´ì•¼í•¨. Super:: í•„ìš”í•¨. - ?? ì´ê±° ì•„ë§ˆ ì™¸ë¶€ì—ì„œ ë¶ˆë¦¬ê²Œ ë  ë“¯.
 	virtual void ActionSelected();
 
 };

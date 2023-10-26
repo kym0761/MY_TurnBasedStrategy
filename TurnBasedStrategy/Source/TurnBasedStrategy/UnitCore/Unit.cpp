@@ -6,14 +6,15 @@
 #include "UnitAction/UnitMoveActionComponent.h"
 #include "UnitAction/UnitAttackActionComponent.h"
 #include "UnitAction/UnitInteractActionComponent.h"
-#include "UnitAction/WaitActionComponent.h"
+#include "UnitAction/UnitWaitActionComponent.h"
 #include "StatComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Components/SceneComponent.h"
 
 #include "Manager/GridManager.h"
-#include "Manager/SRPG_GameMode.h"
+#include "Manager/BattleManager.h"
+//#include "Manager/SRPG_GameMode.h"
 #include "UMG/DamageTextActor.h"
 
 #include "DebugHelper.h"
@@ -32,8 +33,9 @@ AUnit::AUnit()
 	UnitMoveActionComponent = CreateDefaultSubobject<UUnitMoveActionComponent>("UnitMoveActionComponent");
 	UnitAttackActionComponent = CreateDefaultSubobject<UUnitAttackActionComponent>("UnitAttackActionComponent");
 	UnitInteractActionComponent = CreateDefaultSubobject<UUnitInteractActionComponent>("UnitInteractActionComponent");
-	WaitActionComponent = CreateDefaultSubobject<UWaitActionComponent>("WaitActionComponent");
+	UnitWaitActionComponent = CreateDefaultSubobject<UUnitWaitActionComponent>("WaitActionComponent");
 
+	TeamType = ETeamType::Team01;
 }
 
 // Called when the game starts or when spawned
@@ -41,19 +43,41 @@ void AUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BindToBattleManager();
+
 }
 
 void AUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (IsValid(gridManager))
 	{
-		gameMode->RemoveUnitAtGrid(this, gameMode->WorldToGrid(GetActorLocation()));
-		gameMode->RemoveUnitFromTurnManaging(this);
+		gridManager->RemoveUnitAtGrid(this, gridManager->WorldToGrid(GetActorLocation()));
+		
+		Debug::Print(DEBUG_TEXT("TODO!"));
+		//gridManager->RemoveUnitFromTurnManaging(this);
+	}
+
+	if (OnUnitDestroyed.IsBound())
+	{
+		OnUnitDestroyed.Broadcast();
 	}
 
 	Super::EndPlay(EndPlayReason);
 
+}
+
+void AUnit::BindToBattleManager()
+{
+	auto battleManager = ABattleManager::GetBattleManager();
+	if (IsValid(battleManager))
+	{
+		//ì´ ìœ ë‹›ì´ ì£½ì–´ì„œ ì‚¬ë¼ì¡Œì„ ë•Œ ì‚­ì œëœ ê²ƒì„ ë³´ì¥í•˜ê¸° ìœ„í•´ Bindí•¨.
+		FScriptDelegate bindToOnUnitDestroyed;
+		bindToOnUnitDestroyed.BindUFunction(battleManager, FName("OnUnitDestroyed"));
+		OnUnitDestroyed.Add(bindToOnUnitDestroyed);
+	}
 }
 
 // Called every frame
@@ -94,10 +118,10 @@ float AUnit::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, ACo
 
 FGrid AUnit::GetGrid()
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
 	{
-		return gameMode->WorldToGrid(GetActorLocation());
+		return gridManager->WorldToGrid(GetActorLocation());
 	}
 
 	return FGrid(-1, -1);
@@ -134,6 +158,8 @@ UUnitActionComponent* AUnit::GetUnitActionComponent(EUnitActionType UnitActionTy
 	case EUnitActionType::Interact:
 		return UnitInteractActionComponent;
 
+	case EUnitActionType::Wait:
+		return UnitWaitActionComponent;
 	default:
 		return nullptr;
 	}
@@ -141,11 +167,11 @@ UUnitActionComponent* AUnit::GetUnitActionComponent(EUnitActionType UnitActionTy
 
 void AUnit::InitUnit()
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
 	{
 
-		gameMode->AddUnitAtGrid(this, gameMode->WorldToGrid(GetActorLocation()));
+		gridManager->AddUnitAtGrid(this, gridManager->WorldToGrid(GetActorLocation()));
 	}
 }
 
@@ -162,7 +188,7 @@ void AUnit::OnSelectedUnitChanged()
 
 void AUnit::ActivateUnitAllAction()
 {
-	//ÅÏÀÌ ½ÃÀÛµÆÀ» ¶§, ÀÌ À¯´ÖÀÌ ÇÒ ¼ö ÀÖ´Â Çàµ¿À» ÀüºÎ ´Ù SetÇØÁØ´Ù.
+	//í„´ì´ ì‹œì‘ëì„ ë•Œ, ì´ ìœ ë‹›ì´ í•  ìˆ˜ ìˆëŠ” í–‰ë™ì„ ì „ë¶€ ë‹¤ Setí•´ì¤€ë‹¤.
 
 	TArray<UActorComponent*> unitActions;
 	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
@@ -183,8 +209,8 @@ void AUnit::ActivateUnitAllAction()
 
 void AUnit::FinishUnitAllAction()
 {
-	//À¯´ÖÀÇ ¸ğµç ¾×¼ÇÀ» ÀÌ¹øÅÏ¿¡ ºñÈ°¼ºÈ­ÇÏ¿© Çàµ¿À» ¸¶Ä£ °ÍÀ¸·Î ÇÔ.
-	//ÀÌ´Â °ø°İÀ» ³¡¸¶Ä£ ÈÄ, È¤Àº Wait ÇÏ¸é µ¿ÀÛÇÒ °Í.
+	//ìœ ë‹›ì˜ ëª¨ë“  ì•¡ì…˜ì„ ì´ë²ˆí„´ì— ë¹„í™œì„±í™”í•˜ì—¬ í–‰ë™ì„ ë§ˆì¹œ ê²ƒìœ¼ë¡œ í•¨.
+	//ì´ëŠ” ê³µê²©ì„ ëë§ˆì¹œ í›„, í˜¹ì€ Wait í•˜ë©´ ë™ì‘í•  ê²ƒ.
 
 	TArray<UActorComponent*> unitActions;
 	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
@@ -210,7 +236,7 @@ void AUnit::FinishUnitAllAction()
 
 bool AUnit::IsThisUnitCanAction() const
 {
-	//À¯´ÖÀº ¾×¼ÇÀÌ °¡´ÉÇÑ°¡? == °¢ ¾×¼ÇÀ» °Ë»öÇÏ°í ¾×¼Ç Áß¿¡ ÇöÀç ÅÏ¿¡ »ç¿ë °¡´ÉÇÑ °ÍÀÌ ÀÖ´ÂÁö ´Ù È®ÀÎÇÏ¸é µÈ´Ù.
+	//ìœ ë‹›ì€ ì•¡ì…˜ì´ ê°€ëŠ¥í•œê°€? == ê° ì•¡ì…˜ì„ ê²€ìƒ‰í•˜ê³  ì•¡ì…˜ ì¤‘ì— í˜„ì¬ í„´ì— ì‚¬ìš© ê°€ëŠ¥í•œ ê²ƒì´ ìˆëŠ”ì§€ ë‹¤ í™•ì¸í•˜ë©´ ëœë‹¤.
 
 	TArray<UActorComponent*> unitActions;
 	GetComponents(UUnitActionComponent::StaticClass(), unitActions);
@@ -232,5 +258,10 @@ bool AUnit::IsThisUnitCanAction() const
 	}
 
 	return false;
+}
+
+ETeamType AUnit::GetTeamType() const
+{
+	return TeamType;
 }
 

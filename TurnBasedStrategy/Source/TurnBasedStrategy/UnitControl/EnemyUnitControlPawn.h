@@ -20,7 +20,7 @@ enum class EAIPawnMode : uint8
 };
 
 /**
- * Enemy¸¦ ¿òÁ÷ÀÌ°Ô ÇÒ AI ControlPawn.
+ * Enemyë¥¼ ì›€ì§ì´ê²Œ í•  AI ControlPawn.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API AEnemyUnitControlPawn : public AUnitControlPawn
@@ -48,8 +48,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void TriggerToPlay();
-
-	void FindEnemyAllUnits();
 
 	void MoveProcedure();
 	void AttackProcedure();

@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "UnitActionComponent.h"
-#include "WaitActionComponent.generated.h"
+#include "UnitWaitActionComponent.generated.h"
 
 /**
  * 
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class TURNBASEDSTRATEGY_API UWaitActionComponent : public UUnitActionComponent
+class TURNBASEDSTRATEGY_API UUnitWaitActionComponent : public UUnitActionComponent
 {
 	GENERATED_BODY()
 	
 public:
 
-	UWaitActionComponent();
+	UUnitWaitActionComponent();
 
 protected:
 

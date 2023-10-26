@@ -2,14 +2,13 @@
 
 
 #include "UnitMoveActionComponent.h"
-#include "UnitCore/Unit.h"
 
+#include "UnitCore/Unit.h"
 #include "Manager/GridManager.h"
-#include "Manager/SRPG_GameMode.h"
+#include "Grid/GridObject.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "AIController.h"
-#include "Grid/GridObject.h"
 
 #include "DebugHelper.h"
 
@@ -26,7 +25,7 @@ void UUnitMoveActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GameModeRef = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	//GameModeRef = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 }
 
 // Called every frame
@@ -34,14 +33,16 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//À¯´Ö ÀÌµ¿ÀÌ È°¼ºÈ­µÇ¸é PathArray¿¡ ¸ÂÃç À¯´ÖÀ» ÀÌµ¿½ÃÅ´.
+	//ìœ ë‹› ì´ë™ì´ í™œì„±í™”ë˜ë©´ PathArrayì— ë§ì¶° ìœ ë‹›ì„ ì´ë™ì‹œí‚´.
 	if (bMoveActivate)
 	{
-		if (!IsValid(GameModeRef))
-		{
-			Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
-			return;
-		}
+		AGridManager* gridManager = AGridManager::GetGridManager();
+
+		//if (!IsValid(GameModeRef))
+		//{
+		//	Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
+		//	return;
+		//}
 
 		AUnit* unit = GetOwningUnit();
 		if (!IsValid(unit))
@@ -53,7 +54,7 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		if (Path.Num() > 0)
 		{
 			FVector currentLocation = unit->GetActorLocation();
-			FVector worldLocation = GameModeRef->GridToWorld(Path[0]);// +FVector(0.0f, 0.0f, currentLocation.Z);
+			FVector worldLocation = gridManager->GridToWorld(Path[0]);// +FVector(0.0f, 0.0f, currentLocation.Z);
 
 			float dist = FVector::Distance(currentLocation, worldLocation);
 			FVector rotVector = worldLocation - currentLocation;
@@ -62,7 +63,7 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 			//UE_LOG(LogTemp, Warning, TEXT("Dist : %f"), dist);
 
-			//ÇöÀç ÁöÁ¡À¸·Î ´Ù ¿òÁ÷ÀÎ °Í °°´Ù¸é, ´ÙÀ½ path·Î º¯°æ.
+			//í˜„ì¬ ì§€ì ìœ¼ë¡œ ë‹¤ ì›€ì§ì¸ ê²ƒ ê°™ë‹¤ë©´, ë‹¤ìŒ pathë¡œ ë³€ê²½.
 			if (FMath::IsNearlyEqual(dist, 0.0f,0.01f))
 			{
 				Path.RemoveAt(0);
@@ -83,9 +84,9 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		else
 		{
 			FVector currentLocation = GetOwner()->GetActorLocation();
-			FGrid currentGrid = GameModeRef->WorldToGrid(currentLocation);
+			FGrid currentGrid = gridManager->WorldToGrid(currentLocation);
 
-			//ÇöÀç À§Ä¡°¡ ¸ñÀûÁö¸é ¸ØÃß¾î¾ßÇÔ.
+			//í˜„ì¬ ìœ„ì¹˜ê°€ ëª©ì ì§€ë©´ ë©ˆì¶”ì–´ì•¼í•¨.
 			if (currentGrid == Destination)
 			{
 				ActionEnd();
@@ -104,7 +105,7 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 {
-	//ÀÌµ¿ÇÒ ¼ö ÀÖ´Â ¹üÀ§
+	//ì´ë™í•  ìˆ˜ ìˆëŠ” ë²”ìœ„
 	TSet<FGrid> validSet;
 
 	AUnit* unit = GetOwningUnit();
@@ -115,11 +116,12 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 
 	FGrid unitGrid = unit->GetGrid();
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	
-	if (!IsValid(gameMode))
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return validSet;
 	}
 
@@ -137,50 +139,50 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 			resultGrid += unitGrid;
 
 
-			//Á¸ÀçÇÏÁö ¾Ê´Â Grid
-			if (!gameMode->IsValidGrid(resultGrid))
+			//ì¡´ì¬í•˜ì§€ ì•ŠëŠ” Grid
+			if (!gridManager->IsValidGrid(resultGrid))
 			{
 				Debug::Print(DEBUG_TEXT("Grid is Invalid. : ") + resultGrid.ToString());
 				continue;
 			}
 
-			//´©±º°¡ Á¡À¯ÁßÀÌ¸é Skip
-			if (gameMode->HasAnyUnitOnGrid(resultGrid))
+			//ëˆ„êµ°ê°€ ì ìœ ì¤‘ì´ë©´ Skip
+			if (gridManager->HasAnyUnitOnGrid(resultGrid))
 			{
 				Debug::Print(DEBUG_TEXT("Someone is on this Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
-			//°ÉÀ» ¼ö ¾ø´Â À§Ä¡?
-			if (!gameMode->IsWalkableGrid(resultGrid))
+			//ê±¸ì„ ìˆ˜ ì—†ëŠ” ìœ„ì¹˜?
+			if (!gridManager->IsWalkableGrid(resultGrid))
 			{
 				Debug::Print(DEBUG_TEXT("Can't Walk on this Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
 			bool bisFriend = false;
-			AUnit* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+			AUnit* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
 			{
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
 			}
 
-			//µµÂø °¡´ÉÇÑ À§Ä¡?
-			//TODO : ignore °¡´ÉÇÑÁö ¾È°¡´ÉÇÑÁö µûÁ®ºÁ¾ßÇÔ.
-			if (bisFriend && !gameMode->HasPath(unitGrid, resultGrid, MaxActionRange, true) || !gameMode->HasPath(unitGrid, resultGrid, MaxActionRange))
+			//ë„ì°© ê°€ëŠ¥í•œ ìœ„ì¹˜?
+			//TODO : ignore ê°€ëŠ¥í•œì§€ ì•ˆê°€ëŠ¥í•œì§€ ë”°ì ¸ë´ì•¼í•¨.
+			if (bisFriend && !gridManager->HasPath(unitGrid, resultGrid, MaxActionRange, true) || !gridManager->HasPath(unitGrid, resultGrid, MaxActionRange))
 			{
 				Debug::Print(DEBUG_TEXT("You Can't Reach to this Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
-			//ÀÇµµ¿Í ´Ş¸® ¸Õ °Å¸®?
-			if (gameMode->GetPathLength(unitGrid, resultGrid, MaxActionRange) == -1)
+			//ì˜ë„ì™€ ë‹¬ë¦¬ ë¨¼ ê±°ë¦¬?
+			if (gridManager->GetPathLength(unitGrid, resultGrid, MaxActionRange) == -1)
 			{
 				Debug::Print(DEBUG_TEXT("Too Far Grid. : ") + resultGrid.ToString());
 				continue;
 			}
 
-			//Åë°úÇÏ¸é ¹®Á¦¾øÀ¸´Ï validSet¿¡ Ãß°¡
+			//í†µê³¼í•˜ë©´ ë¬¸ì œì—†ìœ¼ë‹ˆ validSetì— ì¶”ê°€
 			validSet.Add(resultGrid);
 		}
 	}
@@ -190,7 +192,7 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 
 TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet() const
 {
-	//ÀÌµ¿ÇÒ ¼ö ÀÖ´Â À§Ä¡¿Í Range »óÀ¸·Î´Â °¡´ÉÇÏÁö¸¸ ½ÇÁ¦·Î´Â ÀÌµ¿ ºÒ°¡´ÉÇÑ À§Ä¡µéÀ» ÀüºÎ µµÃâÇÔ.
+	//ì´ë™í•  ìˆ˜ ìˆëŠ” ìœ„ì¹˜ì™€ Range ìƒìœ¼ë¡œëŠ” ê°€ëŠ¥í•˜ì§€ë§Œ ì‹¤ì œë¡œëŠ” ì´ë™ ë¶ˆê°€ëŠ¥í•œ ìœ„ì¹˜ë“¤ì„ ì „ë¶€ ë„ì¶œí•¨.
 
 	TSet<FGridVisualData> validVisualDataSet;
 
@@ -204,11 +206,11 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 
 	TSet<FGrid> validSet = GetValidActionGridSet();
 	 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	AGridManager* gridManager = AGridManager::GetGridManager();
 
-	if (!IsValid(gameMode))
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return validVisualDataSet;
 	}
 
@@ -224,8 +226,8 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 			FGrid resultGrid = FGrid(x, y);
 			resultGrid += unitGrid;
 
-			//Á¸ÀçÇÏÁö ¾Ê´Â Grid
-			if (!gameMode->IsValidGrid(resultGrid))
+			//ì¡´ì¬í•˜ì§€ ì•ŠëŠ” Grid
+			if (!gridManager->IsValidGrid(resultGrid))
 			{
 				Debug::Print(DEBUG_TEXT("Grid is Invalid."));
 				continue;
@@ -235,10 +237,10 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 			testData.Grid = resultGrid;
 			testData.GridVisualType = EGridVisualType::Move;
 
-			//if (gameMode->HasAnyUnitOnGrid(grid) || //´©±º°¡ Á¡À¯Áß
-			//	!gameMode->IsWalkableGrid(grid) || //°ÉÀ» ¼ö ¾ø´Â À§Ä¡?
-			//	!gameMode->HasPath(unitGrid, grid, false) || //µµÂø ºÒ°¡´ÉÇÑ À§Ä¡?
-			//	gameMode->GetPathLength(unitGrid, grid) > MaxActionRange) 	//ÀÇµµ¿Í ´Ş¸® ¸Õ °Å¸®?
+			//if (gameMode->HasAnyUnitOnGrid(grid) || //ëˆ„êµ°ê°€ ì ìœ ì¤‘
+			//	!gameMode->IsWalkableGrid(grid) || //ê±¸ì„ ìˆ˜ ì—†ëŠ” ìœ„ì¹˜?
+			//	!gameMode->HasPath(unitGrid, grid, false) || //ë„ì°© ë¶ˆê°€ëŠ¥í•œ ìœ„ì¹˜?
+			//	gameMode->GetPathLength(unitGrid, grid) > MaxActionRange) 	//ì˜ë„ì™€ ë‹¬ë¦¬ ë¨¼ ê±°ë¦¬?
 			if(!validSet.Contains(resultGrid))
 			{
 				Debug::Print(DEBUG_TEXT("You Can't Select This Grid. : ") + resultGrid.ToString());
@@ -247,24 +249,24 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 
 
 			bool bisFriend = false;
-			auto targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+			auto targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
 			{
 				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
-				if (bisFriend) // ¸¸¾à ¾Æ±º À§Ä¡¶ó¸é ³ë¶õ»öÀ¸·Î º¯°æÇÔ.
+				if (bisFriend) // ë§Œì•½ ì•„êµ° ìœ„ì¹˜ë¼ë©´ ë…¸ë€ìƒ‰ìœ¼ë¡œ ë³€ê²½í•¨.
 				{
 					Debug::Print(DEBUG_TEXT("Your Ally is On This Grid. : ") + resultGrid.ToString());
 					testData.GridVisualType = EGridVisualType::Warning;
 				}
 			}
 
-			if (targetUnit == unit) //ÇöÀç À¯´Ö À§Ä¡´Â ÀÌµ¿°¡´ÉÇÑ °É·Î ÆÇÁ¤ÇÔ.
+			if (targetUnit == unit) //í˜„ì¬ ìœ ë‹› ìœ„ì¹˜ëŠ” ì´ë™ê°€ëŠ¥í•œ ê±¸ë¡œ íŒì •í•¨.
 			{
 				Debug::Print(DEBUG_TEXT("Yourself : ") + resultGrid.ToString());
 				testData.GridVisualType = EGridVisualType::Move;
 			}
 
-			//Åë°úÇÏ¸é ¹®Á¦¾øÀ¸´Ï validSet¿¡ Ãß°¡
+			//í†µê³¼í•˜ë©´ ë¬¸ì œì—†ìœ¼ë‹ˆ validSetì— ì¶”ê°€
 			validVisualDataSet.Add(testData);
 
 		}
@@ -275,8 +277,9 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 
 void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
 	{
 		return;
 	}
@@ -285,7 +288,7 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 	AUnit* unit = GetOwningUnit();
 
 
-	TArray<FGrid> pathArray = gameMode->FindPath(unit->GetGrid(), Grid, pathLength, MaxActionRange);
+	TArray<FGrid> pathArray = gridManager->FindPath(unit->GetGrid(), Grid, pathLength, MaxActionRange);
 
 	if (pathLength > MaxActionRange)
 	{
@@ -307,23 +310,23 @@ void UUnitMoveActionComponent::TakeAction(const FGrid& Grid)
 
 
 	// ! Move Debuging Sphere
-	//ºñÁÖ¾ó Ãø¸é¿¡¼­ ÇöÀç °è¼Ó ÀÖ¾îµµ ±¦Âú¾Æº¸¿©¼­ ÀÏ´Ü À¯Áö Áß. ÇÊ¿ä¾øÀ¸¸é ºñÈ°¼ºÈ­ÇÒ °Í
+	//ë¹„ì£¼ì–¼ ì¸¡ë©´ì—ì„œ í˜„ì¬ ê³„ì† ìˆì–´ë„ ê´œì°®ì•„ë³´ì—¬ì„œ ì¼ë‹¨ ìœ ì§€ ì¤‘. í•„ìš”ì—†ìœ¼ë©´ ë¹„í™œì„±í™”í•  ê²ƒ
 	for (int i = 0; i < pathArray.Num(); i++)
 	{
 		Debug::Print(TEXT("pathArray[%d] : %s") + pathArray[i].ToString());
-		DrawDebugSphere(GetWorld(), gameMode->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
+		DrawDebugSphere(GetWorld(), gridManager->GridToWorld(pathArray[i]), 10, 12, FColor::Blue, false, 1.5f, 0, 2.0f);
 	}
 
 	FGrid dest = pathArray.Last();
 
-	if (!gameMode->IsValidGrid(dest))
+	if (!gridManager->IsValidGrid(dest))
 	{
 		return;
 	}
 	
 	Destination = dest;
 	Path = pathArray;
-	Prev_Grid = gameMode->WorldToGrid(unit->GetActorLocation());
+	Prev_Grid = gridManager->WorldToGrid(unit->GetActorLocation());
 	ActionStart();
 }
 
@@ -341,11 +344,6 @@ void UUnitMoveActionComponent::ActionStart()
 
 void UUnitMoveActionComponent::ActionEnd()
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
-	{
-		return;
-	}
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
 	{
@@ -358,15 +356,15 @@ void UUnitMoveActionComponent::ActionEnd()
 	}
 
 	//Update Grid Data
-	gameMode->MoveUnitGrid(unit, Prev_Grid, Destination);
+	gridManager->MoveUnitGrid(unit, Prev_Grid, Destination);
 
 	//Remove Visual
 	gridManager->RemoveAllGridVisual();
 
 	bMoveActivate = false;
 
-	//Super::ActionEnd()¿¡ AI°¡ ´ÙÀ½Çàµ¿À» ÇÏ¶ó´Â ¸í·ÉÀ» ½ÇÇàÇÒÅÙµ¥,
-	//gameModeÀÇ °ª º¯°æÀÌ ¹İ¿µµÈ ÀÌÈÄ¿¡ CallµÇ¾ßÇÔ.
+	//Super::ActionEnd()ì— AIê°€ ë‹¤ìŒí–‰ë™ì„ í•˜ë¼ëŠ” ëª…ë ¹ì„ ì‹¤í–‰í• í…ë°,
+	//gameModeì˜ ê°’ ë³€ê²½ì´ ë°˜ì˜ëœ ì´í›„ì— Callë˜ì•¼í•¨.
 	Super::ActionEnd();
 }
 
@@ -377,27 +375,26 @@ void UUnitMoveActionComponent::ActionSelected()
 
 FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 {
-	//¾î´À À§Ä¡°¡ ÀÌµ¿ÇÏ±â °¡Àå ÀûÀıÇÑÁö °è»êÇÔ.
-
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	//ì–´ëŠ ìœ„ì¹˜ê°€ ì´ë™í•˜ê¸° ê°€ì¥ ì ì ˆí•œì§€ ê³„ì‚°í•¨.
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
-		//ºÒ°¡.
+		//ë¶ˆê°€.
 		return FGrid(-1, -1);
 	}
 
-	//ÀÌ Çàµ¿À» ÃëÇÒ AIÀÇ Unit.
+	//ì´ í–‰ë™ì„ ì·¨í•  AIì˜ Unit.
 	AUnit* unit = GetOwningUnit();
 	if (!IsValid(unit))
 	{
-		//ºÒ°¡.
+		//ë¶ˆê°€.
 		return FGrid(-1, -1);
 	}
 
-	TSet<FGrid> grids = GetValidActionGridSet(); //ÀÌµ¿ÇÒ ¼ö ÀÖ´Â À§Ä¡ ÀüºÎ.
+	TSet<FGrid> grids = GetValidActionGridSet(); //ì´ë™í•  ìˆ˜ ìˆëŠ” ìœ„ì¹˜ ì „ë¶€.
 	TArray<FActionValueToken> actionValues;
 
-	//ÀÌµ¿ °¡´ÉÇÑ À§Ä¡ ÀüºÎ È®ÀÎÇÏ¿© ÇØ´ç À§Ä¡ÀÇ Value¸¦ °è»ê.
+	//ì´ë™ ê°€ëŠ¥í•œ ìœ„ì¹˜ ì „ë¶€ í™•ì¸í•˜ì—¬ í•´ë‹¹ ìœ„ì¹˜ì˜ Valueë¥¼ ê³„ì‚°.
 	for (FGrid& grid : grids)
 	{
 		FActionValueToken actionValueToken;
@@ -409,7 +406,7 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 
 	if (actionValues.Num() == 0)
 	{
-		//È®ÀÎÇÒ Grid°¡ ¾øÀ½.
+		//í™•ì¸í•  Gridê°€ ì—†ìŒ.
 		return FGrid(-1, -1);
 	}
 
@@ -418,7 +415,7 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 			return a.ActionValue > b.ActionValue;
 		});
 
-	//°è»êµÈ Value¿¡ ´ëÇØ¼­, °¡Àå °ªÀÌ ³ôÀº (°¡Àå »ó´ë¿Í °¡±î¿ï ¼ö ÀÖ´Â) Grid¸¦ ¼±ÅÃ.
+	//ê³„ì‚°ëœ Valueì— ëŒ€í•´ì„œ, ê°€ì¥ ê°’ì´ ë†’ì€ (ê°€ì¥ ìƒëŒ€ì™€ ê°€ê¹Œìš¸ ìˆ˜ ìˆëŠ”) Gridë¥¼ ì„ íƒ.
 	FActionValueToken selectedActionValueToken = actionValues[0];
 
 	return selectedActionValueToken.Grid;
@@ -426,71 +423,71 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 
 int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
-	//unitÀÌ ÀûÀıÇÏÁö ¾ÊÀ¸¸é ¹ë·ù°è»ê ºÒ°¡´É.
+	//unitì´ ì ì ˆí•˜ì§€ ì•Šìœ¼ë©´ ë°¸ë¥˜ê³„ì‚° ë¶ˆê°€ëŠ¥.
 	AUnit* unit = GetOwningUnit();
 	if (!IsValid(unit) || unit->Tags.Num() == 0)
 	{
 		return -1;
 	}
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
 		return -1;
 	}
 
-	//ÀÌµ¿ÇÒ À§Ä¡¿¡ ´©±º°¡°¡ ÀÖ´Ù¸é ÇØ´ç À§Ä¡·Î ÀÌµ¿ÇÏÁö ¸»¾Æ¾ßÇÔ.
-	if (gameMode->HasAnyUnitOnGrid(CandidateGrid))
+	//ì´ë™í•  ìœ„ì¹˜ì— ëˆ„êµ°ê°€ê°€ ìˆë‹¤ë©´ í•´ë‹¹ ìœ„ì¹˜ë¡œ ì´ë™í•˜ì§€ ë§ì•„ì•¼í•¨.
+	if (gridManager->HasAnyUnitOnGrid(CandidateGrid))
 	{
 		return -10000;
 	}
 
 	FName teamTag = unit->Tags[0];
 	int32 distanceToTarget = TNumericLimits<int32>::Max();
-	TMap<FGrid, UGridObject*> gridObjMap = gameMode->GetAllGridObjectsThatHasUnit();
+	TMap<FGrid, UGridObject*> gridObjMap = gridManager->GetAllGridObjectsThatHasUnit();
 
 
 	FGrid unitGrid = unit->GetGrid();
-	//TODO : TargetGrid¿¡ Àû À¯´ÖÀÌ Á¸ÀçÇØ¼­ Distance°¡ ¹«Á¶°Ç -1ÀÌ ³ª¿È.
-	//À¯´ÖÀÌ Á¸ÀçÇÏ´Â Grid¿¡ ´ëÇØ¼­, ÇöÀç À¯´Ö°úÀÇ °Å¸® °è»ê ¹× °¡Ä¡ °è»ê.
+	//TODO : TargetGridì— ì  ìœ ë‹›ì´ ì¡´ì¬í•´ì„œ Distanceê°€ ë¬´ì¡°ê±´ -1ì´ ë‚˜ì˜´.
+	//ìœ ë‹›ì´ ì¡´ì¬í•˜ëŠ” Gridì— ëŒ€í•´ì„œ, í˜„ì¬ ìœ ë‹›ê³¼ì˜ ê±°ë¦¬ ê³„ì‚° ë° ê°€ì¹˜ ê³„ì‚°.
 	for (auto gridPair : gridObjMap)
 	{
 		AUnit* targetUnit = gridPair.Value->GetUnit();
 
-		//UnitÀÌ InvalidÇÏ¸é ½ºÅµ.
+		//Unitì´ Invalidí•˜ë©´ ìŠ¤í‚µ.
 		if (!IsValid(targetUnit))
 		{
 			continue;
 		}
 		
-		//Target°ú ÇöÀç unit°ú °°À¸¸é ½ºÅµ.
+		//Targetê³¼ í˜„ì¬ unitê³¼ ê°™ìœ¼ë©´ ìŠ¤í‚µ.
 		if (targetUnit == unit)
 		{
 			continue;
 		}
 
-		// Å¸°ÙÀÌ °°Àº ÆÀÀÌ¸é ½ºÅµ
+		// íƒ€ê²Ÿì´ ê°™ì€ íŒ€ì´ë©´ ìŠ¤í‚µ
 		if (targetUnit->ActorHasTag(teamTag))
 		{
 			continue;
 		}
 
-		//distanceToTarget : Target À¯´Ö°úÀÇ °Å¸®
-		//target°úÀÇ °Å¸®°¡ °¡±î¿ï¼ö·Ï ¼±ÅÃÇÔ
-		//ÀÌµ¿ÇÏ´Âµ¥ ÇÊ¿äÇÑ °Å¸®°¡ °¡±î¿ï¼ö·Ï ¼±ÅÃÇÔ.
+		//distanceToTarget : Target ìœ ë‹›ê³¼ì˜ ê±°ë¦¬
+		//targetê³¼ì˜ ê±°ë¦¬ê°€ ê°€ê¹Œìš¸ìˆ˜ë¡ ì„ íƒí•¨
+		//ì´ë™í•˜ëŠ”ë° í•„ìš”í•œ ê±°ë¦¬ê°€ ê°€ê¹Œìš¸ìˆ˜ë¡ ì„ íƒí•¨.
 		FGrid targetGrid = gridPair.Key;
 		int32 distance;
-		gameMode->FindPath(CandidateGrid, targetGrid, distance, MaxActionRange, false, true);
+		gridManager->FindPath(CandidateGrid, targetGrid, distance, MaxActionRange, false, true);
 		distanceToTarget = (distanceToTarget > distance && distance != -1) ? distance : distanceToTarget;
 	}
 
 	int32 reverseValueOffset = 10000;
 
-	//»ó´ë¿Í °Å¸®°¡ 1ÀÌ¸é, 10000-1 = 9999
-	//»ó´ë¿Í °Å¸®°¡ 5¸é, 10000-5 = 9995
-	//Áï, »ó´ë¿Í °Å¸®°¡ °¡±î¿ï ¼ö·Ï Value°¡ Å©´Ù.
-	//¸¸¾à, ÀÌµ¿°Å¸®°¡ ¸Å¿ì ±æ°í ¸ÊÀÌ ¸Å¿ì Å©´Ù¸é 10000À¸·Î ÀâÀº °ª¿¡ ¹®Á¦°¡ »ı±æ ¼öµµ ÀÖÁö¸¸
-	//Grid SRPG Æ¯¼º»ó ÀÌµ¿°Å¸®°¡ 40 ÀÌ»ó ¿òÁ÷ÀÌ·ÁÇÏ°Å³ª ¸ÊÀÇ Å©±â°¡ ÃæºĞÈ÷ Å©´Ù¸é ·¢ÀÌ °É¸®¹Ç·Î ½ÇÁúÀûÀ¸·Î ¹®Á¦°¡ ¾ÈµÉ °ÍÀÌ´Ù.
+	//ìƒëŒ€ì™€ ê±°ë¦¬ê°€ 1ì´ë©´, 10000-1 = 9999
+	//ìƒëŒ€ì™€ ê±°ë¦¬ê°€ 5ë©´, 10000-5 = 9995
+	//ì¦‰, ìƒëŒ€ì™€ ê±°ë¦¬ê°€ ê°€ê¹Œìš¸ ìˆ˜ë¡ Valueê°€ í¬ë‹¤.
+	//ë§Œì•½, ì´ë™ê±°ë¦¬ê°€ ë§¤ìš° ê¸¸ê³  ë§µì´ ë§¤ìš° í¬ë‹¤ë©´ 10000ìœ¼ë¡œ ì¡ì€ ê°’ì— ë¬¸ì œê°€ ìƒê¸¸ ìˆ˜ë„ ìˆì§€ë§Œ
+	//Grid SRPG íŠ¹ì„±ìƒ ì´ë™ê±°ë¦¬ê°€ 40 ì´ìƒ ì›€ì§ì´ë ¤í•˜ê±°ë‚˜ ë§µì˜ í¬ê¸°ê°€ ì¶©ë¶„íˆ í¬ë‹¤ë©´ ë™ì´ ê±¸ë¦¬ë¯€ë¡œ ì‹¤ì§ˆì ìœ¼ë¡œ ë¬¸ì œê°€ ì•ˆë  ê²ƒì´ë‹¤.
 	return reverseValueOffset - distanceToTarget;
 }
 

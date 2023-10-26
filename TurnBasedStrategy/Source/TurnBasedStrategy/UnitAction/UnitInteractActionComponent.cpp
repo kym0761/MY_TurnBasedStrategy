@@ -5,7 +5,6 @@
 
 #include "UnitCore/Unit.h"
 #include "Manager/GridManager.h"
-#include "Manager/SRPG_GameMode.h"
 
 #include "DebugHelper.h"
 
@@ -28,7 +27,7 @@ void UUnitInteractActionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 {
-	//Interact´Â ÇöÀç À§Ä¡¿¡¼­ »óÇÏÁÂ¿ì¿¡¼­¸¸ ÀÏ¾î³¯ °ÍÀÓ.
+	//InteractëŠ” í˜„ì¬ ìœ„ì¹˜ì—ì„œ ìƒí•˜ì¢Œìš°ì—ì„œë§Œ ì¼ì–´ë‚  ê²ƒì„.
 
 	TSet<FGrid> validSet;
 
@@ -40,8 +39,8 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 
 	FGrid unitGrid = unit->GetGrid();
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
 		Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
 		return validSet;
@@ -55,19 +54,19 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 		FGrid offsetGrid = FGrid(dx[i], dy[i]);
 		FGrid resultGrid = unitGrid + offsetGrid;
 
-		//Á¸ÀçÇÏÁö ¾Ê´Â Grid
-		if (!gameMode->IsValidGrid(resultGrid))
+		//ì¡´ì¬í•˜ì§€ ì•ŠëŠ” Grid
+		if (!gridManager->IsValidGrid(resultGrid))
 		{
 			continue;
 		}
 
-		AUnit* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+		AUnit* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 		if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && !targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 		{
 			continue;
 		}
 
-		//Åë°úÇÏ¸é ¹®Á¦¾øÀ¸´Ï validSet¿¡ Ãß°¡
+		//í†µê³¼í•˜ë©´ ë¬¸ì œì—†ìœ¼ë‹ˆ validSetì— ì¶”ê°€
 		validSet.Add(resultGrid);
 	}
 
@@ -76,7 +75,7 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 
 TSet<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualDataSet() const
 {
-	//À§ FunctionÀÇ GridVisualData ¹öÀü
+	//ìœ„ Functionì˜ GridVisualData ë²„ì „
 
 	TSet<FGridVisualData> validVisualDataSet;
 	auto grids = GetValidActionGridSet();
@@ -95,7 +94,7 @@ TSet<FGridVisualData> UUnitInteractActionComponent::GetValidActionGridVisualData
 
 void UUnitInteractActionComponent::TakeAction(const FGrid& Grid)
 {
-	//TODO : Interact°¡ µÇµµ·Ï ¸¸µé¾î¾ßÇÔ.
+	//TODO : Interactê°€ ë˜ë„ë¡ ë§Œë“¤ì–´ì•¼í•¨.
 
 	TSet<FGrid> tempArr = GetValidActionGridSet();
 

@@ -12,6 +12,7 @@
 #include "Components/SceneComponent.h"
 
 #include "Manager/SRPG_GameMode.h"
+#include "Manager/GridManager.h"
 #include "UnitCore/Unit.h"
 
 #include "UMG/UnitActionListWidget.h"
@@ -58,6 +59,29 @@ void AUnitControlPawn::BeginPlay()
 	{
 		MainCanvasWidget->AddToViewport();
 	}
+
+
+	TArray<AActor*> units;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), units);
+
+	for (auto i : units)
+	{
+		auto unit = Cast<AUnit>(i);
+
+		TODO_Marker::TODO();
+		unit->GetUnitActionComponent(EUnitActionType::Attack)
+			->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+		unit->GetUnitActionComponent(EUnitActionType::Interact)
+			->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+		unit->GetUnitActionComponent(EUnitActionType::Move)
+		->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+		unit->GetUnitActionComponent(EUnitActionType::Wait)
+			->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+
+	}
+
+
+
 }
 
 //void AUnitControlPawn::PossessedBy(AController* NewController)
@@ -71,11 +95,12 @@ void AUnitControlPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//ControlPawnÀÇ GridÀ§Ä¡¿¡ ¸Â°Ô º¸°£ÀÌµ¿ÇÔ.
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (IsValid(gameMode))
+	//ControlPawnì˜ Gridìœ„ì¹˜ì— ë§ê²Œ ë³´ê°„ì´ë™í•¨.
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
 	{
-		FVector worldLoc = gameMode->GridToWorld(PivotGrid);
+		FVector worldLoc = gridManager->GridToWorld(PivotGrid);
 		FVector currentLoc = GetActorLocation();
 		FVector loc = FMath::VInterpTo(currentLoc, worldLoc, DeltaTime, 10.0f);
 
@@ -127,33 +152,33 @@ void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
 {
 	PivotGrid = Grid;
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (IsValid(gridManager))
 	{
-		FVector worldLoc = gameMode->GridToWorld(PivotGrid);
+		FVector worldLoc = gridManager->GridToWorld(PivotGrid);
 		SetActorLocation(worldLoc);
 	}
 	else
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 	}
 }
 
 void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 {
-	//UI ¸ğµå³ª, Busy »óÅÂ¸é ÀÌµ¿ ¸øÇÔ.
+	//UI ëª¨ë“œë‚˜, Busy ìƒíƒœë©´ ì´ë™ ëª»í•¨.
 	if (PawnMode == EPawnMode::UI || PawnMode == EPawnMode::Busy)
 	{
 		return;
 	}
 
-	//Å°º¸µå ÀÔ·Â.. ÀÌµ¿ÇÒ ¹æÇâÀÓ.
+	//í‚¤ë³´ë“œ ì…ë ¥.. ì´ë™í•  ë°©í–¥ì„.
 	const FVector2D moveVal = Val.Get<FVector2D>();
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f / %f"), moveVal.X, moveVal.Y);
 
-	//ÀÌµ¿¹öÆ° ´©¸£´Â µ¿¾È...
-	//0.15ÃÊ¸¶´Ù ÇÑÄ­¾¿ ÀÌµ¿ÇÒ ¼ö ÀÖ°Ô ¹öÆ° ´©¸¥ ½Ã°£ ´©ÀûÇÕ
+	//ì´ë™ë²„íŠ¼ ëˆ„ë¥´ëŠ” ë™ì•ˆ...
+	//0.15ì´ˆë§ˆë‹¤ í•œì¹¸ì”© ì´ë™í•  ìˆ˜ ìˆê²Œ ë²„íŠ¼ ëˆ„ë¥¸ ì‹œê°„ ëˆ„ì í•©
 	if (moveVal.Size() > 0.0f)
 	{
 		if (!GetWorld())
@@ -168,7 +193,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 		FGrid move(0, 0);
 
 
-		/*´©¸¥ ¹öÆ°ÀÇ ¹æÇâ¿¡ ¸Â°Ô ÀÌµ¿¹æÇâ Grid¸¦ ¸¸µë*/
+		/*ëˆ„ë¥¸ ë²„íŠ¼ì˜ ë°©í–¥ì— ë§ê²Œ ì´ë™ë°©í–¥ Gridë¥¼ ë§Œë“¬*/
 		if (moveVal.X != 0.0f)
 		{
 			if (moveVal.X >= 0.01f)
@@ -205,7 +230,7 @@ void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 
 void AUnitControlPawn::GridMoveStart(const FInputActionValue& Val)
 {
-	//ÃÖÃÊ ÀÌµ¿À» ÇÒ¶© ¹Ù·Î ÀÌµ¿ÇÒ ¼ö ÀÖ¾î¾ßÇÔ.
+	//ìµœì´ˆ ì´ë™ì„ í• ë• ë°”ë¡œ ì´ë™í•  ìˆ˜ ìˆì–´ì•¼í•¨.
 	MoveAccumulate = 1.0f;
 }
 
@@ -221,9 +246,9 @@ void AUnitControlPawn::HandleControlEnter(const bool& Val)
 		return;
 	}
 
-	//PawnÀÇ ÇöÀç »óÅÂ¿¡ µû¶ó Enter ¹öÆ°ÀÇ Çàµ¿ÀÌ ´Ù¸§.
-	//Selection : PawnÀÌ ÇöÀç Grid À§Ä¡ÀÇ À¯´ÖÀ» ¼±ÅÃÇÏ´Â ¸ğµå
-	//Action : ¼±ÅÃµÈ À¯´ÖÀÇ ActionÀ» ½ÇÇàÇÏ´Â ¸ğµå
+	//Pawnì˜ í˜„ì¬ ìƒíƒœì— ë”°ë¼ Enter ë²„íŠ¼ì˜ í–‰ë™ì´ ë‹¤ë¦„.
+	//Selection : Pawnì´ í˜„ì¬ Grid ìœ„ì¹˜ì˜ ìœ ë‹›ì„ ì„ íƒí•˜ëŠ” ëª¨ë“œ
+	//Action : ì„ íƒëœ ìœ ë‹›ì˜ Actionì„ ì‹¤í–‰í•˜ëŠ” ëª¨ë“œ
 	switch (PawnMode)
 	{
 	case EPawnMode::Selection:
@@ -239,23 +264,24 @@ void AUnitControlPawn::HandleControlEnter(const bool& Val)
 
 bool AUnitControlPawn::TryUnitSelect()
 {
-	//Unit ¼±ÅÃÀ» ½ÃµµÇÔ. MyUnit ÅÂ±×°¡ ºÙ¾îÀÖÀ¸¸é À¯´ÖÀ» ¼±ÅÃÇÒ °ÍÀÓ.
-	//°á°ú¿¡ µû¶ó true or false returnÇÑ´Ù.
+	//Unit ì„ íƒì„ ì‹œë„í•¨. MyUnit íƒœê·¸ê°€ ë¶™ì–´ìˆìœ¼ë©´ ìœ ë‹›ì„ ì„ íƒí•  ê²ƒì„.
+	//ê²°ê³¼ì— ë”°ë¼ true or false returní•œë‹¤.
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return false;
 	}
 
-	if (!gameMode->IsValidGrid(PivotGrid))
+	if (!gridManager->IsValidGrid(PivotGrid))
 	{
 		Debug::Print(DEBUG_TEXT("Grid is Invalid."));
 		return false;
 	}
 
-	AUnit* unitOnGrid = gameMode->GetUnitAtGrid(PivotGrid);
+	AUnit* unitOnGrid = gridManager->GetUnitAtGrid(PivotGrid);
 
 	if (!IsValid(unitOnGrid))
 	{
@@ -281,17 +307,17 @@ bool AUnitControlPawn::TryUnitSelect()
 
 void AUnitControlPawn::SetSelectedUnit(AUnit* UnitToSelect)
 {
-	//PawnÀÌ ÇöÀç À¯´ÖÀ» ¼±ÅÃÇÑ´Ù.
+	//Pawnì´ í˜„ì¬ ìœ ë‹›ì„ ì„ íƒí•œë‹¤.
 
 	if (!IsValid(UnitToSelect)
-		|| SelectedUnit == UnitToSelect) // ¿Ã¹Ù¸£Áö ¾ÊÀº À¯´ÖÀÌ°Å³ª, ÀÌ¹Ì ¼±ÅÃÇÑ À¯´ÖÀÌ¸é ´õÀÌ»ó ÇÏÁö ¾ÊÀ½.
+		|| SelectedUnit == UnitToSelect) // ì˜¬ë°”ë¥´ì§€ ì•Šì€ ìœ ë‹›ì´ê±°ë‚˜, ì´ë¯¸ ì„ íƒí•œ ìœ ë‹›ì´ë©´ ë”ì´ìƒ í•˜ì§€ ì•ŠìŒ.
 	{
 		return;
 	}
 
 	SelectedUnit = UnitToSelect;
 
-	if (OnSelectedUnitChanged.IsBound()) // À¯´ÖÀÌ º¯°æµÆ´Ù´Â °ÍÀ» ¾Ë¸².
+	if (OnSelectedUnitChanged.IsBound()) // ìœ ë‹›ì´ ë³€ê²½ëë‹¤ëŠ” ê²ƒì„ ì•Œë¦¼.
 	{
 		OnSelectedUnitChanged.Broadcast();
 	}
@@ -300,7 +326,7 @@ void AUnitControlPawn::SetSelectedUnit(AUnit* UnitToSelect)
 
 void AUnitControlPawn::SetSelectedAction(UUnitActionComponent* UnitActionToSelect)
 {
-	//PawnÀÌ ½ÇÇàÇÏ°í ½ÍÀº UnitÀÇ ActionÀ» ¼±ÅÃÇÔ.
+	//Pawnì´ ì‹¤í–‰í•˜ê³  ì‹¶ì€ Unitì˜ Actionì„ ì„ íƒí•¨.
 
 	if (SelectedAction == UnitActionToSelect)
 	{
@@ -379,14 +405,14 @@ void AUnitControlPawn::DoAction()
 		return;
 	}
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return;
 	}
 
-	if (!gameMode->IsValidGrid(PivotGrid))
+	if (!gridManager->IsValidGrid(PivotGrid))
 	{
 		return;
 	}
@@ -436,35 +462,39 @@ void AUnitControlPawn::OnUnitActionCompleted()
 	Debug::Print(DEBUG_TEXT("OnUnitActionCompleted"));
 }
 
-void AUnitControlPawn::FindAllPlayerUnits()
+void AUnitControlPawn::FindAllManagingUnits()
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
 
-	if (!IsValid(gameMode))
+	TArray<AActor*> outUnit;
+	UGameplayStatics::GetAllActorsOfClass(this, AUnit::StaticClass(), outUnit);
+
+	ETeamType teamCompare = ETeamType::Team01;
+
+	switch (PawnTurnType)
 	{
-		Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
-		return;
+	case ETurnType::Team01Turn:
+		teamCompare = ETeamType::Team01;
+		break;
+	case ETurnType::Team02Turn:
+		teamCompare = ETeamType::Team02;
+		break;
+	case ETurnType::Team03Turn:
+		teamCompare = ETeamType::Team03;
+		break;
+	default:
+		break;
 	}
 
-	auto unitArr = gameMode->GetAllUnitInGridSystem();
-	TArray<AUnit*> playerArr;
-
-	for (auto unit : unitArr)
+	for (auto actor : outUnit)
 	{
+		AUnit* unit = Cast<AUnit>(actor);
+
 		if (!IsValid(unit))
 		{
 			continue;
 		}
 
-		if (unit->ActorHasTag(MYUNIT))
-		{
-			playerArr.Add(unit);
-		}
-	}
-
-	for (auto unit : playerArr)
-	{
-		if (!IsValid(unit))
+		if (unit->GetTeamType() != teamCompare)
 		{
 			continue;
 		}
@@ -484,8 +514,10 @@ void AUnitControlPawn::FindAllPlayerUnits()
 
 			unitAction_Cast->OnActionCompleteForControlPawn.Clear();
 			unitAction_Cast->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
-			Debug::Print(DEBUG_TEXT("Bind OK"));
+			Debug::Print(DEBUG_TEXT("UnitAction Bind to Control Pawn OK"));
 		}
+
 	}
+
 }
 

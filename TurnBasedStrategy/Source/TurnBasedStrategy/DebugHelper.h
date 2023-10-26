@@ -2,28 +2,28 @@
 
 #pragma once
 
-//¿¹½Ã) AActor::BeginPlay()
+//ì˜ˆì‹œ) AActor::BeginPlay()
 #define FUNCTION_NAME (TEXT(" / Function Name : ") + FString(__FUNCTION__)+TEXT(" "))
 
-//¿¹½Ã) AActor::Func¿¡¼­ ::FuncÀÌ ºüÁ®¼­ AActor¸¸ ³ª¿È.
+//ì˜ˆì‹œ) AActor::Funcì—ì„œ ::Funcì´ ë¹ ì ¸ì„œ AActorë§Œ ë‚˜ì˜´.
 #define CURRENT_CLASS (TEXT(" / Class Name : ") + FString(__FUNCTION__).Left(FString(__FUNCTION__).Find(TEXT(":"))) + TEXT(" "))
 
-//ÇÔ¼öÀÇ ¶óÀÎ¸¸ ³ª¿È
+//í•¨ìˆ˜ì˜ ë¼ì¸ë§Œ ë‚˜ì˜´
 #define CURRENT_LINE  (TEXT(" / Line : ") + FString::FromInt(__LINE__) + TEXT(" "))
 
-//¿¹½Ã) void __cdecl AActor::BeginPlay(void) Çü½ÄÀ¸·Î Ãâ·ÂµÊ.
+//ì˜ˆì‹œ) void __cdecl AActor::BeginPlay(void) í˜•ì‹ìœ¼ë¡œ ì¶œë ¥ë¨.
 #define CURRENT_FUNCSIG (TEXT(" / Func signature : ") +FString(__FUNCSIG__)+ TEXT(" "))
 #define DEBUG_TEXT_POSITION (FUNCTION_NAME + CURRENT_LINE)
 
-//param0 ²À stringÀ¸·Î ÇÒ °Í.   ¿¹½Ã) DEBUG_TEXT("abc")
+//param0 ê¼­ stringìœ¼ë¡œ í•  ê²ƒ.   ì˜ˆì‹œ) DEBUG_TEXT("abc")
 #define DEBUG_TEXT(Param0) (TEXT(Param0) + DEBUG_TEXT_POSITION)
 
 /**
  * 
  */
 
-//Debug Ãâ·Â ÇÚµé : true -> Ãâ·Â / false -> ºñÃâ·Â
-//!ÁÖÀÇ -> °ÔÀÓ¸ğµåÀÇ ÇÁ·ÎÆÛÆ¼·Î ºôµå¸¦ ¸Å¹ø »õ·ÎÇÏÁö ¾Ê°í Debug¸¦ È°¼ºÈ­ÇÏ°Ô ¸¸µë.
+//Debug ì¶œë ¥ í•¸ë“¤ : true -> ì¶œë ¥ / false -> ë¹„ì¶œë ¥
+//!ì£¼ì˜ -> ê²Œì„ëª¨ë“œì˜ í”„ë¡œí¼í‹°ë¡œ ë¹Œë“œë¥¼ ë§¤ë²ˆ ìƒˆë¡œí•˜ì§€ ì•Šê³  Debugë¥¼ í™œì„±í™”í•˜ê²Œ ë§Œë“¬.
 namespace DebugControl
 {
 	static bool bOK_Debugging = false;
@@ -47,4 +47,13 @@ namespace Debug
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *Msg);
 	}
 
+}
+
+namespace TODO_Marker
+{
+
+	static void TODO()
+	{
+		Debug::Print(DEBUG_TEXT("TODO!"));
+	}
 }

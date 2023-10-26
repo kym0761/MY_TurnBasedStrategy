@@ -20,7 +20,7 @@ public:
 
 private:
 
-	//tick¿¡¼­ ÇÊ¿äÇÑ Á¤º¸µé
+	//tickì—ì„œ í•„ìš”í•œ ì •ë³´ë“¤
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		FGrid Destination;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
@@ -28,8 +28,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		TArray<FGrid> Path;
 
-	UPROPERTY()
-		ASRPG_GameMode* GameModeRef;
+	//UPROPERTY()
+	//	ASRPG_GameMode* GameModeRef;
 	UPROPERTY()
 		FGrid Prev_Grid;
 

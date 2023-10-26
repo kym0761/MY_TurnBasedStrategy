@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid/Grid.h"
+#include "Interface/GridManagerInterface.h"
 #include "GridManager.generated.h"
 
 class UGridObject;
@@ -18,15 +19,15 @@ class UGridSystem;
 class ASRPG_GameMode;
 
 /* 
- * GridSystem°ú PathFindingSystemÀÇ Á¶È­¸¦ À§ÇØ¼­
- * °¢ SystemÀº °¢°¢ÀÇ UObject¸¸ °ü¸®ÇÏ°í
- * PathFinding°°Àº ±â´ÉÀº GridManager¿¡¼­ °ü¸®ÇØ¾ßÇÔ.
+ * GridSystemê³¼ PathFindingSystemì˜ ì¡°í™”ë¥¼ ìœ„í•´ì„œ
+ * ê° Systemì€ ê°ê°ì˜ UObjectë§Œ ê´€ë¦¬í•˜ê³ 
+ * PathFindingê°™ì€ ê¸°ëŠ¥ì€ GridManagerì—ì„œ ê´€ë¦¬í•´ì•¼í•¨.
 */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAnyUnitMoved);
 
 UCLASS()
-class TURNBASEDSTRATEGY_API AGridManager : public AActor
+class TURNBASEDSTRATEGY_API AGridManager : public AActor, public IGridManagerInterface
 {
 	GENERATED_BODY()
 	
@@ -44,7 +45,7 @@ private:
 
 	/*
 	* GridVisual
-	* ÀÌ Instanced Mesh ComponentµéÀº GridÀÇ Á¤º¸¸¦ ½Ã°¢ÀûÀ¸·Î º¸¿©ÁÖ´Â ¿ªÇÒÀ» ÇÑ´Ù.
+	* ì´ Instanced Mesh Componentë“¤ì€ Gridì˜ ì •ë³´ë¥¼ ì‹œê°ì ìœ¼ë¡œ ë³´ì—¬ì£¼ëŠ” ì—­í• ì„ í•œë‹¤.
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_Move;
@@ -61,8 +62,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 		UInstancedGridVisualComponent* GridVisual_DANGER;
 
-	UPROPERTY()
-		ASRPG_GameMode* SRPG_GameModeRef;
+	//UPROPERTY()
+	//	ASRPG_GameMode* SRPG_GameModeRef;
 
 #pragma endregion
 
@@ -94,20 +95,45 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Setup();
+	void SetupGridSystem();
+
+	/*GridSystem Functions*/
+	virtual TArray<AUnit*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
+	virtual TArray<AUnit*> GetAllUnitInGridSystem() const;
+	virtual AUnit* GetUnitAtGrid(const FGrid& GridValue) const;
+	virtual bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
+	virtual bool IsWalkableGrid(const FGrid& GridValue) const;
+	virtual bool IsValidGrid(const FGrid& Grid) const;
+	virtual FGrid WorldToGrid(const FVector& WorldPosition) const;
+	virtual FVector GridToWorld(const FGrid& Grid) const;
+	virtual UGridObject* GetValidGridObject(const FGrid& Grid) const;
+	virtual void AddUnitAtGrid(AUnit* Unit, const FGrid& GridValue);
+	virtual void RemoveUnitAtGrid(AUnit* Unit, const FGrid& GridValue);
+	virtual void MoveUnitGrid(AUnit* Unit, const FGrid& From, const FGrid& to);
+	virtual TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
+
+	/*Pathfinding Functions*/
+	virtual TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false);
+	virtual int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
+	virtual UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
+	virtual TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
+	virtual TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
+	virtual bool HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost = 1000, bool bCanIgnoreUnit = false);
+	virtual void InitAllPathFindingNodes();
+	virtual int32 GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost);
 
 	//*GridVisual Functions*/
-	void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
-	void ShowFromGridSet(const TSet<FGrid>& GridSet, EGridVisualType GridVisualType, const float Height = 0.01f);
-	void ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVisualDataSet, const float Height = 0.01f);
-	void RemoveAllGridVisual();
+	virtual void ShowGridRange(const FGrid& Grid, int32 Range, EGridVisualType GridVisualType);
+	virtual void ShowFromGridSet(const TSet<FGrid>& GridSet, EGridVisualType GridVisualType, const float Height = 0.01f);
+	virtual void ShowFromGridVisualDataSet(const TSet<FGridVisualData>& GridVisualDataSet, const float Height = 0.01f);
+	virtual void RemoveAllGridVisual();
 
 
 	static AGridManager* GetGridManager();
 
 	//Test EnemyRangeFunction
-	//ÇöÀç BP_GridManager¿¡¼­ R¹öÆ° ÀÔ·Â¿¡ ´ëÇØ BindµÈ »óÅÂ·Î µ¿ÀÛÇÔ.
-	//ÃßÈÄ¿¡ º¯°æÇÒ ¿¹Á¤.
+	//í˜„ì¬ BP_GridManagerì—ì„œ Rë²„íŠ¼ ì…ë ¥ì— ëŒ€í•´ Bindëœ ìƒíƒœë¡œ ë™ì‘í•¨.
+	//ì¶”í›„ì— ë³€ê²½í•  ì˜ˆì •.
 	UFUNCTION(BlueprintCallable)
 		void ShowEnemyRange();
 

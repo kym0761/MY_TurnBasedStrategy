@@ -6,7 +6,6 @@
 #include "UnitCore/StatComponent.h"
 #include "UnitCore/Unit.h"
 #include "UnitMoveActionComponent.h"
-#include "Manager/SRPG_GameMode.h"
 #include "Manager/GridManager.h"
 
 #include "DebugHelper.h"
@@ -26,8 +25,8 @@ void UUnitAttackActionComponent::BeginPlay()
 
 void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 {
-	//UI¸¦ ¶ç¿ì±â.
-	//UI¿¡¼­ Attack OK ¸í·ÉÀ» ¹Ş¾ÒÀ» ½Ã¿¡ °ø°İÇÏ±â.
+	//UIë¥¼ ë„ìš°ê¸°.
+	//UIì—ì„œ Attack OK ëª…ë ¹ì„ ë°›ì•˜ì„ ì‹œì— ê³µê²©í•˜ê¸°.
 
 	if (!IsValid(AttackCalculationWidgetClass))
 	{
@@ -35,11 +34,10 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
-
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	auto gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return;
 	}
 
@@ -50,7 +48,7 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
-	AUnit* unit = gameMode->GetUnitAtGrid(Grid);
+	AUnit* unit = gridManager->GetUnitAtGrid(Grid);
 	if (!IsValid(unit))
 	{
 		Debug::Print(DEBUG_TEXT("there is no unit at you selected."));
@@ -63,20 +61,21 @@ void UUnitAttackActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
 		return;
 	}
 
-	//TODO : WidgetÀ» »ı¼ºÇÏ´Â °Íº¸´Ù, Main Canvas¿¡ ³Ö°í Show / Hide ÇÏ´Â°Ô ´õ ³ª¾Æº¸ÀÓ. ÃßÈÄ ¼öÁ¤ÇØ¾ßÇÔ
+	//TODO : Widgetì„ ìƒì„±í•˜ëŠ” ê²ƒë³´ë‹¤, Main Canvasì— ë„£ê³  Show / Hide í•˜ëŠ”ê²Œ ë” ë‚˜ì•„ë³´ì„. ì¶”í›„ ìˆ˜ì •í•´ì•¼í•¨
+	Debug::Print(DEBUG_TEXT("TODO!"));
 	AttackCalculationWidget = CreateWidget<UAttackCalculationWidget>(GetWorld(), AttackCalculationWidgetClass);
 	if (IsValid(AttackCalculationWidget))
 	{
 		AttackCalculationWidget->AddToViewport();
 		AttackCalculationWidget->
-			InitAttackCalculationWidget(GetOwner(), gameMode->GetUnitAtGrid(Grid));
+			InitAttackCalculationWidget(GetOwner(), gridManager->GetUnitAtGrid(Grid));
 	}
 
 }
 
 TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 {
-	//°ø°İ ¹üÀ§¿¡ ´ê´Â Grid À§Ä¡¸¦ ÀüºÎ Ã£¾Æ returnÇÑ´Ù.
+	//ê³µê²© ë²”ìœ„ì— ë‹¿ëŠ” Grid ìœ„ì¹˜ë¥¼ ì „ë¶€ ì°¾ì•„ returní•œë‹¤.
 
 	TSet<FGrid> validSet;
 
@@ -88,11 +87,10 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 
 	FGrid unitGrid = unit->GetGrid();
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return validSet;
 	}
 
@@ -108,27 +106,27 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 			FGrid resultGrid = FGrid(x, y);
 			resultGrid += unitGrid;
 
-			//Á¸ÀçÇÏÁö ¾Ê´Â Grid
-			if (!gameMode->IsValidGrid(resultGrid))
+			//ì¡´ì¬í•˜ì§€ ì•ŠëŠ” Grid
+			if (!gridManager->IsValidGrid(resultGrid))
 			{
 				continue;
 			}
 
-			////Áö±İ ÇöÀç UnitÀÇ À§Ä¡
+			////ì§€ê¸ˆ í˜„ì¬ Unitì˜ ìœ„ì¹˜
 			if (resultGrid == unitGrid)
 			{
 				continue;
 			}
 
-			//»ó´ë°¡ °°Àº ÆÀ tag°¡ ºÙ¾îÀÖÀ¸¸é ½ºÅµ.
-			AUnit* targetUnit = gameMode->GetUnitAtGrid(resultGrid);
+			//ìƒëŒ€ê°€ ê°™ì€ íŒ€ tagê°€ ë¶™ì–´ìˆìœ¼ë©´ ìŠ¤í‚µ.
+			AUnit* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
 			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && 
 				targetUnit->ActorHasTag(GetOwner()->Tags[0]))
 			{
 				continue;
 			}
 
-			//Åë°úÇÏ¸é ¹®Á¦¾øÀ¸´Ï validSet¿¡ Ãß°¡
+			//í†µê³¼í•˜ë©´ ë¬¸ì œì—†ìœ¼ë‹ˆ validSetì— ì¶”ê°€
 			validSet.Add(resultGrid);
 		}
 	}
@@ -138,7 +136,7 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 
 TSet<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataSet() const
 {
-	//À§ FunctionÀÇ Visual Data ¹öÀü
+	//ìœ„ Functionì˜ Visual Data ë²„ì „
 
 	TSet<FGrid> grids = GetValidActionGridSet();
 	TSet<FGridVisualData> validVisualDataSet;
@@ -157,8 +155,8 @@ TSet<FGridVisualData> UUnitAttackActionComponent::GetValidActionGridVisualDataSe
 
 void UUnitAttackActionComponent::TakeAction(const FGrid& Grid)
 {
-	//Attack ActionÀÇ TakeActionÀº AttackManager¿¡¼­ ÃÖÁ¾È£ÃâµÊ.
-	//AIÀÇ °æ¿ì, °¡´ÉÇÑ °ø°İÇÒ À§Ä¡°¡ ¾ø´Ù¸é, AI_Action¿¡¼­ TakeActionÀ» ÇÏ¿© °ø°İÀ» Á¾·áÇÔ.
+	//Attack Actionì˜ TakeActionì€ BattleManagerì—ì„œ ìµœì¢…í˜¸ì¶œë¨.
+	//AIì˜ ê²½ìš°, ê°€ëŠ¥í•œ ê³µê²©í•  ìœ„ì¹˜ê°€ ì—†ë‹¤ë©´, AI_Actionì—ì„œ TakeActionì„ í•˜ì—¬ ê³µê²©ì„ ì¢…ë£Œí•¨.
 
 	ActionEnd();	
 }
@@ -180,13 +178,13 @@ void UUnitAttackActionComponent::ActionEnd()
 
 	gridManager->RemoveAllGridVisual();
 
-	//°ø°İÀ» ¸¶Ä£ À¯´ÖÀº ÀÌÈÄ ´Ù¸¥ Çàµ¿ ºÒ°¡.
+	//ê³µê²©ì„ ë§ˆì¹œ ìœ ë‹›ì€ ì´í›„ ë‹¤ë¥¸ í–‰ë™ ë¶ˆê°€.
 	AUnit* owner = GetOwningUnit();
 	if (IsValid(owner))
 	{
 		owner->FinishUnitAllAction();
 	}
-
+	Debug::Print(DEBUG_TEXT("Attack Action End"));
 	Super::ActionEnd();
 }
 
@@ -197,34 +195,27 @@ void UUnitAttackActionComponent::ActionSelected()
 
 FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 {
-	//°ø°İ ¹üÀ§ ³»¿¡¼­ °¡´ÉÇÑ °ø°İ Áß Á¦ÀÏ °¡Ä¡°¡ ³ôÀº Çàµ¿À» ¼±ÅÃÇÔ.
-	//¿¹½Ã) °ø°İ °á°ú·Î ÀûÀÇ ÇÇ¸¦ °¡Àå ¸¹ÀÌ ³·Ãâ ¼ö ÀÖÀ» ¶§ ÇØ´ç ActionÀ» ¼±ÅÃÇÔ.
+	//ê³µê²© ë²”ìœ„ ë‚´ì—ì„œ ê°€ëŠ¥í•œ ê³µê²© ì¤‘ ì œì¼ ê°€ì¹˜ê°€ ë†’ì€ í–‰ë™ì„ ì„ íƒí•¨.
+	//ì˜ˆì‹œ) ê³µê²© ê²°ê³¼ë¡œ ì ì˜ í”¼ë¥¼ ê°€ì¥ ë§ì´ ë‚®ì¶œ ìˆ˜ ìˆì„ ë•Œ í•´ë‹¹ Actionì„ ì„ íƒí•¨.
 
-	TSet<FGrid> grids = GetValidActionGridSet(); //°ø°İÇÒ ¼ö ÀÖ´Â À§Ä¡ ÀüºÎ.
+	TSet<FGrid> grids = GetValidActionGridSet(); //ê³µê²©í•  ìˆ˜ ìˆëŠ” ìœ„ì¹˜ ì „ë¶€.
 	TArray<FActionValueToken> actionValues;
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
 	{
-		//ºÒ°¡.
+		//ë¶ˆê°€.
 		return FGrid(-1, -1);
 	}
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
-	{
-		//ºÒ°¡.
-		return FGrid(-1, -1);
-	}
-
-	//°ø°İ °¡´ÉÇÑ À§Ä¡ ÀüºÎ È®ÀÎÇØ¼­ ÇØ´ç À§Ä¡ÀÇ Value¸¦ °è»ê.
+	//ê³µê²© ê°€ëŠ¥í•œ ìœ„ì¹˜ ì „ë¶€ í™•ì¸í•´ì„œ í•´ë‹¹ ìœ„ì¹˜ì˜ Valueë¥¼ ê³„ì‚°.
 	for (FGrid& grid : grids)
 	{
 		FActionValueToken actionValueToken;
 		actionValueToken.Grid = grid;
 		actionValueToken.ActionValue = CalculateActionValue(grid);
 
-		//Action Value°¡ ¸¶ÀÌ³Ê½º¸é, ÇØ´ç À§Ä¡¸¦ °ø°İÇÏ·Á´Â ½Ãµµ¸¦ ÇÏÁö¸» °Í.
+		//Action Valueê°€ ë§ˆì´ë„ˆìŠ¤ë©´, í•´ë‹¹ ìœ„ì¹˜ë¥¼ ê³µê²©í•˜ë ¤ëŠ” ì‹œë„ë¥¼ í•˜ì§€ë§ ê²ƒ.
 		if (actionValueToken.ActionValue == -1)
 		{
 			continue;
@@ -235,7 +226,7 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 
 	if (actionValues.Num() == 0)
 	{
-		//È®ÀÎÇÒ Grid°¡ ¾øÀ½.
+		//í™•ì¸í•  Gridê°€ ì—†ìŒ.
 		return FGrid(-1, -1);
 	}
 
@@ -244,7 +235,7 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 			return a.ActionValue > b.ActionValue;
 		});
 
-	//°è»êµÈ Value¿¡ ´ëÇØ¼­, °¡Àå °ªÀÌ ³ôÀº (°ø°İ °¡Ä¡°¡ Á¦ÀÏ ³ôÀº) Grid¸¦ ¼±ÅÃ.
+	//ê³„ì‚°ëœ Valueì— ëŒ€í•´ì„œ, ê°€ì¥ ê°’ì´ ë†’ì€ (ê³µê²© ê°€ì¹˜ê°€ ì œì¼ ë†’ì€) Gridë¥¼ ì„ íƒ.
 	FActionValueToken selectedActionValueToken = actionValues[0];
 
 	return selectedActionValueToken.Grid;
@@ -252,17 +243,11 @@ FGrid UUnitAttackActionComponent::ThinkAIBestActionGrid()
 
 int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
-	//AttackOrder¸¦ ¹Ş¾Æ °á°ú¸¦ ºĞ¼®ÇÔ.
-	//°á°ú·Î ³» ÇÇ°¡ °¡Àå ³ôÀ» ¼ö·Ï, »ó´ë ÇÇ°¡ °¡Àå ÀûÀ» ¼ö·Ï °¡Ä¡°¡ ³ôÀ½
+	//AttackOrderë¥¼ ë°›ì•„ ê²°ê³¼ë¥¼ ë¶„ì„í•¨.
+	//ê²°ê³¼ë¡œ ë‚´ í”¼ê°€ ê°€ì¥ ë†’ì„ ìˆ˜ë¡, ìƒëŒ€ í”¼ê°€ ê°€ì¥ ì ì„ ìˆ˜ë¡ ê°€ì¹˜ê°€ ë†’ìŒ
 
 	AGridManager* gridManager = AGridManager::GetGridManager();
 	if (!IsValid(gridManager))
-	{
-		return -1;
-	}
-
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
 	{
 		return -1;
 	}
@@ -273,13 +258,16 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -1;
 	}
 
-	auto defender = gameMode->GetUnitAtGrid(CandidateGrid);
+	auto defender = gridManager->GetUnitAtGrid(CandidateGrid);
 	if (!IsValid(defender))
 	{
 		return -1;
 	}
 
-	TArray<FAttackOrder> attackOrders = gameMode->CalculateAttackOrder(attacker, defender);
+	//GameModeê°€ í•˜ëŠ” ì¼ì„.
+	TODO_Marker::TODO();
+	TArray<FAttackOrder> attackOrders;
+	//TArray<FAttackOrder> attackOrders = gridManager->CalculateAttackOrder(attacker, defender);
 
 	UStatComponent* attackerStatComponent =
 		attacker->FindComponentByClass<UStatComponent>();
@@ -308,7 +296,7 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		}
 	}
 
-	//AttackerHP°¡ ¸¹À»¼ö·Ï Á¡¼ö°¡ ³ôÀ½. DefenderHP°¡ ÀûÀ»¼ö·Ï Á¡¼ö°¡ ³ôÀ½.
+	//AttackerHPê°€ ë§ì„ìˆ˜ë¡ ì ìˆ˜ê°€ ë†’ìŒ. DefenderHPê°€ ì ì„ìˆ˜ë¡ ì ìˆ˜ê°€ ë†’ìŒ.
 	float valueScore = 0.0f;
 
 	float counterAttackValue = 100 * attackerHP / attackerStatComponent->GetMaxHP();
@@ -322,28 +310,30 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 
 void UUnitAttackActionComponent::AI_Action()
 {
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
-	if (!IsValid(gameMode))
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
 	{
-		//ºÒ°¡.
+		//ë¶ˆê°€.
 		return;
 	}
 
 	FGrid grid = ThinkAIBestActionGrid();
 
-	//°ø°İÀÌ ºÒ°¡´ÉÇÏ¸é takeactionÃ³¸®ÇÏ¿© °ø°İ Çàµ¿À» Á¾·áÇÔ.
+	//ê³µê²©ì´ ë¶ˆê°€ëŠ¥í•˜ë©´ takeactionì²˜ë¦¬í•˜ì—¬ ê³µê²© í–‰ë™ì„ ì¢…ë£Œí•¨.
 	if (grid == FGrid(-1, -1))
 	{
 		TakeAction(grid);
 	}
 
-	gameMode->SetupAttackManaging(GetOwner(), gameMode->GetUnitAtGrid(grid));
-	gameMode->StartAttack();
+	TODO_Marker::TODO();
+	//ê²Œì„ ëª¨ë“œì˜ ë¬´ì–¸ê°€ë¥¼ ì‹¤í–‰í•´ì•¼í•˜ëŠ”ë°, ì´ê²ƒì„ ë³€ê²½í•´ì•¼í•¨.
+	//gameMode->SetupAttackManaging(GetOwner(), gameMode->GetUnitAtGrid(grid));
+	//gameMode->StartAttack();
 }
 
 TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 {
-	//Àû À¯´ÖÀÇ ÀÌµ¿°Å¸® + °ø°İ ¹üÀ§ ÀüºÎ ÇÕ»êÇÏ¿© À§Çè Áö¿ªÀ» °è»êÇÒ ¶§ »ç¿ëÇÔ.
+	//ì  ìœ ë‹›ì˜ ì´ë™ê±°ë¦¬ + ê³µê²© ë²”ìœ„ ì „ë¶€ í•©ì‚°í•˜ì—¬ ìœ„í—˜ ì§€ì—­ì„ ê³„ì‚°í•  ë•Œ ì‚¬ìš©í•¨.
 
 	UUnitMoveActionComponent* moveActionComp = GetOwner()->FindComponentByClass<UUnitMoveActionComponent>();
 	if (!IsValid( moveActionComp))
@@ -357,7 +347,7 @@ TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 
 	for (FGrid& canMoveGrid : canMoveGrids)
 	{
-		//ÀÌ À§Ä¡¿¡¼­ °ø°İ °¡´ÉÇÑ Grid À§Ä¡¸¦ °Ë»ö
+		//ì´ ìœ„ì¹˜ì—ì„œ ê³µê²© ê°€ëŠ¥í•œ Grid ìœ„ì¹˜ë¥¼ ê²€ìƒ‰
 		TSet<FGrid> grids = GetAttackRangeGridSetAtGrid(canMoveGrid);
 
 		for (FGrid& grid : grids)
@@ -372,15 +362,15 @@ TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 
 TSet<FGrid> UUnitAttackActionComponent::GetAttackRangeGridSetAtGrid(FGrid& Grid)
 {
-	//Grid À§Ä¡¿¡¼­ Attack Range ¸¸Å­ °ø°İ °¡´ÉÇÑ Grid¸¦ µµÃâ.
+	//Grid ìœ„ì¹˜ì—ì„œ Attack Range ë§Œí¼ ê³µê²© ê°€ëŠ¥í•œ Gridë¥¼ ë„ì¶œ.
 
 	TSet<FGrid> validSet;
 
-	ASRPG_GameMode* gameMode = ASRPG_GameMode::GetSRPG_GameMode(GetWorld());
+	AGridManager* gridManager = AGridManager::GetGridManager();
 
-	if (!IsValid(gameMode))
+	if (!IsValid(gridManager))
 	{
-		Debug::Print(DEBUG_TEXT("gameMode is Invalid."));
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return validSet;
 	}
 
@@ -396,13 +386,13 @@ TSet<FGrid> UUnitAttackActionComponent::GetAttackRangeGridSetAtGrid(FGrid& Grid)
 			FGrid resultGrid = FGrid(x, y);
 			resultGrid += Grid;
 
-			//Á¸ÀçÇÏÁö ¾Ê´Â Grid
-			if (!gameMode->IsValidGrid(resultGrid))
+			//ì¡´ì¬í•˜ì§€ ì•ŠëŠ” Grid
+			if (!gridManager->IsValidGrid(resultGrid))
 			{
 				continue;
 			}
 
-			//Åë°úÇÏ¸é ¹®Á¦¾øÀ¸´Ï validSet¿¡ Ãß°¡
+			//í†µê³¼í•˜ë©´ ë¬¸ì œì—†ìœ¼ë‹ˆ validSetì— ì¶”ê°€
 			validSet.Add(resultGrid);
 		}
 	}
