@@ -3,7 +3,7 @@
 
 #include "GridManager.h"
 #include "Grid/GridObject.h"
-#include "Grid/PathNode.h"
+#include "Grid/PathObject.h"
 #include "Grid/InstancedGridVisualComponent.h"
 #include "Grid/PathFindingSystem.h"
 #include "Grid/GridSystem.h"
@@ -100,14 +100,14 @@ void AGridManager::SetupGridSystem()
 		Y_Length,
 		[](UPathFindingSystem* pfs, FGrid grid)
 		{
-			UPathNode* pathNode = NewObject<UPathNode>();
-			pathNode->SetGrid(grid);
-			return pathNode;
+			UPathObject* pathObject = NewObject<UPathObject>();
+			pathObject->SetGrid(grid);
+			return pathObject;
 		}
 	);
 
 	//Grid 맵에 장애물 적용. 통과 불가.
-	auto pathFindingMap = PathFindingSystem->GetPathNodeMap();
+	auto pathFindingMap = PathFindingSystem->GetPathObjectMap();
 	for (int32 i = 0; i < X_Length; i++)
 	{
 		for (int32 j = 0; j < Y_Length; j++)
@@ -147,10 +147,10 @@ void AGridManager::SetupGridSystem()
 			//outhits이 1개 이상의 값을 가지고 있다면, 해당 위치에 장애물이 존재하고 있는 것임.
 			if (outHits.Num() > 0)
 			{
-				UPathNode* pathNode = pathFindingMap[grid];
-				if (IsValid(pathNode))
+				UPathObject* pathObject = pathFindingMap[grid];
+				if (IsValid(pathObject))
 				{
-					pathNode->SetIsWalkable(false);
+					pathObject->SetIsWalkable(false);
 				}
 			}
 		}
@@ -278,10 +278,10 @@ bool AGridManager::IsWalkableGrid(const FGrid& GridValue) const
 	//장애물, 높은 벽, 용암? 등의 유닛이 올라갈 수 없는 위치인지 확인함
 	//TODO : 공중 유닛의 경우를 생각해야함.
 
-	UPathNode* pathNode = PathFindingSystem->GetValidPathNode(GridValue);
-	if (IsValid(pathNode))
+	UPathObject* pathObject = PathFindingSystem->GetValidPathObject(GridValue);
+	if (IsValid(pathObject))
 	{
-		return pathNode->GetIsWalkable();
+		return pathObject->GetIsWalkable();
 	}
 
 	return false;
@@ -390,56 +390,56 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 		//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
 		//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 Valid.
 
-	TArray<UPathNode*> openList; 	//openList = 이동 가능할 위치. Heap으로 사용함.
-	TSet<UPathNode*> closeSet; 	//closeSet = 이동 불가능한 위치. 빠른 검색용 TSet
+	TArray<UPathObject*> openList; 	//openList = 이동 가능할 위치. Heap으로 사용함.
+	TSet<UPathObject*> closeSet; 	//closeSet = 이동 불가능한 위치. 빠른 검색용 TSet
 
 	//Heap화 == PriorityQueue
-	openList.Heapify(UPathNode::PathFindingPredicated);
+	openList.Heapify(UPathObject::PathFindingPredicated);
 
 	//시작 위치
-	UPathNode* startNode = PathFindingSystem->GetValidPathNode(Start);
-	if (!IsValid(startNode))
+	UPathObject* startObject = PathFindingSystem->GetValidPathObject(Start);
+	if (!IsValid(startObject))
 	{
-		Debug::Print(DEBUG_TEXT("StartNode is Invalid."));
+		Debug::Print(DEBUG_TEXT("startObject is Invalid."));
 		PathLength = -1;
 		return TArray<FGrid>();
 	}
 
 	//목표 위치
-	UPathNode* endNode = PathFindingSystem->GetValidPathNode(End);
-	if (!IsValid(endNode))
+	UPathObject* endObject = PathFindingSystem->GetValidPathObject(End);
+	if (!IsValid(endObject))
 	{
-		Debug::Print(DEBUG_TEXT("EndNode is Invalid."));
+		Debug::Print(DEBUG_TEXT("endObject is Invalid."));
 		PathLength = -1;
 		return TArray<FGrid>();
 	}
 
-	//모든 PathNode를 초기화 한 뒤에 시작함.
-	InitAllPathFindingNodes();
+	//모든 PathObject를 초기화 한 뒤에 시작함.
+	InitAllPathFindingObjects();
 
-	//startNode 상태
+	//startObject 상태
 	//G = 0 , H = 예상되는 직선 길이(X+Y), F = G+H
-	startNode->SetGCost(0);
-	startNode->SetHCost(CalculateGridDistance(Start, End));
-	startNode->CalculateFCost();
+	startObject->SetGCost(0);
+	startObject->SetHCost(CalculateGridDistance(Start, End));
+	startObject->CalculateFCost();
 
-	openList.Add(startNode);
+	openList.Add(startObject);
 
 	while (openList.Num() > 0)
 	{
-		UPathNode* currentNode = GetLowestFCostNode(openList);
+		UPathObject* currentObject = GetLowestFCostObject(openList);
 
-		openList.Remove(currentNode); // 현재 위치를 Openlist에서 제거
+		openList.Remove(currentObject); // 현재 위치를 Openlist에서 제거
 
-		if (currentNode->GetGCost() > MaxMoveCost)
+		if (currentObject->GetGCost() > MaxMoveCost)
 		{
 			//이 위치로는 이동할 수 없음. 다른 길을 찾아야함.
 			continue;
 		}
 
-		if (currentNode == endNode) //Break Point.
+		if (currentObject == endObject) //Break Point.
 		{
-			FGrid currentGrid = currentNode->GetGrid();
+			FGrid currentGrid = currentObject->GetGrid();
 			AUnit* currentUnit = GetUnitAtGrid(currentGrid);
 			AUnit* startUnit = GetUnitAtGrid(Start);
 
@@ -451,32 +451,31 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 				return TArray<FGrid>();
 			}
 
-			PathLength = endNode->GetFCost();
-			return CalculatePath(endNode);
+			PathLength = endObject->GetFCost();
+			return CalculatePath(endObject);
 		}
 
-		//Debug::Print(DEBUG_TEXT("Node Position :") + currentNode->GetGrid().ToString());
 
-		TArray<UPathNode*> nearNodeArray = GetNearNodeArray(currentNode);
-		for (UPathNode* nearNode : nearNodeArray)
+		TArray<UPathObject*> nearObjectArray = GetNearObjectArray(currentObject);
+		for (UPathObject* nearObject : nearObjectArray)
 		{
 			//close Set 안에 있는 노드는 무시.
-			if (closeSet.Contains(nearNode))
+			if (closeSet.Contains(nearObject))
 			{
 				continue;
 			}
 
 			//걸을 수 없는 위치 무시.
-			if (nearNode->GetIsWalkable() == false)
+			if (nearObject->GetIsWalkable() == false)
 			{
-				closeSet.Add(nearNode);
+				closeSet.Add(nearObject);
 				continue;
 			}
 
 			//bCanIgnoreUnit이 true일 때, 적 유닛을 통과할 수 있음.
 			//GridVisual은 여기가 아니라 MoveActionComponent에서 ValidGridVisual을 체크함.
 			//유닛 정보는 GridSystem에 접근이 필요함.
-			UGridObject* gridObj = GridSystem->GetValidGridObject(nearNode->GetGrid());
+			UGridObject* gridObj = GridSystem->GetValidGridObject(nearObject->GetGrid());
 			if (!bCanIgnoreUnit && IsValid(gridObj) && gridObj->HasAnyUnit())
 			{
 				AUnit* currentUnit = gridObj->GetUnit();
@@ -490,7 +489,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 					else
 					{
 						//아군이 아니라면 통과가 불가능함.
-						closeSet.Add(nearNode);
+						closeSet.Add(nearObject);
 						continue;
 					}
 				}
@@ -502,18 +501,18 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 			//H : 앞으로 예상되는 Cost
 
 			//G = 현재까지의 GCost + 다음노드 진입에 필요한 Cost
-			int tempGCost = currentNode->GetGCost() + nearNode->GetGridCost();
+			int tempGCost = currentObject->GetGCost() + nearObject->GetGridCost();
 
-			if (tempGCost < nearNode->GetGCost())
+			if (tempGCost < nearObject->GetGCost())
 			{
-				nearNode->SetParentNode(currentNode);
-				nearNode->SetGCost(tempGCost);
-				nearNode->SetHCost(CalculateGridDistance(nearNode->GetGrid(), End));
-				nearNode->CalculateFCost();
+				nearObject->SetParentObject(currentObject);
+				nearObject->SetGCost(tempGCost);
+				nearObject->SetHCost(CalculateGridDistance(nearObject->GetGrid(), End));
+				nearObject->CalculateFCost();
 
-				if (!openList.Contains(nearNode))
+				if (!openList.Contains(nearObject))
 				{
-					openList.Add(nearNode);
+					openList.Add(nearObject);
 				}
 			}
 		}
@@ -529,22 +528,22 @@ int32 AGridManager::CalculateGridDistance(const FGrid& a, const FGrid& b) const
 	return FMath::Abs(a.X - b.X) + FMath::Abs(a.Y - b.Y);
 }
 
-UPathNode* AGridManager::GetLowestFCostNode(TArray<UPathNode*>& PathNodeList)
+UPathObject* AGridManager::GetLowestFCostObject(TArray<UPathObject*>& PathObjectList)
 {
-	if (PathNodeList.Num() == 0)
+	if (PathObjectList.Num() == 0)
 	{
 		return nullptr;
 	}
 
-	//PathNodeList는 FindPath에서 Heapify가 됐다. Heap의 첫번째 원소가 가장 F 값이 낮은 Node다.
-	UPathNode* lowestNode = PathNodeList[0];
+	//PathObjectList는 FindPath에서 Heapify가 됐다. Heap의 첫번째 원소가 가장 F 값이 낮은 Object다.
+	UPathObject* lowestObject = PathObjectList[0];
 
-	return lowestNode;
+	return lowestObject;
 }
 
-TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode) const
+TArray<FGrid> AGridManager::CalculatePath(UPathObject* EndObject) const
 {
-	if (!IsValid(EndNode))
+	if (!IsValid(EndObject))
 	{
 		return TArray<FGrid>();
 	}
@@ -554,12 +553,12 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode) const
 	//그 Grid 결과를 뒤집으면 Start -> End 까지의 Path다.
 	TArray<FGrid> gridArray;
 
-	gridArray.Add(EndNode->GetGrid());
-	UPathNode* current = EndNode;
+	gridArray.Add(EndObject->GetGrid());
+	UPathObject* current = EndObject;
 	while (IsValid(current))
 	{
 		gridArray.Add(current->GetGrid());
-		current = current->GetParentNode();
+		current = current->GetParentObject();
 	}
 
 	//결과를 reverse하면 올바른 방향의 경로가 나옴.
@@ -568,14 +567,14 @@ TArray<FGrid> AGridManager::CalculatePath(UPathNode* EndNode) const
 	return gridArray;
 }
 
-TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode) const
+TArray<UPathObject*> AGridManager::GetNearObjectArray(UPathObject* CurrentObject) const
 {
-	//PathFinding에서 사용할 현재 위치의 상하좌우 Node를 찾는 Function
-	//만약, 존재하지 않는 노드라면 NearNode로 추가하지 않음.
+	//PathFinding에서 사용할 현재 위치의 상하좌우 Object를 찾는 Function
+	//만약, 존재하지 않는 노드라면 NearObject로 추가하지 않음.
 
-	TArray<UPathNode*> nearNodeList;
+	TArray<UPathObject*> nearObjectList;
 
-	FGrid grid = CurrentNode->GetGrid();
+	FGrid grid = CurrentObject->GetGrid();
 
 	TArray<int32> dx{ 1,-1,0,0 };
 	TArray<int32> dy{ 0,0,1,-1 };
@@ -588,18 +587,18 @@ TArray<UPathNode*> AGridManager::GetNearNodeArray(UPathNode* CurrentNode) const
 
 		if (IsValidGrid(near))
 		{
-			UPathNode* nearNode = PathFindingSystem->GetValidPathNode(near);
+			UPathObject* nearObject = PathFindingSystem->GetValidPathObject(near);
 
-			if (!IsValid(nearNode))
+			if (!IsValid(nearObject))
 			{
 				continue;
 			}
 
-			nearNodeList.Add(nearNode);
+			nearObjectList.Add(nearObject);
 		}
 	}
 
-	return nearNodeList;
+	return nearObjectList;
 }
 
 bool AGridManager::HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost, bool bCanIgnoreUnit)
@@ -612,12 +611,12 @@ bool AGridManager::HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCo
 	return pathLength != -1;
 }
 
-void AGridManager::InitAllPathFindingNodes()
+void AGridManager::InitAllPathFindingObjects()
 {
 	//PathFindingGridSystem의 Grid 값을 PathFinding에 이용할 수 있도록 전부 초기화.
 	//G = 무한대(int32 최대값) , H = 0 , F = G + H = 무한대
 
-	TMap<FGrid, UPathNode*> pathNodes = PathFindingSystem->GetPathNodeMap();
+	TMap<FGrid, UPathObject*> pathObjects = PathFindingSystem->GetPathObjectMap();
 	TMap<FGrid, UGridObject*> gridObjs = GridSystem->GetGridObjectMap();
 
 	for (int x = 0; x < X_Length; x++)
@@ -625,10 +624,10 @@ void AGridManager::InitAllPathFindingNodes()
 		for (int y = 0; y < Y_Length; y++)
 		{
 			FGrid grid(x, y);
-			UPathNode* pathNode = pathNodes[grid];
+			UPathObject* pathObject = pathObjects[grid];
 			UGridObject* gridObj = gridObjs[grid];
 
-			if (!IsValid(pathNode) || !IsValid(gridObj))
+			if (!IsValid(pathObject) || !IsValid(gridObj))
 			{
 				Debug::Print(DEBUG_TEXT("Invalid Position."));
 				continue;
@@ -638,11 +637,11 @@ void AGridManager::InitAllPathFindingNodes()
 			int32 tempH_Cost = 0;
 			int32 tempGridCost = gridObj->GetGridCost();
 
-			pathNode->SetGCost(tempG_Cost);
-			pathNode->SetHCost(tempH_Cost);
-			pathNode->CalculateFCost();
-			pathNode->SetGridCost(tempGridCost);
-			pathNode->SetParentNode(nullptr);
+			pathObject->SetGCost(tempG_Cost);
+			pathObject->SetHCost(tempH_Cost);
+			pathObject->CalculateFCost();
+			pathObject->SetGridCost(tempGridCost);
+			pathObject->SetParentObject(nullptr);
 		}
 	}
 }

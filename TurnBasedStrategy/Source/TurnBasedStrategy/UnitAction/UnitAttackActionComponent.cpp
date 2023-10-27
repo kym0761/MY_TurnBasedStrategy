@@ -6,7 +6,9 @@
 #include "UnitCore/StatComponent.h"
 #include "UnitCore/Unit.h"
 #include "UnitMoveActionComponent.h"
+
 #include "Manager/GridManager.h"
+#include "Manager/BattleManager.h"
 
 #include "DebugHelper.h"
 
@@ -120,8 +122,7 @@ TSet<FGrid> UUnitAttackActionComponent::GetValidActionGridSet() const
 
 			//상대가 같은 팀 tag가 붙어있으면 스킵.
 			AUnit* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && 
-				targetUnit->ActorHasTag(GetOwner()->Tags[0]))
+			if (!IsValid(targetUnit) || unit->GetTeamType() == targetUnit->GetTeamType())
 			{
 				continue;
 			}
@@ -185,6 +186,7 @@ void UUnitAttackActionComponent::ActionEnd()
 		owner->FinishUnitAllAction();
 	}
 	Debug::Print(DEBUG_TEXT("Attack Action End"));
+
 	Super::ActionEnd();
 }
 
@@ -252,8 +254,8 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -1;
 	}
 
-	AActor* attacker = GetOwner();
-	if (!IsValid(attacker) || attacker->Tags.Num() == 0)
+	auto attacker = CastChecked<AUnit>(GetOwner());
+	if (!IsValid(attacker))
 	{
 		return -1;
 	}
@@ -264,10 +266,22 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -1;
 	}
 
+	if (defender->GetTeamType() == attacker->GetTeamType())
+	{
+		return -1;
+	}
+
 	//GameMode가 하는 일임.
 	TODO_Marker::TODO();
-	TArray<FAttackOrder> attackOrders;
 	//TArray<FAttackOrder> attackOrders = gridManager->CalculateAttackOrder(attacker, defender);
+
+	ABattleManager* battleManager = ABattleManager::GetBattleManager();
+	if (!IsValid(battleManager))
+	{
+		return -1;
+	}
+
+	TArray<FBattleOrder> battleOrders = battleManager->CalculateBattleOrders(attacker,defender);
 
 	UStatComponent* attackerStatComponent =
 		attacker->FindComponentByClass<UStatComponent>();
@@ -283,15 +297,15 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 	float attackerHP = attackerStatComponent->GetHP();
 	float defenderHP = defenderStatComponent->GetHP();
 
-	for (auto attackOrder : attackOrders)
+	for (auto battleOrder : battleOrders)
 	{
-		switch (attackOrder.AttackOrderType)
+		switch (battleOrder.OrderOwnerType)
 		{
-		case EAttackOrderType::Attack:
-			attackerHP -= attackOrder.Damage;
+		case EOrderOwnerType::Attacker:
+			attackerHP -= battleOrder.Damage;
 			break;
-		case EAttackOrderType::Defend:
-			defenderHP -= attackOrder.Damage;
+		case EOrderOwnerType::Defender:
+			defenderHP -= battleOrder.Damage;
 			break;
 		}
 	}
@@ -317,16 +331,24 @@ void UUnitAttackActionComponent::AI_Action()
 		return;
 	}
 
-	FGrid grid = ThinkAIBestActionGrid();
+	FGrid targetGrid = ThinkAIBestActionGrid();
+	auto targetUnit = gridManager->GetUnitAtGrid(targetGrid);
 
-	//공격이 불가능하면 takeaction처리하여 공격 행동을 종료함.
-	if (grid == FGrid(-1, -1))
+	ABattleManager* battleManager = ABattleManager::GetBattleManager();
+
+	if (IsValid(battleManager) && IsValid(targetUnit))
 	{
-		TakeAction(grid);
+		Debug::Print(DEBUG_TEXT("AI StartBattle."));
+		battleManager->StartBattle(GetOwner(), targetUnit); //AI가 상대에게 공격 시도.
+	}
+	else 
+	{
+		Debug::Print(DEBUG_TEXT("Invalid Attack Grid Position."));
+		TakeAction(targetGrid); // 만약 공격이 불가능하다면, 그냥 TakeAction 처리해서 공격 Action의 사용을 종료함.
 	}
 
 	TODO_Marker::TODO();
-	//게임 모드의 무언가를 실행해야하는데, 이것을 변경해야함.
+	//AI에게도 실제 공격을 실행하는 로직이 필요함.
 	//gameMode->SetupAttackManaging(GetOwner(), gameMode->GetUnitAtGrid(grid));
 	//gameMode->StartAttack();
 }

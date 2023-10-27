@@ -80,15 +80,17 @@ public:
 
 	void InitUnit();
 
-	UFUNCTION()
-		void StartUnitTurn();
+	//UFUNCTION()
+	//	void StartUnitTurn();
 
 	UFUNCTION()
 		void OnSelectedUnitChanged();
 
-	void ActivateUnitAllAction();
+	void ActivateUnitAllActions();
 	void FinishUnitAllAction();
 
+	//AI Task에서 사용할 수 있도록 BlueprintCallable
+	UFUNCTION(BlueprintCallable)
 	bool IsThisUnitCanAction() const;
 
 	ETeamType GetTeamType() const;

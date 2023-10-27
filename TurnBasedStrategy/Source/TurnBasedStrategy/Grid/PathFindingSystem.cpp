@@ -2,7 +2,7 @@
 
 
 #include "PathFindingSystem.h"
-#include "PathNode.h"
+#include "PathObject.h"
 
 UPathFindingSystem::UPathFindingSystem()
 {
@@ -10,7 +10,7 @@ UPathFindingSystem::UPathFindingSystem()
 	Y_Length = 10;
 }
 
-void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction)
+void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFunctionRef<UPathObject* (UPathFindingSystem*, FGrid)> CreateObjectFunction)
 {
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
@@ -21,27 +21,27 @@ void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFun
 		for (int y = 0; y < Y_Length; y++)
 		{
 			FGrid grid = FGrid(x, y);
-			//CreateObjectFunctionÀ» ±¸ÇöÇØ¾ßÇÔ. ¶÷´Ù·Î ±¸Çö.
-			//GridManager Âü°í.
+			//CreateObjectFunctionì„ êµ¬í˜„í•´ì•¼í•¨. ëžŒë‹¤ë¡œ êµ¬í˜„.
+			//GridManager ì°¸ê³ .
 
-			UPathNode* pathNode = CreateObjectFunction(this, grid);
-			PathNodeMap.Add(grid,pathNode);
+			UPathObject* pathObj = CreateObjectFunction(this, grid);
+			PathObjectMap.Add(grid,pathObj);
 		}
 	}
 }
 
-TMap<FGrid, UPathNode*> UPathFindingSystem::GetPathNodeMap() const
+TMap<FGrid, UPathObject*> UPathFindingSystem::GetPathObjectMap() const
 {
-	return PathNodeMap;
+	return PathObjectMap;
 }
 
-UPathNode* UPathFindingSystem::GetValidPathNode(const FGrid& Grid) const
+UPathObject* UPathFindingSystem::GetValidPathObject(const FGrid& Grid) const
 {
-	if (PathNodeMap.Contains(Grid))
+	if (PathObjectMap.Contains(Grid))
 	{
-		if (IsValid(PathNodeMap[Grid]))
+		if (IsValid(PathObjectMap[Grid]))
 		{
-			return PathNodeMap[Grid];
+			return PathObjectMap[Grid];
 		}
 	}
 

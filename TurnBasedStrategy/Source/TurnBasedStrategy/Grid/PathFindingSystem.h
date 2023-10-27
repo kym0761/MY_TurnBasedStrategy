@@ -7,7 +7,7 @@
 #include "Grid.h"
 #include "PathFindingSystem.generated.h"
 
-class UPathNode;
+class UPathObject;
 
 /**
  * 
@@ -26,7 +26,7 @@ private:
 
 	//PathFinding Object
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PathFinding", Meta = (AllowPrivateAccess = true))
-		TMap<FGrid,UPathNode*> PathNodeMap;
+		TMap<FGrid, UPathObject*> PathObjectMap;
 public:
 
 	UPathFindingSystem();
@@ -34,9 +34,9 @@ public:
 
 	//Call Order in GridManager : NewObject<>(); -> SetPathFindingSystem();
 	void SetPathFindingSystem(int _X_Length, int _Y_Length,
-		TFunctionRef<UPathNode* (UPathFindingSystem*, FGrid)> CreateObjectFunction);
+		TFunctionRef<UPathObject* (UPathFindingSystem*, FGrid)> CreateObjectFunction);
 
-	TMap<FGrid,UPathNode*> GetPathNodeMap() const;
-	UPathNode* GetValidPathNode(const FGrid& Grid) const;
+	TMap<FGrid, UPathObject*> GetPathObjectMap() const;
+	UPathObject* GetValidPathObject(const FGrid& Grid) const;
 
 };

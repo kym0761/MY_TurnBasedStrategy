@@ -4,31 +4,31 @@
 
 #include "CoreMinimal.h"
 #include "Grid.h"
-#include "PathNode.generated.h"
+#include "PathObject.generated.h"
 /**
  * 
  */
 
 UCLASS()
-class TURNBASEDSTRATEGY_API UPathNode : public UObject
+class TURNBASEDSTRATEGY_API UPathObject : public UObject
 {
 	GENERATED_BODY()
 public:
 
-	UPathNode();
+	UPathObject();
 
 private:
 
-	// ÇöÀç±îÁöÀÇ cost
+	// í˜„ì¬ê¹Œì§€ì˜ cost
 	UPROPERTY()
 		int32 G_Cost;
-	// ¾ÕÀ¸·Î ÇÊ¿äÇÒ °ÍÀ¸·Î ¿¹»óµÇ´Â cost
+	// ì•ìœ¼ë¡œ í•„ìš”í•  ê²ƒìœ¼ë¡œ ì˜ˆìƒë˜ëŠ” cost
 	UPROPERTY()
 		int32 H_Cost;
-	// ÃÑÇÕ cost
+	// ì´í•© cost
 	UPROPERTY()
 		int32 F_Cost;
-	//ÀÌ Pathnode°¡ ´ã´çÇÏ´Â Grid·Î ÁøÀÔÇÏ±â À§ÇÑ Cost
+	//ì´ Pathnodeê°€ ë‹´ë‹¹í•˜ëŠ” Gridë¡œ ì§„ì…í•˜ê¸° ìœ„í•œ Cost
 	UPROPERTY()
 	int32 GridCost;
 
@@ -37,7 +37,7 @@ private:
 	UPROPERTY()
 		bool bIsWalkable;
 	UPROPERTY()
-		UPathNode* ParentNode;
+	UPathObject* ParentObject;
 
 public:
 
@@ -54,19 +54,19 @@ public:
 
 	void CalculateFCost();
 
-	void SetParentNode(UPathNode* InPathNode);
-	UPathNode* GetParentNode() const;
+	void SetParentObject(UPathObject* InPathObject);
+	UPathObject* GetParentObject() const;
 
 	FGrid GetGrid() const;
 	bool GetIsWalkable() const;
 	void SetIsWalkable(bool InVal);
 
-    FORCEINLINE bool operator<(const UPathNode& Other) const
+    FORCEINLINE bool operator<(const UPathObject& Other) const
     {
         return F_Cost < Other.GetFCost();
     }
 
-    static bool PathFindingPredicated(const UPathNode& A, const UPathNode& B)
+    static bool PathFindingPredicated(const UPathObject& A, const UPathObject& B)
     {
         return A.GetFCost() < B.GetFCost();
     }

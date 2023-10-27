@@ -118,7 +118,7 @@ bool ATurnManager::CheckCurrentTurnValidation()
 
 		for (auto i : outUnits)
 		{
-			auto unit= CastChecked<AUnit>(i);
+			auto unit = CastChecked<AUnit>(i);
 
 			if (unit->GetTeamType() != ETeamType::Team01)
 			{
@@ -203,6 +203,18 @@ void ATurnManager::SetTurnType(ETurnType TurnTypeInput)
 void ATurnManager::NextTurnNumber()
 {
 	TurnNumber++;
+
+	// 유닛들 행동 전부 회복시켜야함.
+	TArray<AActor*> outUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
+
+	for (auto i : outUnits)
+	{
+		auto unit = CastChecked<AUnit>(i);
+
+		unit->ActivateUnitAllActions();
+	}
+
 }
 
 void ATurnManager::StartTurn()

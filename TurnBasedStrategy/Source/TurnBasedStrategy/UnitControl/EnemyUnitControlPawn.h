@@ -33,8 +33,8 @@ public:
 
 private:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
-		TArray<AUnit*> EnemyUnits;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
+	//	TArray<AUnit*> EnemyUnits;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
 		EAIPawnMode AIPawnMode = EAIPawnMode::NONE;

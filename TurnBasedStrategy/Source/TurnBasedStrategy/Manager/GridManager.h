@@ -9,7 +9,7 @@
 #include "GridManager.generated.h"
 
 class UGridObject;
-class UPathNode;
+class UPathObject;
 class AUnit;
 class UBillboardComponent;
 class UInstancedGridVisualComponent;
@@ -35,7 +35,7 @@ class TURNBASEDSTRATEGY_API AGridManager : public AActor, public IGridManagerInt
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		UBillboardComponent* BillboardComponent;
+	UBillboardComponent* BillboardComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 	UGridSystem* GridSystem;
@@ -115,11 +115,11 @@ public:
 	/*Pathfinding Functions*/
 	virtual TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false);
 	virtual int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
-	virtual UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList);
-	virtual TArray<FGrid> CalculatePath(UPathNode* EndNode) const;
-	virtual TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const;
+	virtual UPathObject* GetLowestFCostObject(TArray<UPathObject*>& PathObjectList);
+	virtual TArray<FGrid> CalculatePath(UPathObject* EndObject) const;
+	virtual TArray<UPathObject*> GetNearObjectArray(UPathObject* CurrentObject) const;
 	virtual bool HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost = 1000, bool bCanIgnoreUnit = false);
-	virtual void InitAllPathFindingNodes();
+	virtual void InitAllPathFindingObjects();
 	virtual int32 GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost);
 
 	//*GridVisual Functions*/

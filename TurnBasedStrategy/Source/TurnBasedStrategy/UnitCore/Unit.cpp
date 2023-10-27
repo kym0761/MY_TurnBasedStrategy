@@ -175,10 +175,10 @@ void AUnit::InitUnit()
 	}
 }
 
-void AUnit::StartUnitTurn()
-{
-	ActivateUnitAllAction();
-}
+//void AUnit::StartUnitTurn()
+//{
+//	ActivateUnitAllActions();
+//}
 
 void AUnit::OnSelectedUnitChanged()
 {
@@ -186,7 +186,7 @@ void AUnit::OnSelectedUnitChanged()
 
 }
 
-void AUnit::ActivateUnitAllAction()
+void AUnit::ActivateUnitAllActions()
 {
 	//턴이 시작됐을 때, 이 유닛이 할 수 있는 행동을 전부 다 Set해준다.
 

@@ -131,17 +131,17 @@ void UUnitActionComponent::ActionStart()
 		turnManager->SetIsBusy(true);
 	}
 
-	APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (IsValid(playerController))
-	{
-		AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
-	
-		if (IsValid(pawn))
-		{
-			pawn->SetControlPawnMode(EPawnMode::Busy);
-			pawn->SetBusyOrNot(true);
-		}
-	}
+	//APlayerController* playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//if (IsValid(playerController))
+	//{
+	//	AUnitControlPawn* pawn = Cast<AUnitControlPawn>(playerController->GetPawn());
+	//
+	//	if (IsValid(pawn))
+	//	{
+	//		pawn->SetControlPawnMode(EPawnMode::Busy);
+	//		pawn->SetBusyOrNot(true);
+	//	}
+	//}
 
 	if (OnActionStart.IsBound())
 	{
@@ -205,5 +205,10 @@ void UUnitActionComponent::AI_Action()
 void UUnitActionComponent::SelectThisAction()
 {
 	ActionSelected();
+}
+
+void UUnitActionComponent::Execute_AI_Action()
+{
+	AI_Action();
 }
 

@@ -425,7 +425,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
 	//unit이 적절하지 않으면 밸류계산 불가능.
 	AUnit* unit = GetOwningUnit();
-	if (!IsValid(unit) || unit->Tags.Num() == 0)
+	if (!IsValid(unit))
 	{
 		return -1;
 	}
@@ -442,7 +442,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -10000;
 	}
 
-	FName teamTag = unit->Tags[0];
+	ETeamType teamType = unit->GetTeamType();
 	int32 distanceToTarget = TNumericLimits<int32>::Max();
 	TMap<FGrid, UGridObject*> gridObjMap = gridManager->GetAllGridObjectsThatHasUnit();
 
@@ -467,7 +467,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		}
 
 		// 타겟이 같은 팀이면 스킵
-		if (targetUnit->ActorHasTag(teamTag))
+		if (targetUnit->GetTeamType() == teamType)
 		{
 			continue;
 		}

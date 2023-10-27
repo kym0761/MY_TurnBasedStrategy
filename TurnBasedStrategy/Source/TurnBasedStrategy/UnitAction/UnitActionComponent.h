@@ -41,8 +41,11 @@ public:
 
 	//이는 ActionStart()에서 Broadcast되므로, 다른 곳에서 직접 Call하려고 하지말 것.
 	//아래 3개도 마찬가지...
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "Action")
 	FUnitActionDelegate OnActionStart;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "Action")
 	FUnitActionDelegate OnActionEnd;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "Action")
 	FUnitActionDelegate OnActionSelected;
 
 protected:
@@ -78,6 +81,10 @@ public:
 	virtual void AI_Action();
 
 	virtual void SelectThisAction();
+
+	//Behaviour Tree에서 동작하도록 만든 AI_Action()
+	UFUNCTION(BlueprintCallable)
+	void Execute_AI_Action();
 
 protected:
 

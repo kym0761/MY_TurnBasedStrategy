@@ -9,7 +9,7 @@
 
 class AUnit;
 class UGridObject;
-class UPathNode;
+class UPathObject;
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -46,11 +46,11 @@ public:
 	/*Pathfinding Functions*/
 	virtual TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false) = 0;
 	virtual int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const = 0;
-	virtual UPathNode* GetLowestFCostNode(TArray<UPathNode*>& PathNodeList) = 0;
-	virtual TArray<FGrid> CalculatePath(UPathNode* EndNode) const = 0;
-	virtual TArray<UPathNode*> GetNearNodeArray(UPathNode* CurrentNode) const = 0;
+	virtual UPathObject* GetLowestFCostObject(TArray<UPathObject*>& PathObjectList) = 0;
+	virtual TArray<FGrid> CalculatePath(UPathObject* EndObject) const = 0;
+	virtual TArray<UPathObject*> GetNearObjectArray(UPathObject* CurrentObject) const = 0;
 	virtual bool HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost = 1000, bool bCanIgnoreUnit = false) = 0;
-	virtual void InitAllPathFindingNodes() = 0;
+	virtual void InitAllPathFindingObjects() = 0;
 	virtual int32 GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost) = 0;
 
 

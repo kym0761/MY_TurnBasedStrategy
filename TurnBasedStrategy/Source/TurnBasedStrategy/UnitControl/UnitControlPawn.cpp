@@ -168,7 +168,7 @@ void AUnitControlPawn::InitGridPosition(const FGrid& Grid)
 void AUnitControlPawn::GridMove(const FInputActionValue& Val)
 {
 	//UI 모드나, Busy 상태면 이동 못함.
-	if (PawnMode == EPawnMode::UI || PawnMode == EPawnMode::Busy)
+	if (PawnMode == EPawnMode::UI) //|| PawnMode == EPawnMode::Busy)
 	{
 		return;
 	}
@@ -242,10 +242,10 @@ void AUnitControlPawn::GridMoveEnd(const FInputActionValue& Val)
 
 void AUnitControlPawn::HandleControlEnter(const bool& Val)
 {
-	if (PawnMode == EPawnMode::Busy)
+	/*if (PawnMode == EPawnMode::Busy)
 	{
 		return;
-	}
+	}*/
 
 	//Pawn의 현재 상태에 따라 Enter 버튼의 행동이 다름.
 	//Selection : Pawn이 현재 Grid 위치의 유닛을 선택하는 모드

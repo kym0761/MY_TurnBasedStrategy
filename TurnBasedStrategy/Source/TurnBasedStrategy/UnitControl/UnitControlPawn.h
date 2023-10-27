@@ -60,16 +60,16 @@ public:
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UMG")
-		TSubclassOf<UUnitActionListWidget> UnitActionListWidgetClass;
+	TSubclassOf<UUnitActionListWidget> UnitActionListWidgetClass;
 
 	UPROPERTY()
-		UUnitActionListWidget* UnitActionsWidget;
+	UUnitActionListWidget* UnitActionsWidget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UMG")
-		TSubclassOf<UMainCanvasWidget> UMainCanvasWidgetClass;
+	TSubclassOf<UMainCanvasWidget> UMainCanvasWidgetClass;
 
 	UPROPERTY()
-		UMainCanvasWidget* MainCanvasWidget;
+	UMainCanvasWidget* MainCanvasWidget;
 
 public:
 
@@ -77,55 +77,55 @@ public:
 	UInputMappingContext* InputMapping;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-		UInputAction* InputGridMove;
+	UInputAction* InputGridMove;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
-		UInputAction* ControlEnter;
+	UInputAction* ControlEnter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USceneComponent* PawnRoot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component|Camera")
-		UCameraComponent* Camera;
+	UCameraComponent* Camera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component|Camera")
-		USpringArmComponent* CameraBoom;
+	USpringArmComponent* CameraBoom;
 
 	//Start Position
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG")
-		FGrid StartGrid;
+	FGrid StartGrid;
 
 protected:
 
 	//Current Position
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
-		FGrid PivotGrid;
+	FGrid PivotGrid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
-		float MoveInterval = 0.15f;
+	float MoveInterval = 0.15f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
-		float MoveAccumulate = 0.0f;
+	float MoveAccumulate = 0.0f;
 
 	UPROPERTY()
-		bool bIsBusy;
+	bool bIsBusy;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		AUnit* SelectedUnit;
+	AUnit* SelectedUnit;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		UUnitActionComponent* SelectedAction;
+	UUnitActionComponent* SelectedAction;
 
 	//플레이어 Pawn이 현재 어떤 모드인지 따라서 선택할 때의 행동이 달라짐
 	//Selection : Enter로 UnitSelect가능
 	//Action : 선택된 유닛과 Action에 대한 행동을 함.
 	//UI : Enter로 UI 조작
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
-		EPawnMode PawnMode = EPawnMode::Selection;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SRPG", Meta = (AllowPrivateAccess = true))
+	EPawnMode PawnMode = EPawnMode::Selection;
 
 	//어떤 턴에 반응할 것인지 나타냄.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		ETurnType PawnTurnType = ETurnType::Team01Turn;
+	ETurnType PawnTurnType = ETurnType::Team01Turn;
 
 protected:
 	// Called when the game starts or when spawned

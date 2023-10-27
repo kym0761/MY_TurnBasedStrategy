@@ -62,31 +62,31 @@ void AEnemyUnitControlPawn::MoveProcedure()
 	//2 이동 명령을 내림
 	//3 이동 명령이 끝나면 ActionEnd()되고, 유닛의 행동을 마쳤다는 것을 AIControlPawn에게 알림.
 
-	if (EnemyUnits.Num() == 0)
-	{
-		//Move가 끝났을 가능성이 높음
-		AIPawnMode = EAIPawnMode::Attack;
-		//FindAllManagingUnits(); //공격 가능한 유닛을 다시 찾은 뒤에 다음 Control을 실행함.
-		DoAIControl();
+	//if (EnemyUnits.Num() == 0)
+	//{
+	//	//Move가 끝났을 가능성이 높음
+	//	AIPawnMode = EAIPawnMode::Attack;
+	//	//FindAllManagingUnits(); //공격 가능한 유닛을 다시 찾은 뒤에 다음 Control을 실행함.
+	//	DoAIControl();
 
-		return;
-	}
+	//	return;
+	//}
 
-	AUnit* currentEnemyUnit = EnemyUnits[0];
-	EnemyUnits.RemoveAt(0);
+	//AUnit* currentEnemyUnit = EnemyUnits[0];
+	//EnemyUnits.RemoveAt(0);
 
-	if (!IsValid(currentEnemyUnit))
-	{
-		return;
-	}
+	//if (!IsValid(currentEnemyUnit))
+	//{
+	//	return;
+	//}
 
-	UUnitMoveActionComponent* unitMoveComp = currentEnemyUnit->FindComponentByClass<UUnitMoveActionComponent>();
-	if (!IsValid(unitMoveComp))
-	{
-		return;
-	}
+	//UUnitMoveActionComponent* unitMoveComp = currentEnemyUnit->FindComponentByClass<UUnitMoveActionComponent>();
+	//if (!IsValid(unitMoveComp))
+	//{
+	//	return;
+	//}
 
-	unitMoveComp->AI_Action();
+	//unitMoveComp->AI_Action();
 }
 
 void AEnemyUnitControlPawn::AttackProcedure()
@@ -95,31 +95,31 @@ void AEnemyUnitControlPawn::AttackProcedure()
 	//2. 공격함 or 공격 불가능하면 그냥 TakeAction함.
 	//3. 공격이 끝났을 때 ControlPawn에게 공격을 마쳤다는 것을 알림.
 
-	if (EnemyUnits.Num() == 0)
-	{
-		//Attack이 끝났을 가능성이 높음
-		AIPawnMode = EAIPawnMode::Wait;
-		DoAIControl();
+	//if (EnemyUnits.Num() == 0)
+	//{
+	//	//Attack이 끝났을 가능성이 높음
+	//	AIPawnMode = EAIPawnMode::Wait;
+	//	DoAIControl();
 
-		return;
-	}
+	//	return;
+	//}
 
 
-	AUnit* currentEnemyUnit = EnemyUnits[0];
-	EnemyUnits.RemoveAt(0);
+	//AUnit* currentEnemyUnit = EnemyUnits[0];
+	//EnemyUnits.RemoveAt(0);
 
-	if (!IsValid(currentEnemyUnit))
-	{
-		return;
-	}
+	//if (!IsValid(currentEnemyUnit))
+	//{
+	//	return;
+	//}
 
-	UUnitAttackActionComponent* unitAttackComp = currentEnemyUnit->FindComponentByClass<UUnitAttackActionComponent>();
-	if (!IsValid(unitAttackComp))
-	{
-		return;
-	}
+	//UUnitAttackActionComponent* unitAttackComp = currentEnemyUnit->FindComponentByClass<UUnitAttackActionComponent>();
+	//if (!IsValid(unitAttackComp))
+	//{
+	//	return;
+	//}
 
-	unitAttackComp->AI_Action();
+	//unitAttackComp->AI_Action();
 }
 
 void AEnemyUnitControlPawn::WaitProcedure()
