@@ -20,7 +20,6 @@ public:
 	// Sets default values for this component's properties
 	UUnitActionComponent();
 
-	FUnitActionDelegate OnActionCompleteForControlPawn;
 protected:
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
@@ -38,18 +37,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	FString ActionName;
 
-private:
+public:
 
-	//외부의 기능을 동적으로 Call하기 위함. 아마 쓸때마다 비우게 될 가능성이 높음.
 	//이는 ActionStart()에서 Broadcast되므로, 다른 곳에서 직접 Call하려고 하지말 것.
 	//아래 3개도 마찬가지...
-	//현재는 추후 실수를 방지하기 위해 private으로 설정했지만, 나중에 public으로 바꿀 가능성도 있음.
 	FUnitActionDelegate OnActionStart;
 	FUnitActionDelegate OnActionEnd;
 	FUnitActionDelegate OnActionSelected;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	virtual void InitializeComponent() override;
 
 public:	
 	// Called every frame
@@ -78,10 +78,6 @@ public:
 	virtual void AI_Action();
 
 	virtual void SelectThisAction();
-
-	void BindToOnActionStart(FScriptDelegate ToBind);
-	void BindToOnActionEnd(FScriptDelegate ToBind);
-	void BindToOnActionSelected(FScriptDelegate ToBind);
 
 protected:
 

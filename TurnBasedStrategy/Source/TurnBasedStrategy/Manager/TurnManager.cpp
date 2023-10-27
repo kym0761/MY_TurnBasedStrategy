@@ -67,11 +67,13 @@ void ATurnManager::InitTurn()
 
 void ATurnManager::NextTurn()
 {
-	if (!bIsBusy)
-	{
-		Debug::Print(DEBUG_TEXT("currently Busy"));
-		return;
-	}
+	Debug::Print(DEBUG_TEXT("Next Turn"));
+
+	//if (!bIsBusy)
+	//{
+	//	Debug::Print(DEBUG_TEXT("currently Busy"));
+	//	return;
+	//}
 
 	switch (TurnType)
 	{
@@ -99,7 +101,7 @@ void ATurnManager::ResetTurn()
 	TurnType = ETurnType::Team01Turn;
 }
 
-void ATurnManager::CheckCurrentTurnValidation()
+bool ATurnManager::CheckCurrentTurnValidation()
 {
 	//각 유닛이 행동이 가능한지 가능하지 않은지를 확인해서
 	//가능한 유닛이 있으면 턴을 true
@@ -107,53 +109,62 @@ void ATurnManager::CheckCurrentTurnValidation()
 
 	bool IsTurnValid = false;
 
+	TArray<AActor*> outUnits;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), outUnits);
+
 	switch (TurnType)
 	{
 	case ETurnType::Team01Turn:
 
-		for (auto playerUnit : PlayerUnitArr)
+		for (auto i : outUnits)
 		{
-			if (!IsValid(playerUnit))
+			auto unit= CastChecked<AUnit>(i);
+
+			if (unit->GetTeamType() != ETeamType::Team01)
 			{
 				continue;
 			}
 
-			if (playerUnit->IsThisUnitCanAction())
+			if (unit->IsThisUnitCanAction())
 			{
 				IsTurnValid = true;
 				break;
 			}
 		}
-
 		break;
+
 	case ETurnType::Team02Turn:
 
-		for (auto enemyUnit : EnemyUnitArr)
+		for (auto i : outUnits)
 		{
-			if (!IsValid(enemyUnit))
+			auto unit = CastChecked<AUnit>(i);
+
+			if (unit->GetTeamType() != ETeamType::Team02)
 			{
 				continue;
 			}
 
-			if (enemyUnit->IsThisUnitCanAction())
+			if (unit->IsThisUnitCanAction())
 			{
 				IsTurnValid = true;
 				break;
 			}
 		}
-
 		break;
+
 	case ETurnType::Team03Turn:
 		break;
 	default:
 		break;
 	}
 
-	if (IsTurnValid == false)
+	return IsTurnValid;
+
+	/*if (IsTurnValid == false)
 	{
 		Debug::Print(DEBUG_TEXT("Turn Will be Changed"));
 		NextTurn();
-	}
+	}*/
 }
 
 void ATurnManager::SetTurnType(ETurnType TurnTypeInput)
@@ -180,6 +191,13 @@ void ATurnManager::SetTurnType(ETurnType TurnTypeInput)
 	default:
 		break;
 	}
+
+	if (OnTurnChanged.IsBound())
+	{
+		OnTurnChanged.Broadcast();
+	}
+	
+
 }
 
 void ATurnManager::NextTurnNumber()
@@ -195,10 +213,21 @@ void ATurnManager::StartTurn()
 void ATurnManager::SetIsBusy(bool BusyVal)
 {
 	bIsBusy = BusyVal;
+
+	if (!bIsBusy && OnIsBusyChanged.IsBound())
+	{
+		OnIsBusyChanged.Broadcast();
+	}
+
 }
 
 bool ATurnManager::IsBusy() const
 {
 	return bIsBusy;
+}
+
+ETurnType ATurnManager::GetTurnType() const
+{
+	return TurnType;
 }
 

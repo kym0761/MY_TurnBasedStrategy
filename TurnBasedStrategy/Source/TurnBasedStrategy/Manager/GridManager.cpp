@@ -483,7 +483,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 				AUnit* startUnit = GetUnitAtGrid(Start);
 				if (IsValid(currentUnit) && IsValid(startUnit))
 				{
-					if (currentUnit->ActorHasTag(startUnit->Tags[0]))
+					if (currentUnit->GetTeamType() == startUnit->GetTeamType())
 					{
 						//아군이면 일단 통과가 가능함.
 					}

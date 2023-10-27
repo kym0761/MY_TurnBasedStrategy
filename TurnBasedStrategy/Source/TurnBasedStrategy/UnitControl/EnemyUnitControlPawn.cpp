@@ -19,6 +19,12 @@ void AEnemyUnitControlPawn::BeginPlay()
 {
 	Super::Super::BeginPlay();
 
+	//ATurnManager* turnManager = ATurnManager::GetTurnManager();
+	//if (IsValid( turnManager))
+	//{
+	//	turnManager->OnTurnChanged.AddDynamic(this, &AEnemyUnitControlPawn::TriggerToPlay);
+	//}
+
 }
 
 void AEnemyUnitControlPawn::Tick(float DeltaTime)
@@ -29,13 +35,23 @@ void AEnemyUnitControlPawn::Tick(float DeltaTime)
 
 void AEnemyUnitControlPawn::TriggerToPlay()
 {
+	ATurnManager* turnManager = ATurnManager::GetTurnManager();
+	if (IsValid(turnManager))
+	{
+		if (turnManager->GetTurnType() != ETurnType::Team02Turn)
+		{
+			Debug::Print(DEBUG_TEXT("Not Currently Enemy Turn."));
+			return;
+		}
+	}
+
 	Debug::Print(DEBUG_TEXT("TriggerToPlay"));
 
 	//TODO : 현재, 유닛이 죽었을 상황에서는 AI Control이 정상적으로 동작하지 않음. 
 	//예시) 플레이어의 마지막 유닛이 공격을 했을 때 적 유닛이 죽었을 경우, 예시2) AI의 유닛이 공격 중에 AI의 유닛이 죽었을 경우. 혹은 플레이어 유닛이 죽었을 경우.
 	//해결책 예상 : 유닛이 죽을 때, 애니메이션 처리 및 유닛 삭제 시간까지는 Busy 처리하여 AI Control을 지연시키는 기능이 필요할 것.
 	
-	FindAllManagingUnits();
+	//FindAllManagingUnits();
 	AIPawnMode = EAIPawnMode::Move; // 턴 시작되면 PawnMode가 Move로 변경됨.
 	DoAIControl();
 }
@@ -50,7 +66,7 @@ void AEnemyUnitControlPawn::MoveProcedure()
 	{
 		//Move가 끝났을 가능성이 높음
 		AIPawnMode = EAIPawnMode::Attack;
-		FindAllManagingUnits(); //공격 가능한 유닛을 다시 찾은 뒤에 다음 Control을 실행함.
+		//FindAllManagingUnits(); //공격 가능한 유닛을 다시 찾은 뒤에 다음 Control을 실행함.
 		DoAIControl();
 
 		return;
@@ -144,7 +160,7 @@ void AEnemyUnitControlPawn::DoAIControl()
 	}
 }
 
-void AEnemyUnitControlPawn::OnUnitActionCompleted()
+void AEnemyUnitControlPawn::OnUnitActionCompleted_virtual()
 {
 	//만약, Unit 하나가 움직이는 것이 끝났다면
 	//다음 유닛을 움직일 수 있을 것임.

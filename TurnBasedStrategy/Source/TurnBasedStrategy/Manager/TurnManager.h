@@ -25,6 +25,10 @@ public:
 	FTurnManagingDelegate OnPlayerTurnStart;
 	FTurnManagingDelegate OnEnemyTurnStart;
 
+	FTurnManagingDelegate OnTurnChanged;
+
+	FTurnManagingDelegate OnIsBusyChanged;
+
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
@@ -59,8 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void ResetTurn();
 
-	UFUNCTION()
-	void CheckCurrentTurnValidation();
+	//UFUNCTION()
+	bool CheckCurrentTurnValidation();
 
 	void SetTurnType(ETurnType TurnTypeInput);
 
@@ -70,4 +74,5 @@ public:
 	void SetIsBusy(bool BusyVal);
 	bool IsBusy() const;
 
+	ETurnType GetTurnType() const;
 };

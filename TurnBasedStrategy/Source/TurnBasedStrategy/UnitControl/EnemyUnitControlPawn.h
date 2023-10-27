@@ -47,6 +47,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
 	void TriggerToPlay();
 
 	void MoveProcedure();
@@ -55,5 +56,5 @@ public:
 
 	void DoAIControl();
 
-	virtual void OnUnitActionCompleted() override;
+	virtual void OnUnitActionCompleted_virtual() override;
 };

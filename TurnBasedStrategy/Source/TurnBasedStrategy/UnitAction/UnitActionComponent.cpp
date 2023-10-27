@@ -21,6 +21,8 @@ UUnitActionComponent::UUnitActionComponent()
 
 	ActionName = FString("BaseAction");
 
+	bWantsInitializeComponent = true;
+
 }
 
 
@@ -30,6 +32,24 @@ void UUnitActionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+}
+
+void UUnitActionComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	//TArray<AActor*> outActors;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitControlPawn::StaticClass(), outActors);
+
+	//for (auto i : outActors)
+	//{
+	//	AUnitControlPawn* unitControlpawn = CastChecked<AUnitControlPawn>(i);
+
+	//	FScriptDelegate toBind;
+	//	toBind.BindUFunction(unitControlpawn, FName(TEXT("OnUnitActionCompleted")));
+	//	OnActionEnd.Add(toBind);
+	//}
+
 }
 
 
@@ -134,20 +154,15 @@ void UUnitActionComponent::ActionEnd()
 	Debug::Print(DEBUG_TEXT("Base::ActionEnd"));
 	SetCanDoActionThisTurn(false);
 
-	if (OnActionEnd.IsBound())
-	{
-		OnActionEnd.Broadcast();
-	}
-
-	if (OnActionCompleteForControlPawn.IsBound())
-	{
-		OnActionCompleteForControlPawn.Broadcast();
-	}
-
 	auto turnManager = ATurnManager::GetTurnManager();
 	if (IsValid(turnManager))
 	{
 		turnManager->SetIsBusy(false);
+	}
+
+	if (OnActionEnd.IsBound())
+	{
+		OnActionEnd.Broadcast();
 	}
 
 }
@@ -192,17 +207,3 @@ void UUnitActionComponent::SelectThisAction()
 	ActionSelected();
 }
 
-void UUnitActionComponent::BindToOnActionStart(FScriptDelegate ToBind)
-{
-	OnActionStart.AddUnique(ToBind);
-}
-
-void UUnitActionComponent::BindToOnActionEnd(FScriptDelegate ToBind)
-{
-	OnActionEnd.AddUnique(ToBind);
-}
-
-void UUnitActionComponent::BindToOnActionSelected(FScriptDelegate ToBind)
-{
-	OnActionSelected.AddUnique(ToBind);
-}

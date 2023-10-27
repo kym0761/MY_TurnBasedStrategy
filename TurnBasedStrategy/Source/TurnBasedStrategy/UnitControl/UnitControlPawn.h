@@ -124,7 +124,7 @@ protected:
 		EPawnMode PawnMode = EPawnMode::Selection;
 
 	//어떤 턴에 반응할 것인지 나타냄.
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		ETurnType PawnTurnType = ETurnType::Team01Turn;
 
 protected:
@@ -163,7 +163,9 @@ public:
 	void SetBusyOrNot(bool BusyInput);
 
 	UFUNCTION()
-		virtual void OnUnitActionCompleted();
+	void OnUnitActionCompleted();
+
+	virtual void OnUnitActionCompleted_virtual();
 
 	void FindAllManagingUnits() override;
 

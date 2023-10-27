@@ -55,7 +55,7 @@ private:
 	////현재 Grid 위치 값
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 	//	FGrid Grid;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turn", Meta = (AllowPrivateAccess = true))
 	ETeamType TeamType;
 
 protected:

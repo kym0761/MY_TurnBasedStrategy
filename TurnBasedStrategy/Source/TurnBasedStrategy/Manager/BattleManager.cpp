@@ -419,7 +419,7 @@ void ABattleManager::OnAttackHit()
 	}
 
 
-	//크리티컬 예시
+	//크리티컬 예시 : 뎀지 2배로 증가
 	float randCrit = FMath::FRandRange(0.0f, 1.0f);
 	if (currentOrder.CritRate >= randCrit)
 	{
@@ -452,7 +452,7 @@ void ABattleManager::OnAttackEnd()
 void ABattleManager::OnHit()
 {
 	Debug::Print(DEBUG_TEXT("OnHit"));
-	//사실 이거 필요한지 모르겠다.
+	//사실 이거 필요한지 모르겠음.
 }
 
 void ABattleManager::OnHitEnd()
@@ -464,9 +464,11 @@ void ABattleManager::OnHitEnd()
 
 void ABattleManager::OnUnitDestroyed()
 {
+	//죽은 캐릭터는 OnHitEnd가 Call되지 않는다.
+	//Battle이 끝났을테니 FinishBattle()을 Call하자.
 	Debug::Print(DEBUG_TEXT("OnUnitDestroyed"));
 	FinishBattle();
-	OnPlayBattleAnimationCompleted();
+
 }
 
 TArray<FBattleOrder> ABattleManager::GetBattleOrder() const

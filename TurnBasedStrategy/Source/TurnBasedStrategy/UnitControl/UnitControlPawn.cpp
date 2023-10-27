@@ -11,8 +11,9 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SceneComponent.h"
 
-#include "Manager/SRPG_GameMode.h"
+//#include "Manager/SRPG_GameMode.h"
 #include "Manager/GridManager.h"
+#include "Manager/TurnManager.h"
 #include "UnitCore/Unit.h"
 
 #include "UMG/UnitActionListWidget.h"
@@ -61,24 +62,24 @@ void AUnitControlPawn::BeginPlay()
 	}
 
 
-	TArray<AActor*> units;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), units);
+	//TArray<AActor*> units;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), units);
 
-	for (auto i : units)
-	{
-		auto unit = Cast<AUnit>(i);
+	//for (auto i : units)
+	//{
+	//	auto unit = Cast<AUnit>(i);
 
-		TODO_Marker::TODO();
-		unit->GetUnitActionComponent(EUnitActionType::Attack)
-			->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
-		unit->GetUnitActionComponent(EUnitActionType::Interact)
-			->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
-		unit->GetUnitActionComponent(EUnitActionType::Move)
-		->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
-		unit->GetUnitActionComponent(EUnitActionType::Wait)
-			->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+	//	TODO_Marker::TODO();
+	//	unit->GetUnitActionComponent(EUnitActionType::Attack)
+	//		->OnActionCompleted.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+	//	unit->GetUnitActionComponent(EUnitActionType::Interact)
+	//		->OnActionCompleted.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+	//	unit->GetUnitActionComponent(EUnitActionType::Move)
+	//	->OnActionCompleted.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+	//	unit->GetUnitActionComponent(EUnitActionType::Wait)
+	//		->OnActionCompleted.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
 
-	}
+	//}
 
 
 
@@ -295,7 +296,7 @@ bool AUnitControlPawn::TryUnitSelect()
 		return false;
 	}
 
-	if (unitOnGrid->ActorHasTag(MYUNIT))
+	if (unitOnGrid->GetTeamType() == ETeamType::Team01)
 	{
 		Debug::Print(DEBUG_TEXT("Unit Set!"));
 		SetSelectedUnit(unitOnGrid);
@@ -456,9 +457,22 @@ void AUnitControlPawn::SetBusyOrNot(bool BusyInput)
 
 void AUnitControlPawn::OnUnitActionCompleted()
 {
+	OnUnitActionCompleted_virtual();
+}
+
+void AUnitControlPawn::OnUnitActionCompleted_virtual()
+{
 	SetControlPawnMode(EPawnMode::Selection);
 	SetBusyOrNot(false);
 	DoDeselection();
+
+	ATurnManager* turnManager = ATurnManager::GetTurnManager();
+	bool bcheck = turnManager->CheckCurrentTurnValidation();
+	if (!bcheck)
+	{
+		turnManager->NextTurn();
+	}
+
 	Debug::Print(DEBUG_TEXT("OnUnitActionCompleted"));
 }
 
@@ -512,8 +526,8 @@ void AUnitControlPawn::FindAllManagingUnits()
 				continue;
 			}
 
-			unitAction_Cast->OnActionCompleteForControlPawn.Clear();
-			unitAction_Cast->OnActionCompleteForControlPawn.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
+			//unitAction_Cast->OnActionCompleteForControlPawn.Clear();
+			unitAction_Cast->OnActionEnd.AddDynamic(this, &AUnitControlPawn::OnUnitActionCompleted);
 			Debug::Print(DEBUG_TEXT("UnitAction Bind to Control Pawn OK"));
 		}
 

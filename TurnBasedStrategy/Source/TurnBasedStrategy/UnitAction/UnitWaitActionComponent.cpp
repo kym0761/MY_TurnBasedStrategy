@@ -29,14 +29,13 @@ void UUnitWaitActionComponent::TakeAction(const FGrid& Grid)
 
 	Debug::Print(DEBUG_TEXT("Wait OK"));
 
-	ActionEnd();
-
 	auto owner = Cast<AUnit>(GetOwner());
 	if (IsValid(owner))
 	{
 		owner->FinishUnitAllAction();
 	}
 
+	ActionEnd();
 }
 
 void UUnitWaitActionComponent::DealWithGridBeforeAction(const FGrid& Grid)
