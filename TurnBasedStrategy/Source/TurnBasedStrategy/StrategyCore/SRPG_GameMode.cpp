@@ -2,6 +2,9 @@
 
 
 #include "SRPG_GameMode.h"
+
+#include "Kismet/GameplayStatics.h"
+
 #include "DebugHelper.h"
 
 ASRPG_GameMode::ASRPG_GameMode()
@@ -31,7 +34,7 @@ void ASRPG_GameMode::Tick(float DeltaTime)
 
 }
 
-ASRPG_GameMode* ASRPG_GameMode::GetSRPG_GameMode(const UObject* WorldContextObject)
+ASRPG_GameMode* ASRPG_GameMode::GetSRPG_GameMode()
 {
 
 	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport))

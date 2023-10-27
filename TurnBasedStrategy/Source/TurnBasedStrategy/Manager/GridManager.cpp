@@ -17,7 +17,6 @@
 
 #include "GridCostModifier.h"
 
-#include "SRPG_GameMode.h"
 #include "DebugHelper.h"
 
 

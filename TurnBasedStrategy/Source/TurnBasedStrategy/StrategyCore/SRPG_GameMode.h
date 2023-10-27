@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Turn.h"
-#include "Grid/Grid.h"
 #include "GameFramework/GameModeBase.h"
 #include "SRPG_GameMode.generated.h"
 
@@ -34,7 +32,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	static ASRPG_GameMode* GetSRPG_GameMode(const UObject* WorldContextObject);
+	static ASRPG_GameMode* GetSRPG_GameMode();
 
 #pragma region DebugControl
 public:

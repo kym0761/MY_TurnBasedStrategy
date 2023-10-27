@@ -3,14 +3,6 @@
 
 #include "Turn.h"
 
-FAttackOrder::FAttackOrder()
-{
-	AttackOrderType = EAttackOrderType::Attack;
-	Damage = 0;
-	Attacker = nullptr;
-	Defender = nullptr;
-}
-
 FBattleOrder::FBattleOrder()
 {
 	OrderOwnerType = EOrderOwnerType::Attacker;

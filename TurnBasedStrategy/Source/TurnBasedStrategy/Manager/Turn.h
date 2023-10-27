@@ -24,37 +24,6 @@ enum class ETeamType : uint8
 	Team03 UMETA(DisplayName = "Team03") // 중립
 };
 
-UENUM(BlueprintType)
-enum class EAttackOrderType : uint8
-{
-	Attack UMETA(DisplayName = "Attack"),
-	Defend UMETA(DisplayName = "Defend")
-
-};
-
-USTRUCT(BlueprintType, Blueprintable)
-struct FAttackOrder
-{
-	GENERATED_BODY()
-
-public:
-
-	FAttackOrder();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-		EAttackOrderType AttackOrderType;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-		int32 Damage;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-		float CritRate;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-		float Accuracy;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-		AActor* Attacker;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Order")
-		AActor* Defender;
-
-};
 
 UENUM(BlueprintType)
 enum class EOrderOwnerType : uint8

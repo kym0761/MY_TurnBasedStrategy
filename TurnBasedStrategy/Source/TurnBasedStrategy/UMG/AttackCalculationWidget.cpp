@@ -8,7 +8,6 @@
 #include "CalculationUnitStatWidget.h"
 #include "Components/TextBlock.h"
 #include "AttackOrderWidget.h"
-//#include "Manager/SRPG_GameMode.h"
 
 #include "Manager/BattleManager.h"
 

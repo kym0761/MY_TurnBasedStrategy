@@ -2,12 +2,11 @@
 
 
 #include "CalculationUnitStatWidget.h"
-#include "UnitCore/StatComponent.h"
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
-//#include "Manager/SRPG_GameMode.h"
 
 #include "Manager/BattleManager.h"
+#include "UnitCore/StatComponent.h"
 
 #include "DebugHelper.h"
 
