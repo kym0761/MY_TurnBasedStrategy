@@ -368,7 +368,14 @@ void ABattleManager::FinishBattle()
 	//예시) 어딘가에서 유닛이 죽었을 때 Battle과 관련없을 상황이면 AttackUnit이 Set되지 않았을 것이므로..
 	if (!IsValid(AttackActionUnit))
 	{
-		Debug::Print(DEBUG_TEXT("AttackActionUnit Invalid."));
+		Debug::Print(DEBUG_TEXT("AttackActionUnit is Invalid."));
+		return;
+	}
+
+	AGridManager* gridManager = AGridManager::GetGridManager();
+	if (!IsValid(gridManager))
+	{
+		Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
 		return;
 	}
 
@@ -378,7 +385,6 @@ void ABattleManager::FinishBattle()
 
 	if (IsValid(unitAttackActionComponent))
 	{
-		AGridManager* gridManager = AGridManager::GetGridManager();
 		FGrid unitGrid = gridManager->WorldToGrid(AttackActionUnit->GetActorLocation());
 		unitAttackActionComponent->TakeAction(unitGrid);
 	}

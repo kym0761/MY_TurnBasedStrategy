@@ -53,6 +53,13 @@ public:
 	void LoseGame();
 
 
+	/*이겼을 때와 졌을 때 UI가 나오는 임시 UI. 추후에 다른 것으로 변경될 수 있음.*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WinLose")
+	TSubclassOf<class UUserWidget> WBP_WinGame;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WinLose")
+	TSubclassOf<class UUserWidget> WBP_LoseGame;
+
 #pragma endregion
 
 };

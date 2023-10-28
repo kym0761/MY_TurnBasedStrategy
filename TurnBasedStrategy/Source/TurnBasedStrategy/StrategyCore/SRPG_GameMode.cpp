@@ -11,6 +11,9 @@
 #include "UnitAction/UnitActionComponent.h"
 #include "UnitCore/StatComponent.h"
 
+#include "Blueprint/UserWidget.h"
+
+
 ASRPG_GameMode::ASRPG_GameMode()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -132,9 +135,32 @@ void ASRPG_GameMode::CheckWinOrLose()
 void ASRPG_GameMode::WinGame()
 {
 	Debug::Print(DEBUG_TEXT("WIN GAME"));
+
+	if (!IsValid(WBP_WinGame))
+	{
+		return;
+	}
+
+	auto widget = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(this,0), WBP_WinGame);
+	if (IsValid(widget))
+	{
+		widget->AddToViewport();
+	}
+
 }
 
 void ASRPG_GameMode::LoseGame()
 {
 	Debug::Print(DEBUG_TEXT("LOSE GAME"));
+
+	if (!IsValid(WBP_LoseGame))
+	{
+		return;
+	}
+
+	auto widget = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(this, 0), WBP_LoseGame);
+	if (IsValid(widget))
+	{
+		widget->AddToViewport();
+	}
 }
