@@ -6,4 +6,3 @@
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, TurnBasedStrategy, "TurnBaseStrategy" );
 
 DEFINE_LOG_CATEGORY(LogTurnBasedStrategy)
- 

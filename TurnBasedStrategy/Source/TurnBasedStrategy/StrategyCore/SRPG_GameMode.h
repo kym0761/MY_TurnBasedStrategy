@@ -46,6 +46,9 @@ public:
 
 #pragma region WinLose
 
+	UFUNCTION()
+	void CheckWinOrLose();
+
 	void WinGame();
 	void LoseGame();
 

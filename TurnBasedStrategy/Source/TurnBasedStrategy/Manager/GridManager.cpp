@@ -60,14 +60,7 @@ void AGridManager::BeginPlay()
 
 	SetupGridSystem();
 
-	TArray<AActor*> units;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), units);
-
-	for (auto i : units)
-	{
-		auto unit = Cast<AUnit>(i);
-		unit->InitUnit();
-	}
+	SetupUnitsOnGrid();
 
 }
 
@@ -379,6 +372,25 @@ TMap<FGrid, UGridObject*> AGridManager::GetAllGridObjectsThatHasUnit() const
 	}
 
 	return GridSystem->GetAllGridObjectsThatHasUnit();
+}
+
+void AGridManager::SetupUnitsOnGrid()
+{
+	//게임 시작할 때 비어있는 Grid에
+	//모든 유닛을 Grid에 매칭시킨다.
+	TArray<AActor*> units;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnit::StaticClass(), units);
+
+	for (auto i : units)
+	{
+		auto unit = Cast<AUnit>(i);
+
+		if (IsValid(unit))
+		{
+			AddUnitAtGrid(unit, WorldToGrid(unit->GetActorLocation()));
+		}
+
+	}
 }
 
 TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit, bool bCalculateToTarget)

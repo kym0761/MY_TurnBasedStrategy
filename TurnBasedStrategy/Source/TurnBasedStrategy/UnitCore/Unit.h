@@ -27,25 +27,25 @@ class TURNBASEDSTRATEGY_API AUnit : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AUnit();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
 	USceneComponent* SceneRoot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Reaction")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Reaction", Meta = (AllowPrivateAccess = true))
 		TSubclassOf<ADamageTextActor> DamageTextActorBP;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
 		UStatComponent* StatComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
 		UUnitMoveActionComponent* UnitMoveActionComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
 		UUnitAttackActionComponent* UnitAttackActionComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
 		UUnitInteractActionComponent* UnitInteractActionComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
 		UUnitWaitActionComponent* UnitWaitActionComponent;
 
 	FUnitDelegateSignature OnFinishAllAction;
@@ -64,6 +64,8 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	virtual void BeginDestroy() override;
+
 	void BindToBattleManager();
 
 public:
@@ -77,8 +79,6 @@ public:
 
 	bool HasActionComponent(EUnitActionType UnitActionType);
 	UUnitActionComponent* GetUnitActionComponent(EUnitActionType UnitActionType);
-
-	void InitUnit();
 
 	//UFUNCTION()
 	//	void StartUnitTurn();

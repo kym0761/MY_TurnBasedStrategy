@@ -49,14 +49,15 @@ void AUnit::BeginPlay()
 
 void AUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	Super::EndPlay(EndPlayReason);
+
 	AGridManager* gridManager = AGridManager::GetGridManager();
 
 	if (IsValid(gridManager))
 	{
-		gridManager->RemoveUnitAtGrid(this, gridManager->WorldToGrid(GetActorLocation()));
-		
+		// 지금 방법으로도 충분은 하지만, 혹시 더 좋은 방법이 있다면?
 		Debug::Print(DEBUG_TEXT("TODO!"));
-		//gridManager->RemoveUnitFromTurnManaging(this);
+		gridManager->RemoveUnitAtGrid(this, gridManager->WorldToGrid(GetActorLocation()));
 	}
 
 	if (OnUnitDestroyed.IsBound())
@@ -64,8 +65,25 @@ void AUnit::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		OnUnitDestroyed.Broadcast();
 	}
 
-	Super::EndPlay(EndPlayReason);
+}
 
+void AUnit::BeginDestroy()
+{
+	//AGridManager* gridManager = AGridManager::GetGridManager();
+
+	//if (IsValid(gridManager))
+	//{
+	//	// 지금 방법으로도 충분은 하지만, 혹시 더 좋은 방법이 있다면?
+	//	Debug::Print(DEBUG_TEXT("TODO!"));
+	//	gridManager->RemoveUnitAtGrid(this, gridManager->WorldToGrid(GetActorLocation()));
+	//}
+
+	//if (OnUnitDestroyed.IsBound())
+	//{
+	//	OnUnitDestroyed.Broadcast();
+	//}
+
+	Super::BeginDestroy();
 }
 
 void AUnit::BindToBattleManager()
@@ -162,16 +180,6 @@ UUnitActionComponent* AUnit::GetUnitActionComponent(EUnitActionType UnitActionTy
 		return UnitWaitActionComponent;
 	default:
 		return nullptr;
-	}
-}
-
-void AUnit::InitUnit()
-{
-	AGridManager* gridManager = AGridManager::GetGridManager();
-	if (IsValid(gridManager))
-	{
-
-		gridManager->AddUnitAtGrid(this, gridManager->WorldToGrid(GetActorLocation()));
 	}
 }
 

@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+
+#define LOG_NETMODEINFO (GetNetMode() == ENetMode::NM_Client) ? *FString::Printf(TEXT("Client %d"), GPlayerInEditorID) : (GetNetMode() == ENetMode::NM_Standalone) ? TEXT("Standalone") : TEXT("Server")
+
 //예시) AActor::BeginPlay()
 #define FUNCTION_NAME (TEXT(" / Function Name : ") + FString(__FUNCTION__)+TEXT(" "))
 
@@ -17,6 +21,12 @@
 
 //param0 꼭 string으로 할 것.   예시) DEBUG_TEXT("abc")
 #define DEBUG_TEXT(Param0) (TEXT(Param0) + DEBUG_TEXT_POSITION)
+
+#define DTEXT_ARGS(Format, ...)  *FString::Printf(TEXT("%s / %s / Line : %d"),*FString::Printf(Format, ##__VA_ARGS__), ANSI_TO_TCHAR(__FUNCTION__), __LINE__)
+
+#define LOG_EXAMPLE(LogCat, Verbosity, Format, ...) UE_LOG(LogCat, Verbosity, TEXT("%s %d %s"), ANSI_TO_TCHAR(__FUNCTION__), __LINE__, *FString::Printf(Format, ##__VA_ARGS__))
+
+DECLARE_LOG_CATEGORY_EXTERN(LogStrategy, Log, All);
 
 /**
  * 
