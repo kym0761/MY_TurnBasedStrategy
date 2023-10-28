@@ -809,7 +809,7 @@ void AGridManager::ShowEnemyRange()
 			continue;
 		}
 
-		if (unit->ActorHasTag(ENEMY))
+		if (unit->GetTeamType() == ETeamType::Team02)
 		{
 			enemyArr.Add(unit);
 		}

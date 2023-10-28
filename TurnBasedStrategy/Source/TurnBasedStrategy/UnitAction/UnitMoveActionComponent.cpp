@@ -74,9 +74,9 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			}
 			else
 			{
-				FVector movedLocation = FMath::VInterpConstantTo(unit->GetActorLocation(), worldLocation, DeltaTime, 360);
+				FVector movedLocation = FMath::VInterpConstantTo(unit->GetActorLocation(), worldLocation, DeltaTime, MovementSpeed);
 				unit->SetActorLocation(movedLocation);
-				FRotator movedRotation = FMath::RInterpConstantTo(unit->GetActorRotation(), rot, DeltaTime, 360);
+				FRotator movedRotation = FMath::RInterpConstantTo(unit->GetActorRotation(), rot, DeltaTime, RotationSpeed);
 				unit->SetActorRotation(movedRotation);
 				return;
 			}

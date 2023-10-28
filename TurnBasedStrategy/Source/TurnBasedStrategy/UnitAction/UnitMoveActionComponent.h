@@ -28,8 +28,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		TArray<FGrid> Path;
 
-	//UPROPERTY()
-	//	ASRPG_GameMode* GameModeRef;
 	UPROPERTY()
 		FGrid Prev_Grid;
 
@@ -37,6 +35,10 @@ protected:
 
 	virtual void BeginPlay() override;
 
+private:
+
+	const float MovementSpeed = 540.0f;
+	const float RotationSpeed = 360.0f;
 public:
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
