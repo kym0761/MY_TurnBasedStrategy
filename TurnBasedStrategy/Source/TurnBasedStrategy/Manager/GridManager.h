@@ -96,6 +96,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetupGridSystem();
+	void SetupUnitsOnGrid();
 
 	/*GridSystem Functions*/
 	virtual TArray<AUnit*> GetUnitArrayAtGrid(const FGrid& GridValue) const;
@@ -112,7 +113,7 @@ public:
 	virtual void MoveUnitGrid(AUnit* Unit, const FGrid& From, const FGrid& to);
 	virtual TMap<FGrid, UGridObject*> GetAllGridObjectsThatHasUnit() const;
 
-	void SetupUnitsOnGrid();
+
 
 	/*Pathfinding Functions*/
 	virtual TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false);

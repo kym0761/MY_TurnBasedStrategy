@@ -15,13 +15,13 @@ void UGridSystem::SetGridSystem(int _X_Length, int _Y_Length, TFunctionRef<UGrid
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
 
-	for (int x = 0; x < X_Length; x++)
+	for (int y = 0; y < Y_Length; y++)
 	{
-		for (int y = 0; y < Y_Length; y++)
+		for (int x = 0; x < X_Length; x++)
 		{
 			FGrid grid = FGrid(x, y);
-			//CreateObjectFunctionÀ» ±¸ÇöÇØ¾ßÇÔ. ¶÷´Ù·Î ±¸Çö.
-			//GridManager Âü°í.
+			//CreateObjectFunctionì„ êµ¬í˜„í•´ì•¼í•¨. ëžŒë‹¤ë¡œ êµ¬í˜„.
+			//GridManager ì°¸ê³ .
 
 			UGridObject* gridobj = CreateObjectFunction(this, grid);
 			GridObjectMap.Add(grid, gridobj);
@@ -38,10 +38,7 @@ UGridObject* UGridSystem::GetValidGridObject(const FGrid& Grid) const
 {
 	if (GridObjectMap.Num() > 0 && GridObjectMap.Contains(Grid))
 	{
-		if (IsValid(GridObjectMap[Grid]))
-		{
-			return GridObjectMap[Grid];
-		}
+		return GridObjectMap[Grid];
 	}
 
 	return nullptr;

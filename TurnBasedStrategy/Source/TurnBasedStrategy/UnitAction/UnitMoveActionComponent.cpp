@@ -162,9 +162,9 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 
 			bool bisFriend = false;
 			AUnit* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
+			if (IsValid(targetUnit) && unit->GetTeamType() == targetUnit->GetTeamType())
 			{
-				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
+				bisFriend = true;
 			}
 
 			//도착 가능한 위치?

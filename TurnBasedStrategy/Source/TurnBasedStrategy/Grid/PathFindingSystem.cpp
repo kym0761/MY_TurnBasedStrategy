@@ -39,10 +39,7 @@ UPathObject* UPathFindingSystem::GetValidPathObject(const FGrid& Grid) const
 {
 	if (PathObjectMap.Contains(Grid))
 	{
-		if (IsValid(PathObjectMap[Grid]))
-		{
-			return PathObjectMap[Grid];
-		}
+		return PathObjectMap[Grid];
 	}
 
 	return nullptr;
