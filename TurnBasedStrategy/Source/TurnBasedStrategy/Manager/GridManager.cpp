@@ -367,9 +367,17 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 {
 	//!주의! return 하기 전에 PathLength를 변경시켜야함.
 
-		//PathLength의 존재 이유는, 장애물이나 다른 기타 이유로 우회할 때
-		//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
-		//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 Valid.
+	//PathLength의 존재 이유는, 장애물이나 다른 기타 이유로 우회할 때
+	//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
+	//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 Valid.
+
+	FGrid checkGrid = Start - End;
+	if (checkGrid.Size() > MaxMoveCost)
+	{
+		Debug::Print(DEBUG_TEXT("Too Far Distance of StartGrid from EndGrid."));
+		PathLength = -1;
+		return TArray<FGrid>();
+	}
 
 	TArray<UPathObject*> openList; 	//openList = 이동 가능할 위치. Heap으로 사용함.
 	TSet<UPathObject*> closeSet; 	//closeSet = 이동 불가능한 위치. 빠른 검색용 TSet
@@ -396,7 +404,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	}
 
 	//모든 PathObject를 초기화 한 뒤에 시작함.
-	InitAllPathFindingObjects();
+	InitPathFindingObjects(Start, MaxMoveCost);
 
 	//startObject 상태
 	//G = 0 , H = 예상되는 직선 길이(X+Y), F = G+H
@@ -597,6 +605,9 @@ void AGridManager::InitAllPathFindingObjects()
 	//PathFindingGridSystem의 Grid 값을 PathFinding에 이용할 수 있도록 전부 초기화.
 	//G = 무한대(int32 최대값) , H = 0 , F = G + H = 무한대
 
+	//100*100 정도의 큰 맵에서는 전체 초기화를 하기 때문에 랙이 발생할 가능성이 높음
+	//새로 만든 로직이 별 문제가 없으면 삭제할 함수임.
+	
 	TMap<FGrid, UPathObject*> pathObjects = PathFindingSystem->GetPathObjectMap();
 	TMap<FGrid, UGridObject*> gridObjs = GridSystem->GetGridObjectMap();
 
@@ -625,6 +636,54 @@ void AGridManager::InitAllPathFindingObjects()
 			pathObject->SetParentObject(nullptr);
 		}
 	}
+}
+
+void AGridManager::InitPathFindingObjects(const FGrid& StartGrid, const int32 MaxMoveCost)
+{
+	//PathFindingGridSystem의 Grid 값을 PathFinding에 이용할 수 있도록 전부 초기화.
+	//G = 무한대(int32 최대값) , H = 0 , F = G + H = 무한대
+	
+
+	TMap<FGrid, UPathObject*> pathObjects = PathFindingSystem->GetPathObjectMap();
+	TMap<FGrid, UGridObject*> gridObjs = GridSystem->GetGridObjectMap();
+
+	//상하좌우 Near 계산을 감안하고 1칸 정도의 padding(?)을 준다. 
+	int max = MaxMoveCost + 1;
+
+	//모든 값을 초기화하는 것보다, 필요한 만큼만 초기화한다.
+	//전체 초기화보다 확연히 빠르다!
+	for (int32 y = -max; y <= max; y++)
+	{
+		for (int32 x = -max; x <= max; x++)
+		{
+			if (FMath::Abs(x) + FMath::Abs(y) > MaxMoveCost)
+			{
+				continue;
+			}
+
+			FGrid grid = StartGrid + FGrid(x, y);
+
+			if (!pathObjects.Contains(grid) || !gridObjs.Contains(grid))
+			{
+				continue;
+			}
+
+			UPathObject* pathObject = pathObjects[grid];
+			UGridObject* gridObj = gridObjs[grid];
+
+			int32 tempG_Cost = TNumericLimits<int32>::Max();
+			int32 tempH_Cost = 0;
+			int32 tempGridCost = gridObj->GetGridCost(); // 이 그리드를 지나기 위한 Cost
+
+			pathObject->SetGCost(tempG_Cost);
+			pathObject->SetHCost(tempH_Cost);
+			pathObject->CalculateFCost();
+			pathObject->SetGridCost(tempGridCost);
+			pathObject->SetParentObject(nullptr);
+
+		}
+	}
+
 }
 
 void AGridManager::RemoveAllGridVisual()

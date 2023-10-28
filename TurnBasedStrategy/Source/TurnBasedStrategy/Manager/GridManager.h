@@ -123,6 +123,7 @@ public:
 	virtual TArray<UPathObject*> GetNearObjectArray(UPathObject* CurrentObject) const;
 	virtual bool HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost = 1000, bool bCanIgnoreUnit = false);
 	virtual void InitAllPathFindingObjects();
+	virtual void InitPathFindingObjects(const FGrid& StartGrid, const int32 MaxMoveCost);
 	virtual int32 GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost);
 
 	//*GridVisual Functions*/
