@@ -162,6 +162,12 @@ void AGridManager::SetupGridSystem()
 				continue;
 			}
 			FGrid grid = WorldToGrid(gridCostModifier->GetActorLocation());
+
+			if (!gridObjMap.Contains(grid))
+			{
+				continue;
+			}
+
 			UGridObject* gridObj = gridObjMap[grid];
 			if (IsValid(gridObj))
 			{
