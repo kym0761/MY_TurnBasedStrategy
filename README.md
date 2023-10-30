@@ -15,7 +15,7 @@ F = G+H라는 A* 알고리즘에 의거하여, F가 최소가 되는 지점을 �
 
 # GridCostModifier
 
-<img src="ExplainImages/turn01-2.png" width="50%">
+<img src="ExplainImages/turn01_2.png" width="50%">
 <img src="ExplainImages/turn01.png" width="50%">
 
 GridCostModifier라는 Actor를 이동에 필요한 Cost를 변경할 위치에 배치하면 해당 위치의 Grid의 Cost가 바뀐다.
