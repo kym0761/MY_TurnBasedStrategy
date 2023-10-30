@@ -1,3 +1,8 @@
+#MY_TurnBasedStrategy
+
+언리얼 엔진5.3을 사용한 SRPG를 구현하는 토이 프로젝트다.
+기능 구현을 목표로 맵의 Grid, 유닛 및 유닛 액션, 적의 유닛 Control AI, 게임 Win Lose 조건 등을 구현했다.   
+
 ## 목차
 
 1. [GridSystem&PathFindingSystem](#gridSystem&PathFindingSystem)
