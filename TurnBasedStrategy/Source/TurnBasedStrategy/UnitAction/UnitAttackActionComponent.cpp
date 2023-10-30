@@ -271,10 +271,6 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -1;
 	}
 
-	//GameMode가 하는 일임.
-	TODO_Marker::TODO();
-	//TArray<FAttackOrder> attackOrders = gridManager->CalculateAttackOrder(attacker, defender);
-
 	ABattleManager* battleManager = ABattleManager::GetBattleManager();
 	if (!IsValid(battleManager))
 	{
@@ -347,10 +343,6 @@ void UUnitAttackActionComponent::AI_Action()
 		TakeAction(targetGrid); // 만약 공격이 불가능하다면, 그냥 TakeAction 처리해서 공격 Action의 사용을 종료함.
 	}
 
-	TODO_Marker::TODO();
-	//AI에게도 실제 공격을 실행하는 로직이 필요함.
-	//gameMode->SetupAttackManaging(GetOwner(), gameMode->GetUnitAtGrid(grid));
-	//gameMode->StartAttack();
 }
 
 TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
@@ -376,7 +368,6 @@ TSet<FGrid> UUnitAttackActionComponent::GetEnemyAttackableGridRange()
 		{
 			resultGrid.Add(grid);
 		}
-
 	}
 
 	return resultGrid;

@@ -38,11 +38,11 @@ void UUnitMoveActionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	{
 		AGridManager* gridManager = AGridManager::GetGridManager();
 
-		//if (!IsValid(GameModeRef))
-		//{
-		//	Debug::Print(DEBUG_TEXT("Grid Manager is Invalid."));
-		//	return;
-		//}
+		if (!IsValid(gridManager))
+		{
+			Debug::Print(DEBUG_TEXT("gridManager is Invalid."));
+			return;
+		}
 
 		AUnit* unit = GetOwningUnit();
 		if (!IsValid(unit))
@@ -135,9 +135,7 @@ TSet<FGrid> UUnitMoveActionComponent::GetValidActionGridSet() const
 				continue;
 			}
 
-			FGrid resultGrid = FGrid(x, y);
-			resultGrid += unitGrid;
-
+			FGrid resultGrid = unitGrid + FGrid(x, y);
 
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))
@@ -223,8 +221,7 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 				continue;
 			}
 
-			FGrid resultGrid = FGrid(x, y);
-			resultGrid += unitGrid;
+			FGrid resultGrid = unitGrid + FGrid(x, y);
 
 			//존재하지 않는 Grid
 			if (!gridManager->IsValidGrid(resultGrid))
@@ -247,17 +244,11 @@ TSet<FGridVisualData> UUnitMoveActionComponent::GetValidActionGridVisualDataSet(
 				testData.GridVisualType = EGridVisualType::NO;
 			}
 
-
-			bool bisFriend = false;
 			auto targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-			if (IsValid(targetUnit) && GetOwner()->Tags.Num() > 0)
+			if (IsValid(targetUnit) && unit->GetTeamType() == targetUnit->GetTeamType())
 			{
-				bisFriend = targetUnit->ActorHasTag(GetOwner()->Tags[0]);
-				if (bisFriend) // 만약 아군 위치라면 노란색으로 변경함.
-				{
-					Debug::Print(DEBUG_TEXT("Your Ally is On This Grid. : ") + resultGrid.ToString());
-					testData.GridVisualType = EGridVisualType::Warning;
-				}
+				Debug::Print(DEBUG_TEXT("Your Ally is On This Grid. : ") + resultGrid.ToString());
+				testData.GridVisualType = EGridVisualType::Warning;
 			}
 
 			if (targetUnit == unit) //현재 유닛 위치는 이동가능한 걸로 판정함.
@@ -423,6 +414,10 @@ FGrid UUnitMoveActionComponent::ThinkAIBestActionGrid()
 
 int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 {
+	//개선이 필요할 수도?
+	//길막 위치로 이동하려고 함.
+	//적이 충분히 적과 근접한 상황인데도 다른 유닛을 찾거나 먼 거리를 가려고 함.
+
 	//unit이 적절하지 않으면 밸류계산 불가능.
 	AUnit* unit = GetOwningUnit();
 	if (!IsValid(unit))
@@ -442,7 +437,6 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		return -10000;
 	}
 
-	ETeamType teamType = unit->GetTeamType();
 	int32 distanceToTarget = TNumericLimits<int32>::Max();
 	TMap<FGrid, UGridObject*> gridObjMap = gridManager->GetAllGridObjectsThatHasUnit();
 
@@ -467,7 +461,7 @@ int32 UUnitMoveActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		}
 
 		// 타겟이 같은 팀이면 스킵
-		if (targetUnit->GetTeamType() == teamType)
+		if (targetUnit->GetTeamType() == unit->GetTeamType())
 		{
 			continue;
 		}

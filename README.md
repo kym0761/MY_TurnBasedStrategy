@@ -7,11 +7,20 @@
 
 <img src="ExplainImages/turn01.png" width="50%">
 
-이 맵은 FGrid라는 구조체에 맞춰 X,Y의 정보와 언리얼 엔진 월드의 좌표를 매칭하여 GridSystem을 만들었다.  
+이 맵은 FGrid라는 구조체로 X,Y의 정보와 언리얼 엔진 월드의 좌표를 매칭하여 GridSystem을 만들었다.  
 GameMode가 Grid 정보와 PathFinding 계산을 담당한다.  
 F = G+H라는 A* 알고리즘에 의거하여, F가 최소가 되는 지점을 탐색해 길을 찾아 도착지까지의 거리를 계산한다.  
 도착지의 거리를 계산해야하는 이유는, 예를 들면, 이동거리가 5인 상태의 유닛이 그리드만 봤을 때는 충분히 이동할 수 있지만, 위의 이미지처럼 적이 막고 있거나, 장애물이 존재하면 우회해야하므로 거리가 증가한다. 그런 계산을 통해 초록색 그리드는 이동이 가능한 지점, 빨간색은 이동이 불가능한 지점을 나타낸다.  
 노란색은 아군이다.  
+
+# GridCostModifier
+
+<img src="ExplainImages/turn01-2.png" width="50%">
+<img src="ExplainImages/turn01.png" width="50%">
+
+GridCostModifier라는 Actor를 이동에 필요한 Cost를 변경할 위치에 배치하면 해당 위치의 Grid의 Cost가 바뀐다.
+길찾기 알고리즘에서 Cost를 계산해서 지나갈 수 있는지, 아니면 다른 길로 우회해서 해당 위치를 갈 수 있는지 확인하여 유닛이 도착할 수 있는 위치를 계산해준다.
+
 
 # GridVisual
 

@@ -58,12 +58,3 @@ namespace Debug
 	}
 
 }
-
-namespace TODO_Marker
-{
-
-	static void TODO()
-	{
-		Debug::Print(DEBUG_TEXT("TODO!"));
-	}
-}

@@ -61,7 +61,7 @@ TSet<FGrid> UUnitInteractActionComponent::GetValidActionGridSet() const
 		}
 
 		AUnit* targetUnit = gridManager->GetUnitAtGrid(resultGrid);
-		if (!IsValid(targetUnit) || GetOwner()->Tags.Num() > 0 && !targetUnit->ActorHasTag(GetOwner()->Tags[0]))
+		if (!IsValid(targetUnit) || unit->GetTeamType() != targetUnit->GetTeamType())
 		{
 			continue;
 		}

@@ -363,7 +363,8 @@ void AGridManager::SetupUnitsOnGrid()
 	}
 }
 
-TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit, bool bCalculateToTarget)
+TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, 
+	bool bCanIgnoreUnit, bool bCalculateToTarget)
 {
 	//!주의! return 하기 전에 PathLength를 변경시켜야함.
 
@@ -371,7 +372,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 	//이동력에 의해 닿을 수 있는 위치인지 확인해야함.
 	//예시) 이동력이 5인 유닛은 해당 위치까지 가는 PathLength가 5 이하일 때만 Valid.
 
-	FGrid checkGrid = Start - End;
+	const FGrid checkGrid = Start - End;
 	if (checkGrid.Size() > MaxMoveCost)
 	{
 		Debug::Print(DEBUG_TEXT("Too Far Distance of StartGrid from EndGrid."));
@@ -484,12 +485,11 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 				}
 			}
 
-
 			//F = G + H;
 			//G : 현재까지의 Cost
 			//H : 앞으로 예상되는 Cost
 
-			//G = 현재까지의 GCost + 다음노드 진입에 필요한 Cost
+			//tempG = 현재까지의 GCost + 다음노드 진입에 필요한 Cost
 			int tempGCost = currentObject->GetGCost() + nearObject->GetGridCost();
 
 			if (tempGCost < nearObject->GetGCost())
@@ -507,7 +507,7 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 		}
 	}
 
-	//openList.Num() > 0인 조건이 끝날 때까지 올바른 경로를 못찾았다면 실패.
+	//openList가 다 비워질 때까지 올바른 경로를 못찾았다면 실패.
 	PathLength = -1;
 	return TArray<FGrid>();
 }

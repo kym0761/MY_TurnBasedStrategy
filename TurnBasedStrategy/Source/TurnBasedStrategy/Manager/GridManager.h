@@ -138,6 +138,9 @@ public:
 	//Test EnemyRangeFunction
 	//현재 BP_GridManager에서 R버튼 입력에 대해 Bind된 상태로 동작함.
 	//추후에 변경할 예정.
+
+	//아군 유닛이 움직였을 때 갱신기능이 필요함
+
 	UFUNCTION(BlueprintCallable)
 		void ShowEnemyRange();
 

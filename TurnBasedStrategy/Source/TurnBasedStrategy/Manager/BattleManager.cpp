@@ -271,8 +271,8 @@ void ABattleManager::PlayBattle()
 {
 	if (OrdersToPlay.IsEmpty())
 	{
-		//공격을 끝내야함.
-		TODO_Marker::TODO();
+		//할 수 있는 Order가 없는데도 여기에 진입했다면 공격을 끝내야함.
+		FinishBattle();
 		return;
 	}
 
@@ -442,7 +442,7 @@ void ABattleManager::OnAttackHit()
 	{
 		//빗나간 경우 처리하기?
 		//빗나감! 텍스트 표시라던지..
-		TODO_Marker::TODO();
+		Debug::Print(DEBUG_TEXT("TODO"));
 		defenderAnim->PlayUnitAvoidMontage();
 	}
 
