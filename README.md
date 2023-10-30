@@ -18,9 +18,11 @@ F = G+H라는 A* 알고리즘에 의거하여, F가 최소가 되는 지점을 �
 <img src="ExplainImages/Move02.png" width="50%">
 <img src="ExplainImages/Move01.png" width="50%">
 
-GridCostModifier라는 Actor를 이동에 필요한 Cost를 변경할 위치에 배치하면 해당 위치의 Grid의 Cost가 바뀐다.
-길찾기 알고리즘에서 Cost를 계산해서 지나갈 수 있는지, 아니면 다른 길로 우회해서 해당 위치를 갈 수 있는지 확인하여 유닛이 도착할 수 있는 위치를 계산해준다.
+위 : Modifier 적용 전  
+아래 : Modifier 적용 후  
 
+GridCostModifier라는 Actor를 이동에 필요한 Cost를 변경할 위치에 배치하고 원하는 Cost를 CostModifier의 프로퍼티 Cost를 변경하면 해당 위치의 Grid의 Cost가 입력된 값으로 바뀐다.  
+길찾기 알고리즘에서 Cost를 계산해서 지나갈 수 있는지, 아니면 다른 길로 우회해서 해당 위치를 갈 수 있는지 확인하여 유닛이 도착할 수 있는 위치를 계산해준다.
 
 # GridVisual
 
