@@ -34,7 +34,7 @@ GridCostModifier라는 Actor를 이동에 필요한 Cost를 변경할 위치에 
 
 # UnitAction
 
-<img src="ExplainImages/UnitAction01.png" width="100%">
+<img src="ExplainImages/UnitAction01.png" width="75%">
 
 UnitAction이라는 기본 액션을 만든 뒤에, 필요한 액션을 구현한 뒤에 유닛에게 부여하면 된다.
 
@@ -43,7 +43,7 @@ UnitAction이라는 기본 액션을 만든 뒤에, 필요한 액션을 구현�
 예시로, 선택된 유닛이 현재 행동 가능한 액션이 무엇인지 유저는 확인할 수 있으며, 유저가 원하는 Action을 선택하여 유닛이 원하는 행동을 할 수 있게 한다.
 
 <img src="ExplainImages/Attack01.png" width="100%">
-<img src="ExplainImages/Attack02.png" width="100%">
+<img src="ExplainImages/Attack02.png" width="30%">
 공격 액션을 예시로 들면, 사거리 내에 공격 가능한 유닛을 플레이어가 선택하면, 내 유닛과 적 유닛의 스탯을 계산하여 공격의 결과를 알려줄 것이다.  
 Attack 버튼을 눌러 공격을 수락하면 해당 유닛끼리 공격하고 맞는 애니메이션과 함께 결과처럼 HP가 깎이고, HP가 0이 된 유닛은 죽는다.
 
@@ -51,7 +51,7 @@ Attack 버튼을 눌러 공격을 수락하면 해당 유닛끼리 공격하고 
 
 ## GridManager
 
-<img src="ExplainImages/GridManager01.png" width="100%">
+<img src="ExplainImages/GridManager01.png" width="75%">
 
 Level의 WorldPosition을 FGrid로 구성하여 GridObject, PathFinding을 위한 PathObject를 보유하는 GridSystem, PathFindingSystem을 보유한 관리 객체다.   
 이 GridManager는 자신의 위치를 시작으로 Grid를 배치하기 때문에 원하는 시작 위치에 Grid를 배치해주어야 한다.  
@@ -60,7 +60,7 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 ### GridVisualComponent
 
-<img src="ExplainImages/GridVisual01.png" width="100%">
+<img src="ExplainImages/GridVisual01.png" width="50%">
 
 그리드 칸의 색상이 보이는 것은 UInstancedStaticMeshComponent를 통해 구현했다.  
 각 칸의 그리드에 그리드 Actor를 설치하고 각각이 StaticMesh를 가진 것보다 FPS는 높게 나오는 것을 확인했다.  
@@ -68,9 +68,9 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 ## BattleManager
 
-<img src="ExplainImages/BattleManager01.png" width="100%">
+<img src="ExplainImages/BattleManager01.png" width="75%">
 <img src="ExplainImages/Attack01.png" width="100%">
-<img src="ExplainImages/Attack02.png" width="100%">
+<img src="ExplainImages/Attack02.png" width="30%">
 자신의 유닛과 적 유닛의 스탯에 따라 전투 결과 등을 계산해주고, 공격 수락시 전투 결과대로 공격을 실행시켜주는 관리 객체다.  
 
 유닛의 AnimInstance를 통해 1회의 공격이 완료되었는지 확인을 한다.  
@@ -90,8 +90,8 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 ## TurnManager
 
-<img src="ExplainImages/TurnManager01.png" width="100%">
-<img src="ExplainImages/TurnManager02.png" width="100%">
+<img src="ExplainImages/TurnManager01.png" width="30%">
+<img src="ExplainImages/TurnManager02.png" width="30%">
 
 플레이어의 턴인지, 적의 턴인지 확인해주는 관리 객체다.  
 플레이어는 자신의 턴일 때만 유닛을 조종할 수 있다.  
@@ -115,7 +115,7 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 # GameWinLose
 
-<img src="ExplainImages/WinLose01.png" width="100%">
+<img src="ExplainImages/WinLose01.png" width="50%">
 
 유닛이 행동을 할 때마다 GameMode는 유닛의 수를 파악한다.  
 유닛이 행동을 마치면 OnActionEnd라는 Delegate를 Broadcast하면 GameMode의 CheckWinOrLose를 Call된다.  
