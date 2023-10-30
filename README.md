@@ -1,17 +1,25 @@
 ## 목차
 
-1. [PathFindingSystem](#pathfindingsystem)
-2. [GridVisual](#gridvisual)
+1. [GridSystem&PathFindingSystem](#gridSystem&PathFindingSystem)
+2. [GridCostModifier](#gridcostmodifier)
+3. [UnitAction](#unitaction)
+4. [Manager](#manager)
+4.1. [GridManager](#gridmanager)
+4.1.1 [GridVisualComponent](#gridvisualcomponent)
+4.2 [BattleManager](#battlemanager)
+4.3 [TurnManager](#turnmanager)
+5. [GameWinLose](#gamewinlose)
 
-# PathFindingSystem
+# GridSystem&PathFindingSystem
 
 <img src="ExplainImages/Move01.png" width="100%">
 
-이 맵은 FGrid라는 구조체로 X,Y의 정보와 언리얼 엔진 월드의 좌표를 매칭하여 GridSystem을 만들었다.  
-GameMode가 Grid 정보와 PathFinding 계산을 담당한다.  
+이 맵은 FGrid라는 구조체로 X,Y의 정보와 언리얼 엔진 월드의 좌표를 매칭시켰다.  
+FGrid에 맞춰, GridObject를 관리하는 GridSystem, PathObject를 관리하는 PathFindingSystem이 존재한다.  
+
 F = G+H라는 A* 알고리즘에 의거하여, F가 최소가 되는 지점을 탐색해 길을 찾아 도착지까지의 거리를 계산한다.  
-도착지의 거리를 계산해야하는 이유는, 예를 들면, 이동거리가 5인 상태의 유닛이 그리드만 봤을 때는 충분히 이동할 수 있지만, 위의 이미지처럼 적이 막고 있거나, 장애물이 존재하면 우회해야하므로 거리가 증가한다. 그런 계산을 통해 초록색 그리드는 이동이 가능한 지점, 빨간색은 이동이 불가능한 지점을 나타낸다.  
-노란색은 아군이다.  
+도착지의 거리를 계산해야하는 이유는, 예를 들면, 이동거리가 5인 상태의 유닛이 그리드만 봤을 때는 충분히 이동할 수 있지만, 위의 이미지처럼 적이 막고 있거나, 장애물이 존재하면 우회해야하므로 거리가 증가한다.  
+또한, Grid의 Cost에 따라서 자신의 이동력으로 해당 칸을 지나갈 수 없다면 우회하도록 할 필요도 있다.
 
 # GridCostModifier
 
@@ -66,10 +74,18 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 자신의 유닛과 적 유닛의 스탯에 따라 전투 결과 등을 계산해주고, 공격 수락시 전투 결과대로 공격을 실행시켜주는 관리 객체다.  
 
 유닛의 AnimInstance를 통해 1회의 공격이 완료되었는지 확인을 한다.  
+
+
 예를 들면, 내 유닛이 주먹으로 쳤을 시에 공격 애니메이션이 재생됐을 때, 주먹이 상대에게 닿았을 때 쯤에 AttackHit이라는 Notify가 동작하며, 상대 유닛은 그 AttackHit에 맞춰서 공격을 맞은 애니메이션이 재생된다.  
 내 유닛이 공격 애니메이션이 거의 끝났을 쯤엔 AttackEnd라는 Notify가, 적 유닛이 공격을 맞고 애니메이션이 거의 끝났을 쯤엔 HitEnd라는 Notify가 동작하면서 BattleManager는 둘의 동작이 끝났을 것을 확인할 수 있다.  
+
+
 그렇게 두 유닛의 애니메이션이 끝나고나서, 다음 공격 순서대로 애니메이션을 재생하여 계산된 결과에 맞춰 공격을 할 수 있는 것이다.
+
+
 물론 공격 계산 결과대로 100% 데미지를 받는 것은 절대 아니며, 회피 확률에 따라 공격을 무시하는 회피 애니메이션이 재생되어 데미지를 받지도 않을 수도 있다.
+
+
 만약 둘 중 어떤 유닛이 공격 순서대로 전투 결과를 재생하는 중에 HP가 0이 되어 죽게된다면, 이후 전투 결과는 재생되지 않고 전투가 끝날 것이다. 죽은 유닛에게는 죽고나서 사라지는 유예기간을 잠시 가지며, 유예기간이 끝나 죽는다면 GridManager에서 죽은 유닛이 점유하고 있는 Grid에서 벗어나고, 죽은 유닛이 사라지면서 플레이어가 그 후 행동을 할 수 있게 된다.
 
 # TurnManager
@@ -97,7 +113,7 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 적도 조종할 수 있는 모든 유닛이 행동을 마친다면 자신의 턴을 끝내고, 턴 숫자를 1 증가시키면서 플레이어 턴으로 바뀐다.
 
-# Game Win Lose
+# GameWinLose
 
 <img src="ExplainImages/WinLose01.png" width="100%">
 
