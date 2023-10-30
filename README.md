@@ -66,7 +66,7 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 각 칸의 그리드에 그리드 Actor를 설치하고 각각이 StaticMesh를 가진 것보다 FPS는 높게 나오는 것을 확인했다.  
 이미지의 예시에선, 유닛이 Move 행동을 할 때, 파란색은 이동 가능한 칸, 빨간색은 장애물이나 적 유닛이 있으므로 이동이 불가능한 칸, 노란색은 아군이 존재하여 해당 위치는 이동할 수 없지만 통과는 가능한 칸.. 등의 표현이 가능하다는 것을 보여준다.
 
-# BattleManager
+## BattleManager
 
 <img src="ExplainImages/BattleManager01.png" width="100%">
 <img src="ExplainImages/Attack01.png" width="100%">
@@ -88,7 +88,7 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 만약 둘 중 어떤 유닛이 공격 순서대로 전투 결과를 재생하는 중에 HP가 0이 되어 죽게된다면, 이후 전투 결과는 재생되지 않고 전투가 끝날 것이다. 죽은 유닛에게는 죽고나서 사라지는 유예기간을 잠시 가지며, 유예기간이 끝나 죽는다면 GridManager에서 죽은 유닛이 점유하고 있는 Grid에서 벗어나고, 죽은 유닛이 사라지면서 플레이어가 그 후 행동을 할 수 있게 된다.
 
-# TurnManager
+## TurnManager
 
 <img src="ExplainImages/TurnManager01.png" width="100%">
 <img src="ExplainImages/TurnManager02.png" width="100%">
