@@ -13,7 +13,7 @@
 class AUnit;
 class UGridSystem;
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class TURNBASEDSTRATEGY_API UGridObject : public UObject
 {
 	GENERATED_BODY()
@@ -24,19 +24,19 @@ public:
 
 private:
 
-	//ÀÌ GridObj¸¦ º¸À¯ÇÑ GridSystem.
+	//ì´ GridObjë¥¼ ë³´ìœ í•œ GridSystem.
 	UPROPERTY()
 	UGridSystem* GridSystem;
 
-	//ÀÚ½ÅÀÇ GridÁ¤º¸
-	UPROPERTY()
+	//ìì‹ ì˜ Gridì •ë³´
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 	FGrid Grid;
 
-	//ÀÌ ±×¸®µå¸¦ Á¢±ÙÇÏ±â À§ÇØ ÇÊ¿äÇÑ Cost.
-	UPROPERTY()
+	//ì´ ê·¸ë¦¬ë“œë¥¼ ì ‘ê·¼í•˜ê¸° ìœ„í•´ í•„ìš”í•œ Cost.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
 	int32 GridCost;
 
-	//ÀÌ Grid À§¿¡ ¿Ã¶ó¿Â À¯´Ö
+	//ì´ Grid ìœ„ì— ì˜¬ë¼ì˜¨ ìœ ë‹›
 	UPROPERTY()
 	TArray<AUnit*> UnitArray;
 

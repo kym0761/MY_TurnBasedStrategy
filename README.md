@@ -46,7 +46,7 @@ UnitAction이라는 기본 액션을 만든 뒤에, 필요한 액션을 구현�
 
 <img src="ExplainImages/UnitAction02.png" width="100%">
 
-예시로, 선택된 유닛이 현재 행동 가능한 액션이 무엇인지 유저는 확인할 수 있으며, 유저가 원하는 Action을 선택하여 유닛이 원하는 행동을 할 수 있게 한다.
+예시로, 선택된 유닛은 현재 위치에서 Move, Interact, Wait의 행동을 할 수 있다. 자신의 공격 사거리 안에 적이 있다면 Attack이라는 행동도 할 수 있다.
 
 <img src="ExplainImages/Attack01.png" width="100%">
 <img src="ExplainImages/Attack02.png" width="30%">
@@ -128,6 +128,6 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 
 <img src="ExplainImages/WinLose02.png" width="100%">
 
-예를 들면, 플레이어 유닛이 적을 공격하는 Attack 액션을 취했다. 만약 이 유닛의 공격으로 인해 적 유닛이 죽었다면 OnActionEnd를 통해 GameMode가 현재 유닛 숫자를 파악할 것이다. 만약 적 유닛의 숫자가 0이 됐다면 이 게임은 플레이어가 승리하여 Win 상태가 된다.
-다른 예시로, 적 유닛이 내 유닛을 공격할 때, 적 유닛이 죽는다면 적 유닛의 행동에 대한 OnActionEnd가 동작하여 GameMode가 유닛의 숫자를 파악한다. 이때도 적 유닛 숫자가 0이 된 상태라면 플레이어가 승리한다.
+예를 들면, 플레이어 유닛이 적을 공격하는 Attack 액션을 취했다. 만약 이 유닛의 공격으로 인해 적 유닛이 죽었다면 OnActionEnd를 통해 GameMode가 현재 유닛 숫자를 파악할 것이다. 만약 적 유닛의 숫자가 0이 됐다면 이 게임은 플레이어가 승리하여 Win 상태가 된다.  
+다른 예시로, 적 유닛이 내 유닛을 공격할 때, 적 유닛이 죽는다면 적 유닛의 행동에 대한 OnActionEnd가 동작하여 GameMode가 유닛의 숫자를 파악한다. 이때도 적 유닛 숫자가 0이 된 상태라면 플레이어가 승리한다.  
 반대로, 플레이어 유닛의 숫자가 0이 됐다면 적이 승리하여 Lose 상태가 된다.

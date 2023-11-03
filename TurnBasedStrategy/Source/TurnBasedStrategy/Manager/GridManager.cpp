@@ -53,12 +53,26 @@ AGridManager::AGridManager()
 
 }
 
+void AGridManager::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetupGridSystem();
+
+	Debug::Print("OnConstruction Called");
+}
+
+void AGridManager::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	Debug::Print("PostInitializeComponents Called");
+}
+
 // Called when the game starts or when spawned
 void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetupGridSystem();
 
 	SetupUnitsOnGrid();
 

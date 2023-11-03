@@ -5,6 +5,8 @@
 #include "GridObject.h"
 #include "UnitCore/Unit.h"
 
+#include "DebugHelper.h"
+
 UGridSystem::UGridSystem()
 {
 	X_Length = 10;
@@ -12,6 +14,14 @@ UGridSystem::UGridSystem()
 }
 void UGridSystem::SetGridSystem(int _X_Length, int _Y_Length, TFunctionRef<UGridObject* (UGridSystem*, FGrid)> CreateObjectFunction)
 {
+	if (X_Length == _X_Length && Y_Length == _Y_Length)
+	{
+		Debug::Print(DEBUG_TEXT("already? then, Skip."));
+		return;
+	}
+
+	GridObjectMap.Empty();
+
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
 

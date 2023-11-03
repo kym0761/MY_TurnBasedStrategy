@@ -12,6 +12,8 @@ UPathFindingSystem::UPathFindingSystem()
 
 void UPathFindingSystem::SetPathFindingSystem(int _X_Length, int _Y_Length, TFunctionRef<UPathObject* (UPathFindingSystem*, FGrid)> CreateObjectFunction)
 {
+	PathObjectMap.Empty();
+
 	X_Length = _X_Length;
 	Y_Length = _Y_Length;
 

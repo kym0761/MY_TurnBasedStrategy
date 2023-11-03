@@ -36,7 +36,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogStrategy, Log, All);
 //!주의 -> 게임모드의 프로퍼티로 빌드를 매번 새로하지 않고 Debug를 활성화하게 만듬.
 namespace DebugControl
 {
-	static bool bOK_Debugging = false;
+	static bool bOK_Debugging = true;
 }
 
 namespace Debug

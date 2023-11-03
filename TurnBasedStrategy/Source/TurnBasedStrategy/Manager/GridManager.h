@@ -67,12 +67,13 @@ private:
 
 #pragma endregion
 
-public:
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		int32 X_Length = 10;
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		int32 Y_Length = 10;
-	UPROPERTY(EditAnywhere, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
 		float CellSize = 100.0f;
 
 public:	
@@ -82,6 +83,12 @@ public:
 	FOnAnyUnitMoved OnAnyUnitMoved;
 
 protected:
+
+
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	virtual void PostInitializeComponents() override;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -105,8 +112,14 @@ public:
 	virtual bool HasAnyUnitOnGrid(const FGrid& GridValue) const;
 	virtual bool IsWalkableGrid(const FGrid& GridValue) const;
 	virtual bool IsValidGrid(const FGrid& Grid) const;
+
+
+	UFUNCTION(BlueprintCallable)
 	virtual FGrid WorldToGrid(const FVector& WorldPosition) const;
+	UFUNCTION(BlueprintCallable)
 	virtual FVector GridToWorld(const FGrid& Grid) const;
+
+
 	virtual UGridObject* GetValidGridObject(const FGrid& Grid) const;
 	virtual void AddUnitAtGrid(AUnit* Unit, const FGrid& GridValue);
 	virtual void RemoveUnitAtGrid(AUnit* Unit, const FGrid& GridValue);
