@@ -85,7 +85,7 @@ BattleManager는 자신의 유닛과 적 유닛의 스탯에 따라 전투 결�
 
 <img src="ExplainImages/AttackLogic01.png" width="75%">
 
-예를 들면, 내 유닛이 주먹으로 쳤을 시에 공격 애니메이션이 재생됐을 때, 주먹이 상대에게 닿았을 때 쯤에 AttackHit라는 Notify가 동작하고, 상대 유닛은 AttackHit Notify가 동작하는 타이밍에 공격을 맞은 애니메이션이 재생된다.  
+예를 들면, 내 유닛이 공격 명령을 받아 공격 애니메이션을 실행할 때 이 유닛은 주먹을 날린다. 주먹이 상대에게 닿았을 때 쯤에 AttackHit라는 Notify가 동작하고, 상대 유닛은 AttackHit Notify가 동작하는 타이밍에 공격을 맞은 애니메이션이 재생된다.  
 내 유닛이 공격 애니메이션이 거의 끝났을 쯤엔 AttackEnd라는 Notify가, 적 유닛이 공격을 맞고 애니메이션이 거의 끝났을 쯤엔 HitEnd라는 Notify가 동작하면서 BattleManager는 둘의 동작이 끝났을 것을 확인할 수 있다.  
 
 
