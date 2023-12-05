@@ -35,8 +35,10 @@ F = G+H라는 A* 알고리즘에 의거하여, F가 최소가 되는 지점을 �
 위 : Modifier 적용 전  
 아래 : Modifier 적용 후  
 
-GridCostModifier라는 Actor를 이동에 필요한 Cost를 변경할 위치에 배치하고 원하는 Cost를 CostModifier의 프로퍼티 Cost를 변경하면 해당 위치의 Grid의 Cost가 입력된 값으로 바뀐다.  
-길찾기 알고리즘에서 Cost를 계산해서 지나갈 수 있는지, 아니면 다른 길로 우회해서 해당 위치를 갈 수 있는지 확인하여 유닛이 도착할 수 있는 위치를 계산해준다.
+사진의 위와 아래를 비교해보면 Modifier를 적용한 아래의 사진이 유닛이 이동 가능한 위치가 더 적은 것을 확인할 수 있다.
+
+GridCostModifier라는 Actor를 해당 위치의 Grid의 접근에 요구하는 Cost를 변경하기 위해 배치하고 원하는 Cost를 CostModifier의 프로퍼티 Cost를 변경하면 해당 위치의 Grid의 Cost가 입력된 값으로 바뀐다.  
+길찾기 알고리즘에서 Cost를 계산해서 해당 위치를 지나가면서 목적지로 이동할 수 있는지, 혹은 다른 길로 우회해서 목적지로 갈 수 있는지 확인하여 유닛이 도착할 수 있는 위치를 계산해준다.
 
 # UnitAction
 
@@ -46,12 +48,12 @@ UnitAction이라는 기본 액션을 만든 뒤에, 필요한 액션을 구현�
 
 <img src="ExplainImages/UnitAction02.png" width="100%">
 
-예시로, 선택된 유닛은 현재 위치에서 Move, Interact, Wait의 행동을 할 수 있다. 자신의 공격 사거리 안에 적이 있다면 Attack이라는 행동도 할 수 있다.
+예시로, 선택된 유닛은 현재 위치에서 Move, Interact, Wait의 행동을 할 수 있다. 자신의 공격 사거리 안에 적이 있다면 Attack 행동도 할 수 있다.
 
 <img src="ExplainImages/Attack01.png" width="100%">
 <img src="ExplainImages/Attack02.png" width="30%">
-공격 액션을 예시로 들면, 사거리 내에 공격 가능한 유닛을 플레이어가 선택하면, 내 유닛과 적 유닛의 스탯을 계산하여 공격의 결과를 알려줄 것이다.  
-Attack 버튼을 눌러 공격을 수락하면 해당 유닛끼리 공격하고 맞는 애니메이션과 함께 결과처럼 HP가 깎이고, HP가 0이 된 유닛은 죽는다.
+공격 액션을 예시로 들면, 사거리 내에 공격 가능한 유닛을 플레이어가 선택하면, 내 유닛과 적 유닛의 스탯을 계산하여 공격의 결과를 알려주는 UI가 나타난다.  
+Attack 버튼을 눌러 최종적으로 이 공격을 수락하면 해당 유닛끼리 공격하고 맞는 애니메이션과 함께 결과처럼 HP가 깎이고, HP가 0이 된 유닛은 죽는다.
 
 # Manager
 
@@ -69,20 +71,21 @@ X,Y -> FVector / FVector -> X,Y 값으로 변경하는 기능으로 손쉽게 Gr
 <img src="ExplainImages/GridVisual01.png" width="50%">
 
 그리드 칸의 색상이 보이는 것은 UInstancedStaticMeshComponent를 통해 구현했다.  
-각 칸의 그리드에 그리드 Actor를 설치하고 각각이 StaticMesh를 가진 것보다 FPS는 높게 나오는 것을 확인했다.  
-이미지의 예시에선, 유닛이 Move 행동을 할 때, 파란색은 이동 가능한 칸, 빨간색은 장애물이나 적 유닛이 있으므로 이동이 불가능한 칸, 노란색은 아군이 존재하여 해당 위치는 이동할 수 없지만 통과는 가능한 칸.. 등의 표현이 가능하다는 것을 보여준다.
+InstancedStaticMesh를 사용한 이유는, 각 칸의 그리드에 그리드 Actor를 설치하고 각각이 StaticMesh를 가진 것보다 FPS는 높게 나오기 때문이다.  
+
+이미지의 예시에선, 유닛이 Move 행동을 할 때, '파란색'은 이동 가능한 칸, '빨간색'은 장애물이나 적 유닛이 있으므로 이동이 불가능한 칸, '노란색'은 아군이 존재하여 해당 위치는 이동할 수 없지만 통과는 가능한 칸.. 등의 표현이 가능하다는 것을 보여준다.
 
 ## BattleManager
 
 <img src="ExplainImages/BattleManager01.png" width="75%">
 <img src="ExplainImages/Attack01.png" width="100%">
 <img src="ExplainImages/Attack02.png" width="30%">
-자신의 유닛과 적 유닛의 스탯에 따라 전투 결과 등을 계산해주고, 공격 수락시 전투 결과대로 공격을 실행시켜주는 관리 객체다.  
-
+BattleManager는 자신의 유닛과 적 유닛의 스탯에 따라 전투 결과 등을 계산해주고, 공격 수락시 전투 결과대로 공격을 실행시켜주는 관리 객체다.  
 유닛의 AnimInstance를 통해 1회의 공격이 완료되었는지 확인을 한다.  
 
+<img src="ExplainImages/AttackLogic01.png" width="75%">
 
-예를 들면, 내 유닛이 주먹으로 쳤을 시에 공격 애니메이션이 재생됐을 때, 주먹이 상대에게 닿았을 때 쯤에 AttackHit이라는 Notify가 동작하며, 상대 유닛은 그 AttackHit에 맞춰서 공격을 맞은 애니메이션이 재생된다.  
+예를 들면, 내 유닛이 주먹으로 쳤을 시에 공격 애니메이션이 재생됐을 때, 주먹이 상대에게 닿았을 때 쯤에 AttackHit라는 Notify가 동작하고, 상대 유닛은 AttackHit Notify가 동작하는 타이밍에 공격을 맞은 애니메이션이 재생된다.  
 내 유닛이 공격 애니메이션이 거의 끝났을 쯤엔 AttackEnd라는 Notify가, 적 유닛이 공격을 맞고 애니메이션이 거의 끝났을 쯤엔 HitEnd라는 Notify가 동작하면서 BattleManager는 둘의 동작이 끝났을 것을 확인할 수 있다.  
 
 
