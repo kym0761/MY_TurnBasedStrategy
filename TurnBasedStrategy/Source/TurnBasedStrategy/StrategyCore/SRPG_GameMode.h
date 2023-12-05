@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGridManagingDelegate);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTestDele, int32, a, float, b);
+
 /**
  * 
  */
@@ -61,5 +63,7 @@ public:
 	TSubclassOf<class UUserWidget> WBP_LoseGame;
 
 #pragma endregion
+
+	FTestDele TestDelegate;
 
 };

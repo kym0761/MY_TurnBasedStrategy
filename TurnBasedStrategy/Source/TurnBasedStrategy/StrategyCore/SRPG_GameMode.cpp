@@ -57,6 +57,8 @@ void ASRPG_GameMode::BeginPlay()
 
 	}
 
+	//TestDelegate.Broadcast();
+
 }
 
 void ASRPG_GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)

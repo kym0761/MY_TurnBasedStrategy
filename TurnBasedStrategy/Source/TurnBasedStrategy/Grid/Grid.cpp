@@ -38,7 +38,7 @@ FGrid FGrid::operator+(const FGrid& b) const
 	return temp;
 }
 
-FGrid FGrid::operator -(const FGrid& b) const
+FGrid FGrid::operator-(const FGrid& b) const
 {
 	FGrid temp;
 	temp.X = X - b.X;

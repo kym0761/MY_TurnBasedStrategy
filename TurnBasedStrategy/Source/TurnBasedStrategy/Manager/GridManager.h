@@ -104,6 +104,7 @@ public:
 
 	void SetupGridSystem();
 	void SetupUnitsOnGrid();
+	void SetupGridCostInitially();
 
 	/*GridSystem Functions*/
 	virtual TArray<AUnit*> GetUnitArrayAtGrid(const FGrid& GridValue) const;

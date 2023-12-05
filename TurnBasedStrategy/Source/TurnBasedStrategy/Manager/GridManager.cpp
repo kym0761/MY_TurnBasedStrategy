@@ -76,6 +76,7 @@ void AGridManager::BeginPlay()
 
 	SetupUnitsOnGrid();
 
+	SetupGridCostInitially();
 }
 
 // Called every frame
@@ -112,83 +113,7 @@ void AGridManager::SetupGridSystem()
 		}
 	);
 
-	//Grid 맵에 장애물 적용. 통과 불가.
-	{
-		auto pathFindingMap = PathFindingSystem->GetPathObjectMap();
-		for (int32 i = 0; i < X_Length; i++)
-		{
-			for (int32 j = 0; j < Y_Length; j++)
-			{
-				FGrid grid(i, j);
-				FVector pos = GridToWorld(grid);
-
-				FVector startPos = pos + FVector(0.0f, 0.0f, 5000.0f);
-				FVector endPos = FVector(startPos.X, startPos.Y, -5000.0f);
-
-				TArray<TEnumAsByte<EObjectTypeQuery>> objects;
-
-				objects.Add(UEngineTypes::ConvertToObjectType(
-					ECollisionChannel::ECC_GameTraceChannel2)); // ObjectType : Obstacle Obj Type을 감지함. DefaultEngine.ini 참고
-
-				TArray<AActor*> ignores;
-				TArray<FHitResult> outHits;
-
-				UKismetSystemLibrary::LineTraceMultiForObjects(
-					GetWorld(),
-					startPos,
-					endPos,
-					objects,
-					true,
-					ignores,
-					EDrawDebugTrace::None,
-					//EDrawDebugTrace::ForDuration,
-					outHits,
-					true,
-					FLinearColor::Red,
-					FLinearColor::Blue,
-					5.0f
-				);
-
-				//outhits이 1개 이상의 값을 가지고 있다면, 해당 위치에 장애물이 존재하고 있는 것임.
-				if (outHits.Num() > 0)
-				{
-					UPathObject* pathObject = pathFindingMap[grid];
-					if (IsValid(pathObject))
-					{
-						pathObject->SetIsWalkable(false);
-					}
-				}
-			}
-		}
-	}
-
-	//GridModifier 체크
-	{
-		TArray<AActor*> outActors;
-		UGameplayStatics::GetAllActorsOfClass(this, AGridCostModifier::StaticClass(), outActors);
-		auto gridObjMap = GridSystem->GetGridObjectMap();
-
-		for (auto i : outActors)
-		{
-			AGridCostModifier* gridCostModifier = CastChecked<AGridCostModifier>(i);
-			if (!IsValid(gridCostModifier))
-			{
-				continue;
-			}
-			FGrid grid = WorldToGrid(gridCostModifier->GetActorLocation());
-
-			if (!gridObjMap.Contains(grid))
-			{
-				continue;
-			}
-
-			UGridObject* gridObj = gridObjMap[grid];
-			if (IsValid(gridObj))
-			{
-				gridObj->SetGridCost(gridCostModifier->CostValue);
-			}
-		}
-	}
+	
 
 }
 
@@ -383,6 +308,87 @@ void AGridManager::SetupUnitsOnGrid()
 	}
 }
 
+void AGridManager::SetupGridCostInitially()
+{
+	//Grid 맵에 장애물 적용. 통과 불가.
+	{
+		auto pathFindingMap = PathFindingSystem->GetPathObjectMap();
+		for (int32 i = 0; i < X_Length; i++)
+		{
+			for (int32 j = 0; j < Y_Length; j++)
+			{
+				FGrid grid(i, j);
+				FVector pos = GridToWorld(grid);
+
+				FVector startPos = pos + FVector(0.0f, 0.0f, 5000.0f);
+				FVector endPos = FVector(startPos.X, startPos.Y, -5000.0f);
+
+				TArray<TEnumAsByte<EObjectTypeQuery>> objects;
+
+				objects.Add(UEngineTypes::ConvertToObjectType(
+					ECollisionChannel::ECC_GameTraceChannel2)); // ObjectType : Obstacle Obj Type을 감지함. DefaultEngine.ini 참고
+
+				TArray<AActor*> ignores;
+				TArray<FHitResult> outHits;
+
+				UKismetSystemLibrary::LineTraceMultiForObjects(
+					GetWorld(),
+					startPos,
+					endPos,
+					objects,
+					true,
+					ignores,
+					EDrawDebugTrace::None,
+					//EDrawDebugTrace::ForDuration,
+					outHits,
+					true,
+					FLinearColor::Red,
+					FLinearColor::Blue,
+					5.0f
+				);
+
+				//outhits이 1개 이상의 값을 가지고 있다면, 해당 위치에 장애물이 존재하고 있는 것임.
+				if (outHits.Num() > 0)
+				{
+					UPathObject* pathObject = pathFindingMap[grid];
+					if (IsValid(pathObject))
+					{
+						pathObject->SetIsWalkable(false);
+					}
+				}
+			}
+		}
+	}
+
+	//GridModifier 체크
+	{
+		TArray<AActor*> outActors;
+		UGameplayStatics::GetAllActorsOfClass(this, AGridCostModifier::StaticClass(), outActors);
+		auto gridObjMap = GridSystem->GetGridObjectMap();
+
+		for (auto i : outActors)
+		{
+			AGridCostModifier* gridCostModifier = CastChecked<AGridCostModifier>(i);
+			if (!IsValid(gridCostModifier))
+			{
+				continue;
+			}
+			FGrid grid = WorldToGrid(gridCostModifier->GetActorLocation());
+
+			if (!gridObjMap.Contains(grid))
+			{
+				continue;
+			}
+
+			UGridObject* gridObj = gridObjMap[grid];
+			if (IsValid(gridObj))
+			{
+				gridObj->SetGridCost(gridCostModifier->CostValue);
+			}
+		}
+	}
+}
+
 TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, 
 	bool bCanIgnoreUnit, bool bCalculateToTarget)
 {
@@ -562,7 +568,6 @@ TArray<FGrid> AGridManager::CalculatePath(UPathObject* EndObject) const
 	//그 Grid 결과를 뒤집으면 Start -> End 까지의 Path다.
 	TArray<FGrid> gridArray;
 
-	gridArray.Add(EndObject->GetGrid());
 	UPathObject* current = EndObject;
 	while (IsValid(current))
 	{

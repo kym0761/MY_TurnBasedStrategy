@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -25,7 +25,7 @@ public:
 	FGrid(int32 _X, int32 _Y);
 	FString ToString() const;
 	bool operator==(const FGrid& Other) const;
-	bool operator!= (const FGrid& Other) const;
+	bool operator!=(const FGrid& Other) const;
 	FGrid operator+(const FGrid& b) const;
 	FGrid operator-(const FGrid& b) const;
 	FGrid& operator=(const FGrid& b);
