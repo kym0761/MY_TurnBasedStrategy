@@ -8,9 +8,8 @@
 #include "InputActionValue.h"
 #include "Manager/Turn.h"
 #include "Interface/ControlPawnInterface.h"
+#include "MyDelegates.h"
 #include "UnitControlPawn.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitControlDelegate);
 
 class UInputMappingContext;
 class UInputAction;
@@ -54,8 +53,8 @@ public:
 	// Sets default values for this pawn's properties
 	AUnitControlPawn();
 
-	FUnitControlDelegate OnSelectedActionChanged;
-	FUnitControlDelegate OnSelectedUnitChanged;
+	FDynamicMulticastVoid OnSelectedActionChanged;
+	FDynamicMulticastVoid OnSelectedUnitChanged;
 
 public:
 

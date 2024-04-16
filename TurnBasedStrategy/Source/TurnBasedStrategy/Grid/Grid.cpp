@@ -99,3 +99,14 @@ bool FGridVisualData::operator==(const FGridVisualData& Other) const
 {
 	return (Grid == Other.Grid) && (GridVisualType == Other.GridVisualType);
 }
+
+/*T_Hash*/
+uint32 GetTypeHash(const FGrid& Grid)
+{
+	return FCrc::MemCrc32(&Grid, sizeof(Grid));
+}
+
+uint32 GetTypeHash(const FGridVisualData& GridVisualData)
+{
+	return FCrc::MemCrc32(&GridVisualData, sizeof(FGridVisualData));
+}

@@ -18,7 +18,7 @@ enum class EUnitActionType : uint8
 	Wait UMETA(DisplayName = "Wait")
 };
 
-//Grid À§Ä¡¿¡ ´ëÇÑ ActionÀÇ Value¸¦ °è»êÇÏ±â À§ÇÑ Token
+//Grid ìœ„ì¹˜ì— ëŒ€í•œ Actionì˜ Valueë¥¼ ê³„ì‚°í•˜ê¸° ìœ„í•œ Token
 USTRUCT(BlueprintType, Blueprintable)
 struct FActionValueToken
 {
@@ -27,9 +27,9 @@ struct FActionValueToken
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-		FGrid Grid;
+	FGrid Grid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
-		int32 ActionValue;
+	int32 ActionValue;
 
 	FActionValueToken();
 

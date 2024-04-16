@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyDelegates.h"
 #include "GameFramework/Actor.h"
 #include "Grid/Grid.h"
 #include "Manager/Turn.h"
@@ -17,8 +18,6 @@ class UUnitInteractActionComponent;
 class UUnitWaitActionComponent;
 class ADamageTextActor;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitDelegateSignature);
-
 UCLASS()
 class TURNBASEDSTRATEGY_API AUnit : public AActor
 {
@@ -31,25 +30,25 @@ public:
 	USceneComponent* SceneRoot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage Reaction", Meta = (AllowPrivateAccess = true))
-		TSubclassOf<ADamageTextActor> DamageTextActorBP;
+	TSubclassOf<ADamageTextActor> DamageTextActorBP;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
-		UStatComponent* StatComponent;
+	UStatComponent* StatComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
-		UUnitMoveActionComponent* UnitMoveActionComponent;
+	UUnitMoveActionComponent* UnitMoveActionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
-		UUnitAttackActionComponent* UnitAttackActionComponent;
+	UUnitAttackActionComponent* UnitAttackActionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
-		UUnitInteractActionComponent* UnitInteractActionComponent;
+	UUnitInteractActionComponent* UnitInteractActionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", Meta = (AllowPrivateAccess = true))
-		UUnitWaitActionComponent* UnitWaitActionComponent;
+	UUnitWaitActionComponent* UnitWaitActionComponent;
 
-	FUnitDelegateSignature OnFinishAllAction;
-	FUnitDelegateSignature OnUnitDestroyed;
+	FDynamicMulticastVoid OnFinishAllAction;
+	FDynamicMulticastVoid OnUnitDestroyed;
 private:
 
 	////현재 Grid 위치 값

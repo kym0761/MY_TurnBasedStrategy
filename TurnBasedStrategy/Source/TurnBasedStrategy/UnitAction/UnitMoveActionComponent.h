@@ -22,14 +22,14 @@ private:
 
 	//tick에서 필요한 정보들
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		FGrid Destination;
+	FGrid Destination;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		bool bMoveActivate = false;
+	bool bMoveActivate = false;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		TArray<FGrid> Path;
+	TArray<FGrid> Path;
 
 	UPROPERTY()
-		FGrid Prev_Grid;
+	FGrid Prev_Grid;
 
 protected:
 

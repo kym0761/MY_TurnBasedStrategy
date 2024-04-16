@@ -28,7 +28,7 @@ class TURNBASEDSTRATEGY_API AEnemyUnitControlPawn : public AUnitControlPawn
 	GENERATED_BODY()
 
 public:
-	
+
 	AEnemyUnitControlPawn();
 
 private:
@@ -37,7 +37,7 @@ private:
 	//	TArray<AUnit*> EnemyUnits;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Unit", Meta = (AllowPrivateAccess = true))
-		EAIPawnMode AIPawnMode = EAIPawnMode::NONE;
+	EAIPawnMode AIPawnMode = EAIPawnMode::NONE;
 
 protected:
 	// Called when the game starts or when spawned

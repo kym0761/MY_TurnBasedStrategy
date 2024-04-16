@@ -20,10 +20,10 @@ public:
 	UUnitAttackActionComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UMG")
-		TSubclassOf<UAttackCalculationWidget> AttackCalculationWidgetClass;
+	TSubclassOf<UAttackCalculationWidget> AttackCalculationWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UMG")
-		UAttackCalculationWidget* AttackCalculationWidget;
+	UAttackCalculationWidget* AttackCalculationWidget;
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,9 +40,9 @@ public:
 	virtual int32 CalculateActionValue(FGrid& CandidateGrid) override;
 	virtual void AI_Action() override;
 
-	//Àû °ø°İ °¡´É ¹üÀ§¸¦ Ç¥Çö
+	//ì  ê³µê²© ê°€ëŠ¥ ë²”ìœ„ë¥¼ í‘œí˜„
 	TSet<FGrid> GetEnemyAttackableGridRange();
-	//ÀûÀÌ ÇØ´ç À§Ä¡¿¡ ÀÖ´Ù °¡Á¤ÇÏ°í °ø°İÇÒ ¼ö ÀÖ´Â À§Ä¡ÀÎÁö È®ÀÎ.
+	//ì ì´ í•´ë‹¹ ìœ„ì¹˜ì— ìˆë‹¤ ê°€ì •í•˜ê³  ê³µê²©í•  ìˆ˜ ìˆëŠ” ìœ„ì¹˜ì¸ì§€ í™•ì¸.
 	TSet<FGrid> GetAttackRangeGridSetAtGrid(FGrid& Grid);
 
 protected:

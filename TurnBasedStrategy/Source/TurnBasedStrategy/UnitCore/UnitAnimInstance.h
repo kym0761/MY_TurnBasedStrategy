@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyDelegates.h"
 #include "Animation/AnimInstance.h"
 #include "UnitAnimInstance.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNotifyWorksSignature);
 
 /**
  * 이 프로젝트의 공격 방식은 턴방식이라서, 애니메이션에서 공격 행동과 피격 행동이 끝났음을 확인한 뒤에 다음 공격을 시도한다.
@@ -31,13 +31,13 @@ public:
 	UAnimMontage* UnitMontage;
 
 	UPROPERTY()
-	FOnNotifyWorksSignature OnAttackHit;
+	FDynamicMulticastVoid OnAttackHit;
 	UPROPERTY()
-	FOnNotifyWorksSignature OnAttackEnd;
+	FDynamicMulticastVoid OnAttackEnd;
 	UPROPERTY()
-	FOnNotifyWorksSignature OnHit;
+	FDynamicMulticastVoid OnHit;
 	UPROPERTY()
-	FOnNotifyWorksSignature OnHitEnd;
+	FDynamicMulticastVoid OnHitEnd;
 
 protected:
 

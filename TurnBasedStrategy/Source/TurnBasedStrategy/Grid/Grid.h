@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "Grid.generated.h"
 
+/*유닛 진영*/
+#define MYUNIT FName("MyUnit")
+#define ENEMY FName("Enemy")
+
 /**
  * Grid 정보
  */
@@ -34,13 +38,6 @@ public:
 	int32 Size() const;
 };
 
-//To Use in TSet Or TMap. You Need To Make operator==, GetTypeHash(). 
-uint32 GetTypeHash(const FGrid& Grid)
-{
-	return FCrc::MemCrc32(&Grid, sizeof(Grid));
-}
-
-
 UENUM(BlueprintType)
 enum class EGridVisualType : uint8
 {
@@ -69,13 +66,7 @@ public:
 	bool operator==(const FGridVisualData& Other) const;
 };
 
+
 //To Use in TSet Or TMap. You Need To Make operator==, GetTypeHash(). 
-uint32 GetTypeHash(const FGridVisualData& GridVisualData)
-{
-	return FCrc::MemCrc32(&GridVisualData, sizeof(FGridVisualData));
-}
-
-
-/*유닛 진영*/
-#define MYUNIT FName("MyUnit")
-#define ENEMY FName("Enemy")
+uint32 GetTypeHash(const FGrid& Grid);
+uint32 GetTypeHash(const FGridVisualData& GridVisualData);

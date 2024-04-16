@@ -9,7 +9,7 @@
 class UCanvasPanel;
 
 /**
- * ÇöÀç ¿ªÇÒ : HUD
+ * í˜„ìž¬ ì—­í•  : HUD
  */
 
 UCLASS(abstract)
@@ -20,6 +20,6 @@ class TURNBASEDSTRATEGY_API UMainCanvasWidget : public UUserWidget
 public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UCanvasPanel* MainCanvas;
+	UCanvasPanel* MainCanvas;
 
 };

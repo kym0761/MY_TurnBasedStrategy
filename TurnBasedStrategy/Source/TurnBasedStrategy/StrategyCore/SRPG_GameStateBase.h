@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyDelegates.h"
 #include "GameFramework/GameStateBase.h"
 #include "Manager/Turn.h"
 #include "SRPG_GameStateBase.generated.h"
 
 class AUnit;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnDelegate);
 
 /**
  * 
@@ -26,13 +25,13 @@ public:
 	static ASRPG_GameStateBase* GetSRPG_GameState(const UObject* WorldContextObject);
 
 	//Team01의 턴이 시작됐을 때, 유닛들에게 Callback
-	FTurnDelegate Team01Started;
+	FDynamicMulticastVoid Team01Started;
 
 	//Team02의 턴이 시작됐을 때, 유닛들에게 Callback
-	FTurnDelegate Team02Started;
+	FDynamicMulticastVoid Team02Started;
 	
 	//Team03의 턴이 시작됐을 때, 유닛들에게 Callback
-	FTurnDelegate Team03Started;
+	FDynamicMulticastVoid Team03Started;
 
 protected:
 

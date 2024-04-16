@@ -3,13 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyDelegates.h"
 #include "GameFramework/GameModeBase.h"
 #include "SRPG_GameMode.generated.h"
-
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGridManagingDelegate);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FTestDele, int32, a, float, b);
 
 /**
  * 
@@ -64,6 +60,5 @@ public:
 
 #pragma endregion
 
-	FTestDele TestDelegate;
 
 };

@@ -11,7 +11,7 @@ class UDamageTextWidget;
 
 
 /**
- * À¯´ÖÀÌ ¹ŞÀº ÇÇÇØ¸¦ Ãâ·ÂÇÏ´Â Actor
+ * ìœ ë‹›ì´ ë°›ì€ í”¼í•´ë¥¼ ì¶œë ¥í•˜ëŠ” Actor
  */
 UCLASS()
 class TURNBASEDSTRATEGY_API ADamageTextActor : public AActor
@@ -23,16 +23,16 @@ public:
 	ADamageTextActor();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageText")
-		TObjectPtr<UWidgetComponent> WidgetComponent;
+	TObjectPtr<UWidgetComponent> WidgetComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DamageText")
-		TSubclassOf<UDamageTextWidget> DamageTextClass;
+	TSubclassOf<UDamageTextWidget> DamageTextClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DamageText")
-		float AppliedDamage;
+	float AppliedDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DamageText", Meta = (ClampMin = 0.0f, ClampMax = 200.0f))
-		float Speed;
+	float Speed;
 
 protected:
 	// Called when the game starts or when spawned

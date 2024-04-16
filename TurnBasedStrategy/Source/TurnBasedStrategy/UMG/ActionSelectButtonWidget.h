@@ -4,17 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "MyDelegates.h"
 #include "ActionSelectButtonWidget.generated.h"
 
 class UButton;
 class UTextBlock;
 class UUnitActionComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnButtonClickedCompleted);
-
 /**
- * À¯´ÖÀÌ °¡´ÉÇÑ Çàµ¿¿¡ ´ëÇÑ ¹öÆ°
- * UnitActionListWidget¿¡ µé¾î°¨.
+ * ìœ ë‹›ì´ ê°€ëŠ¥í•œ í–‰ë™ì— ëŒ€í•œ ë²„íŠ¼
+ * UnitActionListWidgetì— ë“¤ì–´ê°.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UActionSelectButtonWidget : public UUserWidget
@@ -26,16 +25,16 @@ public:
 	UActionSelectButtonWidget(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_ActionName;
+	UTextBlock* TextBlock_ActionName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UButton* Button_Select;
+	UButton* Button_Select;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UUnitActionComponent* UnitAction;
+	UUnitActionComponent* UnitAction;
 
+	FDynamicMulticastVoid OnButtonClickedCompleted;
 
-	FOnButtonClickedCompleted OnButtonClickedCompleted;
 protected:
 
 	virtual void NativeConstruct() override;

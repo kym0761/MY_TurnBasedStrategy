@@ -11,7 +11,7 @@ class AUnit;
 class UActionSelectButtonWidget;
 
 /**
- * À¯´ÖÀÇ °¡´ÉÇÑ Action ¸ñ·Ï. ¹öÆ°À» ´©¸£¸é ½ÇÇàµÊ.
+ * ìœ ë‹›ì˜ ê°€ëŠ¥í•œ Action ëª©ë¡. ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ ì‹¤í–‰ë¨.
  */
 
 UCLASS(abstract)
@@ -22,14 +22,14 @@ class TURNBASEDSTRATEGY_API UUnitActionListWidget : public UUserWidget
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Component")
-		TSubclassOf<UActionSelectButtonWidget> ChooseActionButtonWidgetClass;
+	TSubclassOf<UActionSelectButtonWidget> ChooseActionButtonWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UVerticalBox* VerticalBox_ActionList;
+	UVerticalBox* VerticalBox_ActionList;
 
 	void InitUnitActionsWidget(AUnit* SelectedUnit);
 
 	UFUNCTION()
-		void OnButtonClickedCompletedFunc();
+	void OnButtonClickedCompletedFunc();
 
 };

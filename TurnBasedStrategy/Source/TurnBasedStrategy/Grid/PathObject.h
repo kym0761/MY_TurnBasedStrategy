@@ -21,21 +21,21 @@ private:
 
 	// 현재까지의 cost
 	UPROPERTY()
-		int32 G_Cost;
+	int32 G_Cost;
 	// 앞으로 필요할 것으로 예상되는 cost
 	UPROPERTY()
-		int32 H_Cost;
+	int32 H_Cost;
 	// 총합 cost
 	UPROPERTY()
-		int32 F_Cost;
+	int32 F_Cost;
 	//이 Pathnode가 담당하는 Grid로 진입하기 위한 Cost
 	UPROPERTY()
 	int32 GridCost;
 
 	UPROPERTY()
-		FGrid Grid;
+	FGrid Grid;
 	UPROPERTY()
-		bool bIsWalkable;
+	bool bIsWalkable;
 	UPROPERTY()
 	UPathObject* ParentObject;
 

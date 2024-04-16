@@ -12,8 +12,8 @@ class UTextBlock;
 class UStatComponent;
 
 /**
- * Unit Stat¿ª ∫∏ø©¡÷¥¬ Widget.
- * AttackCalculationWidget æ»ø° µÈæÓ∞®.
+ * Unit StatÏùÑ Î≥¥Ïó¨Ï£ºÎäî Widget.
+ * AttackCalculationWidget ÏïàÏóê Îì§Ïñ¥Í∞ê.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UCalculationUnitStatWidget : public UUserWidget
@@ -23,22 +23,23 @@ class TURNBASEDSTRATEGY_API UCalculationUnitStatWidget : public UUserWidget
 public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UProgressBar* ProgressBar_HP;
-	
+	UProgressBar* ProgressBar_HP;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_HP;
-	
+	UTextBlock* TextBlock_HP;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_DMG;
-	
+	UTextBlock* TextBlock_DMG;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_Hit;
-	
+	UTextBlock* TextBlock_Hit;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_Crit;
+	UTextBlock* TextBlock_Crit;
 
 	UPROPERTY()
-		UStatComponent* CurrentStatComponent;
+	UStatComponent* CurrentStatComponent;
+
 public:
 
 	void UpdateCalculationUnitStat(AActor* StatOwner, AActor* Opponent);

@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyDelegates.h"
 #include "GameFramework/Actor.h"
 #include "Turn.h"
 #include "TurnManager.generated.h"
 
 class AUnit;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTurnManagingDelegate);
 
 UCLASS()
 class TURNBASEDSTRATEGY_API ATurnManager : public AActor
@@ -22,12 +21,12 @@ public:
 
 	static ATurnManager* GetTurnManager();
 
-	FTurnManagingDelegate OnPlayerTurnStart;
-	FTurnManagingDelegate OnEnemyTurnStart;
+	FDynamicMulticastVoid OnPlayerTurnStart;
+	FDynamicMulticastVoid OnEnemyTurnStart;
 
-	FTurnManagingDelegate OnTurnChanged;
+	FDynamicMulticastVoid OnTurnChanged;
 
-	FTurnManagingDelegate OnIsBusyChanged;
+	FDynamicMulticastVoid OnIsBusyChanged;
 
 private:
 

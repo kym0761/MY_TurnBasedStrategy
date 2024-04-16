@@ -9,7 +9,7 @@
 class UTextBlock;
 
 /**
- * DamageTextActorø°º≠ ªÁøÎµ .
+ * DamageTextActorÏóêÏÑú ÏÇ¨Ïö©Îê®.
  */
 UCLASS(abstract)
 class TURNBASEDSTRATEGY_API UDamageTextWidget : public UUserWidget
@@ -19,12 +19,12 @@ class TURNBASEDSTRATEGY_API UDamageTextWidget : public UUserWidget
 public:
 
 	UPROPERTY(Meta = (BindWidget))
-		TObjectPtr<UTextBlock> DamageTextBlock;
+	TObjectPtr<UTextBlock> DamageTextBlock;
 
 public:
 
 	virtual void NativeConstruct() override;
 
 	void SetDamageText(float InDamage);
-	
+
 };

@@ -7,6 +7,7 @@
 
 #include "Manager/TurnManager.h"
 #include "DebugHelper.h"
+#include "UnitCore/Unit.h"
 
 // Sets default values for this component's properties
 UUnitActionComponent::UUnitActionComponent()
@@ -68,7 +69,6 @@ FString UUnitActionComponent::GetActionName() const
 
 AUnit* UUnitActionComponent::GetOwningUnit() const
 {
-
 	return Cast<AUnit>(GetOwner());
 }
 

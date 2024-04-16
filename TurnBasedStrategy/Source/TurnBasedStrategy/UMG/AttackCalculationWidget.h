@@ -30,31 +30,31 @@ public:
 	UVerticalBox* VerticalBox_AttackOrder;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UButton* Button_Attack;
+	UButton* Button_Attack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UCalculationUnitStatWidget* CalculationStat_Ally;
+	UCalculationUnitStatWidget* CalculationStat_Ally;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UCalculationUnitStatWidget* CalculationStat_Enemy;
+	UCalculationUnitStatWidget* CalculationStat_Enemy;
 
 	UPROPERTY()
-		AActor* Attacker;
+	AActor* Attacker;
 
 	UPROPERTY()
-		AActor* Defender;
+	AActor* Defender;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_AllyName;
+	UTextBlock* TextBlock_AllyName;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_EnemyName;
-	
+	UTextBlock* TextBlock_EnemyName;
+
 	UPROPERTY()
 	//TArray<FAttackOrder> AttackOrders;
 	TArray<FBattleOrder> BattleOrders;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category ="AttackOrder")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackOrder")
 	TSubclassOf<UAttackOrderWidget> AllyAttackOrder;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AttackOrder")
 	TSubclassOf<UAttackOrderWidget> EnemyAttackOrder;

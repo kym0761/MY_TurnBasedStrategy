@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MyDelegates.h"
 #include "Components/ActorComponent.h"
 #include "UnitAction.h"
 #include "UnitActionComponent.generated.h"
 
 class AUnit;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnitActionDelegate);
 
 UCLASS(abstract /*, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent)*/)
 class TURNBASEDSTRATEGY_API UUnitActionComponent : public UActorComponent
@@ -42,11 +42,11 @@ public:
 	//이는 ActionStart()에서 Broadcast되므로, 다른 곳에서 직접 Call하려고 하지말 것.
 	//아래 3개도 마찬가지...
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "Action")
-	FUnitActionDelegate OnActionStart;
+	FDynamicMulticastVoid OnActionStart;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "Action")
-	FUnitActionDelegate OnActionEnd;
+	FDynamicMulticastVoid OnActionEnd;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = "Action")
-	FUnitActionDelegate OnActionSelected;
+	FDynamicMulticastVoid OnActionSelected;
 
 protected:
 	// Called when the game starts

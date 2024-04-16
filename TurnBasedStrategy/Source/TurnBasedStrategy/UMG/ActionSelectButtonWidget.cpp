@@ -14,7 +14,7 @@ UActionSelectButtonWidget::UActionSelectButtonWidget(const FObjectInitializer& O
 {
 	if (IsValid(Button_Select))
 	{
-		//TODO : IsFocusable Deprecated.. -> ±Ùµ¥ SetÇÔ¼ö°¡ ¾ø´Â °Í °°À½.
+		//TODO : IsFocusable Deprecated.. -> ê·¼ë° Setí•¨ìˆ˜ê°€ ì—†ëŠ” ê²ƒ ê°™ìŒ.
 		Button_Select->IsFocusable = true;
 	}
 	
@@ -28,7 +28,7 @@ void UActionSelectButtonWidget::NativeConstruct()
 
 void UActionSelectButtonWidget::InitActionSelectButton(UUnitActionComponent* InputAction)
 {
-	//´­·¶À» ¶§ È°¼ºÈ­µÉ ActionÀ» µî·Ï
+	//ëˆŒë €ì„ ë•Œ í™œì„±í™”ë  Actionì„ ë“±ë¡
 
 	if (IsValid(InputAction))
 	{
@@ -57,8 +57,8 @@ void UActionSelectButtonWidget::InitButton()
 
 void UActionSelectButtonWidget::OnButtonClicked()
 {
-	//¿øÇÏ´Â Action¿¡ ´ëÇÑ ¹öÆ°À» ´­·¶À» ½Ã¿¡
-	//ControlPawn¿¡ UnitActionÀ» ¼±ÅÃÇÏ°í Action °¡´ÉÇÑ GridµéÀ» º¸¿©ÁÖ°Ô µÉ °Í.
+	//ì›í•˜ëŠ” Actionì— ëŒ€í•œ ë²„íŠ¼ì„ ëˆŒë €ì„ ì‹œì—
+	//ControlPawnì— UnitActionì„ ì„ íƒí•˜ê³  Action ê°€ëŠ¥í•œ Gridë“¤ì„ ë³´ì—¬ì£¼ê²Œ ë  ê²ƒ.
 
 
 	if (!IsValid(UnitAction))

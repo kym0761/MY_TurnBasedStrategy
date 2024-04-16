@@ -22,7 +22,7 @@ class TURNBASEDSTRATEGY_API UAttackOrderWidget : public UUserWidget
 public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Meta = (BindWidget))
-		UTextBlock* TextBlock_Damage;
+	UTextBlock* TextBlock_Damage;
 
 public:
 

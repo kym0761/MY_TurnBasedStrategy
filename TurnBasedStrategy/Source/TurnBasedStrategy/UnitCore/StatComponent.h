@@ -7,13 +7,13 @@
 #include "StatComponent.generated.h"
 
 /*
-* STR : ¹°¸® °ø°Ý·Â
-* INT : ¸¶¹ý °ø°Ý·Â
-* SPD : ½ºÇÇµå
-* SKL : ±â¼ú
-* LUK : Çà¿î
-* DEF : ¹°¸® ¹æ¾î·Â
-* RES : ¸¶¹ý ¹æ¾î·Â
+* STR : ë¬¼ë¦¬ ê³µê²©ë ¥
+* INT : ë§ˆë²• ê³µê²©ë ¥
+* SPD : ìŠ¤í”¼ë“œ
+* SKL : ê¸°ìˆ 
+* LUK : í–‰ìš´
+* DEF : ë¬¼ë¦¬ ë°©ì–´ë ¥
+* RES : ë§ˆë²• ë°©ì–´ë ¥
 */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TURNBASEDSTRATEGY_API UStatComponent : public UActorComponent
@@ -27,31 +27,31 @@ public:
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 HP;
+	int32 HP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 MaxHP;
+	int32 MaxHP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 STR;
+	int32 STR;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 INT;
+	int32 INT;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 SPD;
+	int32 SPD;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 SKL;
+	int32 SKL;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 LUK;
+	int32 LUK;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 DEF;
+	int32 DEF;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 RES;
+	int32 RES;
 
 protected:
 	// Called when the game starts
