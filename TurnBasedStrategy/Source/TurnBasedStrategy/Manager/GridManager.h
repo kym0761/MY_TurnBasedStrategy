@@ -30,7 +30,7 @@ class TURNBASEDSTRATEGY_API AGridManager : public AActor, public IGridManagerInt
 {
 	GENERATED_BODY()
 	
-#pragma region PrivateData
+#pragma region PrivateGridData
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
@@ -47,33 +47,32 @@ private:
 	* 이 Instanced Mesh Component들은 Grid의 정보를 시각적으로 보여주는 역할을 한다.
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		UInstancedGridVisualComponent* GridVisual_Move;
+	UInstancedGridVisualComponent* GridVisual_Move;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		UInstancedGridVisualComponent* GridVisual_OK;
+	UInstancedGridVisualComponent* GridVisual_OK;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		UInstancedGridVisualComponent* GridVisual_NO;
+	UInstancedGridVisualComponent* GridVisual_NO;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		UInstancedGridVisualComponent* GridVisual_Warning;
+	UInstancedGridVisualComponent* GridVisual_Warning;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Grid", Meta = (AllowPrivateAccess = true))
-		UInstancedGridVisualComponent* GridVisual_DANGER;
-
-	//UPROPERTY()
-	//	ASRPG_GameMode* SRPG_GameModeRef;
+	UInstancedGridVisualComponent* GridVisual_DANGER;
 
 #pragma endregion
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 X_Length = 10;
+	int32 X_Length = 10;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		int32 Y_Length = 10;
+	int32 Y_Length = 10;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (AllowPrivateAccess = true))
-		float CellSize = 100.0f;
+	float CellSize = 100.0f;
 
 public:	
 	// Sets default values for this actor's properties
@@ -93,8 +92,6 @@ protected:
 
 	//virtual void OnConstruction(const FTransform& Transform);
 
-	////Init
-	//void CreateGridSystem();
 
 public:	
 
@@ -116,6 +113,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual FGrid WorldToGrid(const FVector& WorldPosition) const;
+
 	UFUNCTION(BlueprintCallable)
 	virtual FVector GridToWorld(const FGrid& Grid) const;
 
@@ -131,12 +129,12 @@ public:
 
 	/*Pathfinding Functions*/
 	virtual TArray<FGrid> FindPath(const FGrid& Start, const FGrid& End, int32& PathLength, const int32 MaxMoveCost, bool bCanIgnoreUnit = false, bool bCalculateToTarget = false);
-	virtual int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
 	virtual bool HasPath(const FGrid& Start, const FGrid& End, int32 MaxMoveCost = 1000, bool bCanIgnoreUnit = false);
 	virtual int32 GetPathLength(const FGrid& Start, const FGrid& End, const int32 MaxMoveCost);
 
 private:
 
+	virtual int32 CalculateGridDistance(const FGrid& a, const FGrid& b) const;
 	virtual void InitAllPathFindingObjects();
 	virtual void InitPathFindingObjects(const FGrid& StartGrid, const int32 MaxMoveCost);
 	virtual UPathObject* GetLowestFCostObject(TArray<UPathObject*>& PathObjectList);
@@ -153,6 +151,8 @@ public:
 
 public:
 
+	/* ETC functions */
+
 	static AGridManager* GetGridManager();
 
 	//Test EnemyRangeFunction
@@ -162,8 +162,8 @@ public:
 	//아군 유닛이 움직였을 때 갱신기능이 필요함
 
 	UFUNCTION(BlueprintCallable)
-		void ShowEnemyRange();
+	void ShowEnemyRange();
 
 	UFUNCTION(BlueprintCallable)
-		void ClearEnemyRange();
+	void ClearEnemyRange();
 };

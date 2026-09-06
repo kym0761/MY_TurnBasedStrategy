@@ -298,10 +298,10 @@ int32 UUnitAttackActionComponent::CalculateActionValue(FGrid& CandidateGrid)
 		switch (battleOrder.OrderOwnerType)
 		{
 		case EOrderOwnerType::Attacker:
-			attackerHP -= battleOrder.Damage;
+			defenderHP -= battleOrder.Damage;
 			break;
 		case EOrderOwnerType::Defender:
-			defenderHP -= battleOrder.Damage;
+			attackerHP -= battleOrder.Damage;
 			break;
 		}
 	}

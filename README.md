@@ -77,7 +77,29 @@ InstancedStaticMesh를 사용한 이유는, 각 칸의 그리드에 그리드 Ac
 
 ## BattleManager
 
-<img src="ExplainImages/BattleManager01.png" width="75%">
+```cpp
+// 공격자의 공격
+FBattleOrder attack;
+attack.OrderOwnerType = EOrderOwnerType::Attacker;
+attack.Damage = FMath::Max(0, attackerDamage - defenderDEF);
+attack.Attacker = Attacker;
+attack.Defender = Defender;
+attack.Accuracy = CalculateAccuracy(Attacker, Defender);
+attack.CritRate = CalculateCriticalRate(Attacker, Defender);
+
+// 방어자의 반격 (공격자의 방어력 attackerDEF 반영)
+FBattleOrder counterAttack;
+counterAttack.OrderOwnerType = EOrderOwnerType::Defender;
+counterAttack.Damage = FMath::Max(0, defenderDamage - attackerDEF);
+counterAttack.Attacker = Defender;
+counterAttack.Defender = Attacker;
+counterAttack.Accuracy = CalculateAccuracy(Defender, Attacker);
+counterAttack.CritRate = CalculateCriticalRate(Defender, Attacker);
+
+// 기본 1회 공격 및 반격 보장
+orders.Add(attack);
+orders.Add(counterAttack);
+```
 <img src="ExplainImages/Attack01.png" width="100%">
 <img src="ExplainImages/Attack02.png" width="30%">
 BattleManager는 자신의 유닛과 적 유닛의 스탯에 따라 전투 결과 등을 계산해주고, 공격 수락시 전투 결과대로 공격을 실행시켜주는 관리 객체다.  

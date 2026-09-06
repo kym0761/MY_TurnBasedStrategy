@@ -89,7 +89,7 @@ TArray<FBattleOrder> ABattleManager::CalculateBattleOrders(AActor* Attacker, AAc
 	//공격자의 공격
 	FBattleOrder attack;
 	attack.OrderOwnerType = EOrderOwnerType::Attacker;
-	attack.Damage = attackerDamage - defenderDEF;
+	attack.Damage = FMath::Max(0, attackerDamage - defenderDEF);
 	attack.Attacker = Attacker;
 	attack.Defender = Defender;
 	attack.Accuracy = CalculateAccuracy(Attacker, Defender);
@@ -98,7 +98,7 @@ TArray<FBattleOrder> ABattleManager::CalculateBattleOrders(AActor* Attacker, AAc
 	//방어자의 공격
 	FBattleOrder counterAttack;
 	counterAttack.OrderOwnerType = EOrderOwnerType::Defender;
-	counterAttack.Damage = defenderDamage - defenderDEF;
+	counterAttack.Damage = FMath::Max(0, defenderDamage - attackerDEF);
 	counterAttack.Attacker = Defender;
 	counterAttack.Defender = Attacker;
 	counterAttack.Accuracy = CalculateAccuracy(Defender, Attacker);
@@ -401,6 +401,11 @@ void ABattleManager::OnAttackHit()
 {
 	//Attacker의 공격을 맞았다면 Defender의 hit 애니메이션 재생함.
 	//TODO : 빗나감 처리 필요.
+
+	if (OrdersToPlay.IsEmpty())
+	{
+		return;
+	}
 
 	FBattleOrder currentOrder = OrdersToPlay[0];
 

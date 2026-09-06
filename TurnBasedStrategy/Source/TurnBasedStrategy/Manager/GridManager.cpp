@@ -19,6 +19,7 @@
 
 #include "DebugHelper.h"
 
+#include "Containers/BinaryHeap.h"
 
 // Sets default values
 AGridManager::AGridManager()
@@ -408,6 +409,9 @@ TArray<FGrid> AGridManager::FindPath(const FGrid& Start, const FGrid& End, int32
 
 	TArray<UPathObject*> openList; 	//openList = 이동 가능할 위치. Heap으로 사용함.
 	TSet<UPathObject*> closeSet; 	//closeSet = 이동 불가능한 위치. 빠른 검색용 TSet
+	
+	openList.Reserve(200);
+	closeSet.Reserve(200);
 
 	//Heap화 == PriorityQueue
 	openList.Heapify(UPathObject::PathFindingPredicated);

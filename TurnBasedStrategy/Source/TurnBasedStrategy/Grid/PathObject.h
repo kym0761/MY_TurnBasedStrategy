@@ -37,7 +37,7 @@ private:
 	UPROPERTY()
 	bool bIsWalkable;
 	UPROPERTY()
-	UPathObject* ParentObject;
+	TObjectPtr<UPathObject> ParentObject;
 
 public:
 
@@ -61,7 +61,7 @@ public:
 	bool GetIsWalkable() const;
 	void SetIsWalkable(bool InVal);
 
-    FORCEINLINE bool operator<(const UPathObject& Other) const
+	FORCEINLINE bool operator<(UPathObject& Other) const
     {
         return F_Cost < Other.GetFCost();
     }

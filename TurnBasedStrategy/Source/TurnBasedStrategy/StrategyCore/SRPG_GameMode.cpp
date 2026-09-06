@@ -4,6 +4,7 @@
 #include "SRPG_GameMode.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 #include "DebugHelper.h"
 
@@ -11,7 +12,6 @@
 #include "UnitAction/UnitActionComponent.h"
 #include "UnitCore/StatComponent.h"
 
-#include "Blueprint/UserWidget.h"
 
 
 ASRPG_GameMode::ASRPG_GameMode()
